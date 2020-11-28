@@ -21,7 +21,7 @@ def draw_map():
     for i in range(len(map_)):
         for j in range(len(map_[i])):
             if map_[i][j] == '#':
-                pg.draw.rect(screen, rect_color2d, (j * rect_size2d, i * rect_size2d, rect_size2d, rect_size2d), 4)
+                pg.draw.rect(screen, rect_color2d, (j * rect_size2d, i * rect_size2d, rect_size2d, rect_size2d), 1)
 
 
 if __name__ == '__main__':
