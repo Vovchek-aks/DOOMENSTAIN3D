@@ -1,27 +1,38 @@
 import pygame as pg
 from map import *
 from settings import *
+from player import Player
 
 
 def main():
-    global screen
     pg.init()
-    screen = pg.display.set_mode((size[0] * rect_size2d,
+    sc = pg.display.set_mode((size[0] * rect_size2d,
                                  size[1] * rect_size2d))
 
-    draw_map()
+    running = True
+    clock = pg.time.Clock()
 
-    pg.display.flip()
-    while pg.event.wait().type != pg.QUIT:
-        pass
+    player = Player()
+
+    while running:
+        sc.fill((0, 0, 0))
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+
+        draw_map(sc)
+        player.step(sc)
+        pg.display.flip()
+        clock.tick(FPS)
+
     pg.quit()
 
 
-def draw_map():
+def draw_map(sc):
     for i in range(len(map_)):
         for j in range(len(map_[i])):
             if map_[i][j] == '#':
-                pg.draw.rect(screen, rect_color2d, (j * rect_size2d, i * rect_size2d, rect_size2d, rect_size2d), 1)
+                pg.draw.rect(sc, white, (j * rect_size2d, i * rect_size2d, rect_size2d, rect_size2d), 1)
 
 
 if __name__ == '__main__':
