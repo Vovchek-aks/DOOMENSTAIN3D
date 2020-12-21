@@ -12,9 +12,9 @@ draw_dist = 1500
 fow = 60
 lines = 200
 line_step = fow / lines / 50
-line_to_px = 24
+line_to_px = width / lines
 
-bese_wall_h = 600
+bese_wall_h = 300
 
 white = (255, 255, 255)
 green = (0, 255, 0)

@@ -8,7 +8,7 @@ import math
 def raycast(sc, player):
     for i in range(lines):
         dist = 255
-        a = player.ang + line_step * i - line_step * lines / 6
+        a = player.ang + line_step * i - line_step * lines / 2
         cos = math.cos(a)
         sin = math.sin(a)
         for j in range(0, draw_dist, 8):
@@ -18,15 +18,26 @@ def raycast(sc, player):
                 dist = j / 4
                 break
 
-        pg.draw.line(sc, red, player.pos, (xx, yy), 1)
+        # pg.draw.line(sc, red, player.pos, (xx, yy), 1)
 
-        color = (255 - dist * 0.5,
-                 255 - dist * 0.5,
-                 255 - dist * 0.5)
+        dist *= math.cos(player.ang - a)
 
-        pg.draw.rect(sc, color, (i * line_to_px,
-                                 height / 2 - bese_wall_h + dist * 2,
-                                 line_to_px, (bese_wall_h - dist * 2) * 2))
+        c = 255 / (1 + dist * dist * 0.0001)
+        if c < 0:
+            c = 0
+        elif c > 200:
+            c = 200
+
+        if (bese_wall_h - dist * 1.5) * 2 > 0:
+            pg.draw.rect(sc, (55 + c, 20 + c, c / 2), (i * line_to_px,
+                                                   height / 2 - bese_wall_h + dist * 1.5,
+                                                   line_to_px + 1,
+                                                   (bese_wall_h - dist * 1.5) * 2))
+        else:
+            pg.draw.rect(sc, (55 + c, 55 + c, c), (i * line_to_px,
+                                                   height / 2 - 1,
+                                                   line_to_px + 1,
+                                                   2))
 
 
 def main():
