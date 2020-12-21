@@ -7,7 +7,7 @@ class Player:
     def __init__(self):
         self.pos = self.x, self.y = half_size[0] * rect_size2d - 48 * 4, half_size[1] * rect_size2d - 48
         self.ang = 0
-        self.sp = 2
+        self.sp = 10
 
     def draw(self, cs):
         pg.draw.circle(cs, green, self.pos, 10)
@@ -24,14 +24,14 @@ class Player:
             self.x += self.sp * cos
             self.y += self.sp * sin
         if key[pg.K_s]:
-            self.x -= self.sp * cos
-            self.y -= self.sp * sin
-        if key[pg.K_a]:
             self.x += -self.sp * cos
-            self.y += self.sp * sin
-        if key[pg.K_d]:
-            self.x += self.sp * cos
             self.y += -self.sp * sin
+        if key[pg.K_a]:
+            self.x += self.sp * sin
+            self.y += -self.sp * cos
+        if key[pg.K_d]:
+            self.x += -self.sp * sin
+            self.y += self.sp * cos
         if key[pg.K_q]:
             self.ang -= 0.05
         elif key[pg.K_e]:
@@ -39,5 +39,5 @@ class Player:
 
         self.pos = self.x, self.y
 
-        # self.draw(sc)
+        self.draw(sc)
 

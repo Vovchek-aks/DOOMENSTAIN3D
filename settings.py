@@ -9,8 +9,8 @@ height = size[1] * rect_size2d
 
 draw_dist = 1500
 
-fow = 120
-lines = 100
+fow = 60
+lines = 200
 line_step = fow / lines / 50
 line_to_px = 24
 
@@ -18,6 +18,7 @@ bese_wall_h = 600
 
 white = (255, 255, 255)
 green = (0, 255, 0)
+red = (255, 0, 0)
 gray = (128, 128, 128)
 
 

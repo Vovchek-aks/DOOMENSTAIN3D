@@ -8,7 +8,7 @@ import math
 def raycast(sc, player):
     for i in range(lines):
         dist = 255
-        a = player.ang - (fow * 2) + line_step * i
+        a = player.ang + line_step * i - line_step * lines / 6
         cos = math.cos(a)
         sin = math.sin(a)
         for j in range(0, draw_dist, 8):
@@ -18,7 +18,7 @@ def raycast(sc, player):
                 dist = j / 4
                 break
 
-        # pg.draw.line(sc, gray, player.pos, (xx, yy), 1)
+        pg.draw.line(sc, red, player.pos, (xx, yy), 1)
 
         color = (255 - dist * 0.5,
                  255 - dist * 0.5,
@@ -45,9 +45,9 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
 
-        # draw_map(sc)
-        player.step(sc)
         raycast(sc, player)
+        draw_map(sc)
+        player.step(sc)
         pg.display.flip()
         clock.tick(FPS)
 
