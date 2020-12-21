@@ -1,16 +1,16 @@
-rect_size2d = 48
+FPS = 60
+
+width = 1920
+height = 1080
 
 size = 32, 16
 half_size = size[0] // 2, size[1] // 2
-
-FPS = 60
-width = size[0] * rect_size2d
-height = size[1] * rect_size2d
+rect_size2d = width / size[0]
 
 draw_dist = 1500
 
 fow = 60
-lines = 200
+lines = 100
 line_step = fow / lines / 50
 line_to_px = width / lines
 

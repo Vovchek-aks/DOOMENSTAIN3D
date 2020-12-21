@@ -9,9 +9,9 @@ class Player:
         self.ang = 0
         self.sp = 5
 
-    def draw(self, cs):
-        pg.draw.circle(cs, green, self.pos, 10)
-        pg.draw.line(cs, green, self.pos, (self.x + draw_dist * math.cos(self.ang),
+    def draw(self, sc):
+        pg.draw.circle(sc, green, self.pos, 10)
+        pg.draw.line(sc, green, self.pos, (self.x + draw_dist * math.cos(self.ang),
                                            self.y + draw_dist * math.sin(self.ang)), 1)
 
     def step(self, sc):
@@ -39,5 +39,5 @@ class Player:
 
         self.pos = self.x, self.y
 
-        self.draw(sc)
+        # self.draw(sc)
 
