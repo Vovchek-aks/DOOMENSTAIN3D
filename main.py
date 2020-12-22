@@ -19,7 +19,7 @@ def raycast(sc, player):
                 dist = j / 4
                 break
 
-        dist *= math.cos(player.ang - a)  # inposter tyt!!!!!!!!!!!!!!!!!!!
+        dist *= math.cos(player.ang + a)  # inposter tyt!!!!!!!!!!!!!!!!!!!
 
         ret += [((xx, yy), dist)]
 
@@ -73,7 +73,8 @@ def main():
 
         draw_3d(sc)
         lin = raycast(sc, player)
-        # draw_map(sc, player, lin)
+        # Это у Вовы закоментировано
+        draw_map(sc, player, lin)
         player.step(sc)
         pg.display.flip()
         clock.tick(FPS)
@@ -83,7 +84,7 @@ def main():
 
 def draw_map(sc, player, lines):
     for i in map_coords:
-        pg.draw.rect(sc, white, (i[0], i[1], rect_size2d, rect_size2d), 1)
+        pg.draw.rect(sc, white, (i[0], i[1], rect_size2d, rect_size2d), 2)
     player.draw(sc)
     for i in lines:
         pg.draw.line(sc, gray, player.pos, i[0], 1)
