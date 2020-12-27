@@ -10,6 +10,7 @@ def raycast(sc, player):
     for i in range(lines):
         dist = 255
         a = player.ang + line_step * i - line_step * lines / 2
+
         cos = math.cos(a)
         sin = math.sin(a)
         for j in range(0, draw_dist, 10):
@@ -21,9 +22,11 @@ def raycast(sc, player):
 
         dist *= math.cos(player.ang - a)  # inposter tyt!!!!!!!!!!!!!!!!!!!
 
+        # dist *= abs(lines / 2 - i) / 100 + 0000.1
+
         ret += [((xx, yy), dist)]
 
-        c = 255 / (1 + dist * dist * 0.0001)
+        c = 255 / (1 + dist ** 2 * 0.0001)
 
         if c < 1:
             c = 1
@@ -37,6 +40,8 @@ def raycast(sc, player):
                 color[cc] = 0
             elif color[cc] > 255:
                 color[cc] = 255
+
+        # dist /= abs(lines / 2 - i) + 0.1
 
         if (bese_wall_h - dist) * 2 > 0:
             pg.draw.rect(sc, color, (i * line_to_px,
