@@ -8,12 +8,12 @@ import math
 def raycast(sc, player):
     ret = []
     for i in range(lines):
-        dist = 255
+        dist = 999
         a = player.ang + line_step * i - line_step * lines / 2
 
         cos = math.cos(a)
         sin = math.sin(a)
-        for j in range(0, draw_dist, 10):
+        for j in range(0, draw_dist, 5):
             xx = player.x + j * cos
             yy = player.y + j * sin
             if (int(xx // rect_size2d * rect_size2d), int(yy // rect_size2d * rect_size2d)) in map_coords:
@@ -42,12 +42,13 @@ def raycast(sc, player):
                 color[cc] = 255
 
         # dist /= abs(lines / 2 - i) + 0.1
+        dds = dist * 2
 
-        if (bese_wall_h - dist) * 2 > 0:
+        if (bese_wall_h - dds) * 2 > 0:
             pg.draw.rect(sc, color, (i * line_to_px,
-                                     height / 2 - bese_wall_h + dist,
+                                     height / 2 - bese_wall_h + dds,
                                      line_to_px + 1,
-                                     (bese_wall_h - dist) * 2))  # i tyt!!!!!!!!!!!!
+                                     (bese_wall_h - dds) * 2))  # i tyt!!!!!!!!!!!!
         else:
             pg.draw.rect(sc, color, (i * line_to_px,
                                      height / 2 - 2,
@@ -78,7 +79,7 @@ def main():
 
         draw_3d(sc)
         lin = raycast(sc, player)
-        draw_map(sc, player, lin)
+        # draw_map(sc, player, lin)
         player.step(sc)
         pg.display.flip()
         clock.tick(FPS)

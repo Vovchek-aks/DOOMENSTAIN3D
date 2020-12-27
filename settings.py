@@ -1,3 +1,5 @@
+import math
+
 FPS = 60
 
 width = 1920
@@ -9,12 +11,12 @@ rect_size2d = width / size[0]
 
 draw_dist = 1500
 
-fow = 90
-lines = 100
+fow = 30
+lines = 400
 line_step = fow / lines / 50
 line_to_px = width / lines
 
-bese_wall_h = 300
+bese_wall_h = 600
 
 white = (255, 255, 255)
 green = (0, 255, 0)
