@@ -17,11 +17,13 @@ def raycast(sc, player):
             xx = player.x + j * cos
             yy = player.y + j * sin
             if (int(xx // rect_size2d * rect_size2d), int(yy // rect_size2d * rect_size2d)) in map_coords:
-                ph = dist * rect_size2d / j
-                pg.draw.rect(sc, white, (i * line_to_px,
-                                             height / 2 - ph,
-                                             line_to_px + 1,
-                                             ph * 2))  # i tyt!!!!!!!!!!!!
+                j *= math.cos(player.ang - a)
+                c = 255 / (1 + j * j * 0.00001)
+                color = (int(c / 2), int(c / 3), int(c / 5))
+                pg.draw.rect(sc, color, (i * line_to_px,
+                                         height / 2 - dist * rect_size2d / (j + 1),
+                                         line_to_px + 1,
+                                         dist * rect_size2d / (j + 1) * 2))
 
                 break
 
@@ -51,7 +53,7 @@ def main():
 
         draw_3d(sc)
         lin = raycast(sc, player)
-        draw_map(sc, player, lin)
+        # draw_map(sc, player, lin)
         player.step(sc)
         pg.display.flip()
         clock.tick(FPS)
@@ -62,7 +64,7 @@ def main():
 def draw_map(sc, player, lines):
     for i in map_coords:
         pg.draw.rect(sc, white, (i[0], i[1], rect_size2d, rect_size2d), 1)
-    player.draw(sc)
+        player.draw(sc)
     for i in lines:
         pg.draw.line(sc, gray, player.pos, i[0], 1)
 
