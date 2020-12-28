@@ -13,21 +13,19 @@ def raycast(sc, player):
 
         cos = math.cos(a)
         sin = math.sin(a)
-        for j in range(0, draw_dist, 5):
-            xx = player.x + j * cos
-            yy = player.y + j * sin
+        for dist in range(0, draw_dist, 5):
+            xx = player.x + dist * cos
+            yy = player.y + dist * sin
             if (int(xx // rect_size2d * rect_size2d), int(yy // rect_size2d * rect_size2d)) in map_coords:
-                j *= math.cos(player.ang - a)
-                c = 255 / (1 + j * j * 0.00001)
+                dist *= math.cos(player.ang - a)
+                c = 255 / (1 + dist * dist * 0.00001)
                 color = (int(c / 2), int(c / 3), int(c / 5))
                 pg.draw.rect(sc, color, (i * line_to_px,
-                                         height / 2 - dist * rect_size2d / (j + 1),
+                                         height / 2 - dist * rect_size2d / (dist + 1),
                                          line_to_px + 1,
-                                         dist * rect_size2d / (j + 1) * 2))
+                                         dist * rect_size2d / (dist + 1) * 2))
 
                 break
-
-
 
     return ret
 
