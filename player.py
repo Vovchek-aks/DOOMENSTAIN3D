@@ -11,8 +11,8 @@ class Player:
 
     def draw(self, sc):
         pg.draw.circle(sc, green, self.pos, 10)
-        pg.draw.line(sc, green, self.pos, (self.x + draw_dist * math.cos(self.ang),
-                                           self.y + draw_dist * math.sin(self.ang)), 1)
+        pg.draw.line(sc, green, self.pos, (self.x + rect_size2d * math.cos(self.ang),
+                                           self.y + rect_size2d * math.sin(self.ang)), 1)
 
     def step(self, sc):
         key = pg.key.get_pressed()
