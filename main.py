@@ -27,8 +27,6 @@ def raycast(sc, player):
 
                 break
 
-
-
     return ret
 
 
