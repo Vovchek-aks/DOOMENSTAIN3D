@@ -10,9 +10,9 @@ class Player:
         self.sp = 3
 
     def draw(self, sc):
-        pg.draw.circle(sc, green, self.pos, 10)
-        pg.draw.line(sc, green, self.pos, (self.x + rect_size2d * math.cos(self.ang),
-                                           self.y + rect_size2d * math.sin(self.ang)), 1)
+        pg.draw.circle(sc, green, self.pos, 5)
+        pg.draw.line(sc, green, self.pos, (self.x // 4 + rect_size2d * math.cos(self.ang),
+                                           self.y // 4 + rect_size2d * math.sin(self.ang)), 1)
 
     def step(self, sc):
         key = pg.key.get_pressed()
@@ -37,7 +37,7 @@ class Player:
         elif key[pg.K_e]:
             self.ang += 0.05
 
-        self.pos = self.x, self.y
+        self.pos = self.x // 4, self.y // 4
 
         # self.draw(sc)
 

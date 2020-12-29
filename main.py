@@ -56,7 +56,8 @@ def main():
 
         draw_3d(sc)
         lin = raycast(sc, player)
-        draw_map(sc, player, lin)
+        # draw_map(sc, player, lin)
+        draw_mini_map(sc, player, lin)
         player.step(sc)
         pg.display.flip()
         clock.tick(FPS)
@@ -70,6 +71,13 @@ def draw_map(sc, player, lines):
         player.draw(sc)
     for i in lines:
         pg.draw.line(sc, gray, player.pos, i[0], 1)
+
+
+def draw_mini_map(sc, player, lines):
+    for i in map_coords:
+        print(i[0], i[1], rect_size2d)
+        pg.draw.rect(sc, white, (i[0] // 4, i[1] // 4, rect_size2d // 4, rect_size2d // 4), 1)
+        player.draw(sc)
 
 
 def draw_3d(sc):
