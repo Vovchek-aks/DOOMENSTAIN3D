@@ -8,10 +8,10 @@ import os
 
 
 def load_image(name, colorkey=None):
-    fullname = os.path.join('data', name)
+    fullname = os.path.join('data', 'sprites', name)
     if not os.path.isfile(fullname):
         print(f"Файл с изображением '{fullname}' не найден")
-        sys.exit()
+        fullname = os.path.join('data', 'sprites', 'shrek3.png')
     image = pg.image.load(fullname)
     if colorkey is not None:
         image = image.convert()
@@ -21,12 +21,6 @@ def load_image(name, colorkey=None):
     else:
         image = image.convert_alpha()
     return image
-
-
-g = pg.sprite.Group()
-sh = pg.sprite.Sprite(g)
-sh.image = load_image('shrek2.png')
-sh.rect = sh.image.get_rect()
 
 
 def raycast(sc, player):
@@ -108,7 +102,6 @@ def main():
     clock = pg.time.Clock()
 
     player = Player()
-
     while running:
         sc.fill((0, 0, 0))
         for event in pygame.event.get():
@@ -119,11 +112,11 @@ def main():
                     running = False
 
         draw_3d(sc)
+        g.draw(sc)
         lin = raycast(sc, player)
         # draw_map(sc, player, lin)
-        draw_minimap(sc, player)
+        # draw_minimap(sc, player)
         player.step(sc)
-        g.draw(sc)
         pg.display.flip()
         clock.tick(FPS)
 
