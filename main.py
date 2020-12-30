@@ -38,15 +38,7 @@ def raycast(sc, player):
             if (int(xx // rect_size2d * rect_size2d), int(yy // rect_size2d * rect_size2d)) in map_coords:
                 j *= math.cos(player.ang - a)
 
-                c = 255 / (1 + j * j * 0.00001)
-                color = (int(c / 2), int(c / 3), int(c / 5))
-
-                ret += [((xx, yy), j)]
-
-                pg.draw.rect(sc, color, (i * line_to_px,
-                                         height / 2 - dist * rect_size2d / (j + 1),
-                                         line_to_px + 1,
-                                         dist * rect_size2d / (j + 1) * 2))
+                ret += [((xx, yy), j, i)]
 
                 break
 
@@ -117,10 +109,10 @@ def main():
                 if event.key == pg.K_ESCAPE:
                     running = False
 
-        draw_3d(sc)
         lin = raycast(sc, player)
+        draw_3d(sc, lin)
         # draw_map(sc, player, lin)
-        # draw_minimap(sc, player)
+        draw_minimap(sc, player)
         all_sprites.draw(sc)
         player.step(sc)
         pg.display.flip()
@@ -145,9 +137,21 @@ def draw_minimap(sc, player):
         player.draw_minamap(sc)
 
 
-def draw_3d(sc):
+def draw_3d(sc, lin):
     pg.draw.rect(sc, (50, 30, 0), (0, 0, width, height / 2))
     pg.draw.rect(sc, (40, 30, 0), (0, height / 2, width, height))
+    dist = 999
+    for ret in lin:
+        i = ret[2]
+        j = ret[1]
+
+        c = 255 / (1 + j * j * 0.00001)
+
+        color = (int(c / 2), int(c / 3), int(c / 5))
+        pg.draw.rect(sc, color, (i * line_to_px,
+                                 height / 2 - dist * rect_size2d / (j + 1),
+                                 line_to_px + 1,
+                                 dist * rect_size2d / (j + 1) * 2))
 
 
 if __name__ == '__main__':
