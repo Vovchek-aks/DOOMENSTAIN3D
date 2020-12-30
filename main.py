@@ -23,34 +23,74 @@ def load_image(name, colorkey=None):
     return image
 
 
-def raycast(sc, player):
-    ret = []
-    for i in range(lines):
-        dist = 999
-        a = player.ang + line_step * i - line_step * lines / 2
+# def raycast(sc, player):
+#     ret = []
+#     for i in range(lines):
+#         dist = 999
+#         a = player.ang + line_step * i - line_step * lines / 2
+#
+#         cos = math.cos(a)
+#         sin = math.sin(a)
+#         for j in range(0, draw_dist, 5):
+#             xx = player.x + j * cos
+#             yy = player.y + j * sin
+#
+#             if (int(xx // rect_size2d * rect_size2d), int(yy // rect_size2d * rect_size2d)) in map_coords:
+#                 j *= math.cos(player.ang - a)
+#
+#                 c = 255 / (1 + j * j * 0.00001)
+#                 color = (int(c / 2), int(c / 3), int(c / 5))
+#
+#                 ret += [((xx, yy), j)]
+#
+#                 pg.draw.rect(sc, color, (i * line_to_px,
+#                                          height / 2 - dist * rect_size2d / (j + 1),
+#                                          line_to_px + 1,
+#                                          dist * rect_size2d / (j + 1) * 2))
+#
+#                 break
+#
+#     return ret
 
+
+def raycast(sc, player):
+    x, y = player.x // rect_size2d * rect_size2d, player.y // rect_size2d * rect_size2d
+
+    for i in range(lines):
+
+        a = player.ang + line_step * i - line_step * lines / 2
         cos = math.cos(a)
         sin = math.sin(a)
-        for j in range(0, draw_dist, 5):
-            xx = player.x + j * cos
-            yy = player.y + j * sin
 
-            if (int(xx // rect_size2d * rect_size2d), int(yy // rect_size2d * rect_size2d)) in map_coords:
-                j *= math.cos(player.ang - a)
-
-                c = 255 / (1 + j * j * 0.00001)
-                color = (int(c / 2), int(c / 3), int(c / 5))
-
-                ret += [((xx, yy), j)]
-
-                pg.draw.rect(sc, color, (i * line_to_px,
-                                         height / 2 - dist * rect_size2d / (j + 1),
-                                         line_to_px + 1,
-                                         dist * rect_size2d / (j + 1) * 2))
-
+        # смотрим на пересечение с вертикалями
+        vertical, dop_inf_x = (x + rect_size2d, 1) if cos >= 0 else (x, -1)
+        for j in range(0, width, rect_size2d):
+            rast_vert = (vertical - x) / cos
+            y_vert = player.y + rast_vert * sin
+            if rast_vert // rect_size2d * rect_size2d in map_coords and y_vert // rect_size2d * rect_size2d \
+                    in map_coords:
                 break
+            rast_vert += dop_inf_x * rect_size2d
 
-    return ret
+        # смотрим на пересечение с горизонталями
+        horisontal, dop_inf_y = (y + rect_size2d, 1) if sin >= 0 else (y, -1)
+        for j in range(0, height, rect_size2d):
+            rast_hor = (horisontal - y) / (sin - 1)
+            x_hor = player.x + rast_hor * cos
+            if rast_hor // rect_size2d * rect_size2d in map_coords and x_hor // rect_size2d * rect_size2d \
+                    in map_coords:
+                break
+            rast_hor += dop_inf_y * rect_size2d
+        rast = rast_vert if rast_hor < rast_hor else rast_hor
+        rast *= math.cos(player.ang - a)
+
+        c = 255 / (1 + rast * rast * 0.00001)
+        color = (int(c / 2), int(c / 3), int(c / 5))
+
+        pg.draw.rect(sc, color, (i * line_to_px,
+                                 height / 2 - 999 * rect_size2d // 2,
+                                 line_to_px + 1,
+                                 rast * rect_size2d // 2))
 
 
 def main():
