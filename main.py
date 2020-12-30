@@ -6,6 +6,10 @@ import math
 import sys
 import os
 
+all_sprites = pg.sprite.Group()
+objects = pg.sprite.Group()
+enemies = pg.sprite.Group()
+
 
 def load_image(name, colorkey=None):
     fullname = os.path.join('data', 'sprites', name)
@@ -21,6 +25,26 @@ def load_image(name, colorkey=None):
     else:
         image = image.convert_alpha()
     return image
+
+
+class GameObject(pg.sprite.Sprite):
+    def __init__(self, x, y, spr, *groups):
+        super().__init__(all_sprites, objects, *groups)
+        self.image = load_image(spr)
+        self.rect = self.image.get_rect()
+        self.x = x
+        self.y = y
+
+    def step(self):
+        self.draw3d()
+
+    def draw3d(self):
+        pass
+
+
+class Enemy(GameObject):
+    def __init__(self, x, y, spr):
+        super().__init__(x, y, spr, enemies)
 
 
 def raycast(sc, player):
@@ -95,10 +119,10 @@ def main():
 
     player = Player()
 
-    all_sprites = pg.sprite.Group()
     # sh = pg.sprite.Sprite(all_sprites)
-    # sh.image = load_image('321.png', -1)
+    # sh.image = load_image('shrek3.png', -1)
     # sh.rect = sh.image.get_rect()
+    # print(all_sprites.sprites()[0])
 
     while running:
         sc.fill((0, 0, 0))
