@@ -102,6 +102,12 @@ def main():
     clock = pg.time.Clock()
 
     player = Player()
+
+    g = pg.sprite.Group()
+    sh = pg.sprite.Sprite(g)
+    sh.image = load_image('123.jpg', -1)
+    sh.rect = sh.image.get_rect()
+
     while running:
         sc.fill((0, 0, 0))
         for event in pygame.event.get():
@@ -115,6 +121,7 @@ def main():
         lin = raycast(sc, player)
         # draw_map(sc, player, lin)
         # draw_minimap(sc, player)
+        # g.draw(sc)
         player.step(sc)
         pg.display.flip()
         clock.tick(FPS)
