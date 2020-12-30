@@ -11,8 +11,13 @@ class Player:
 
     def draw(self, sc):
         pg.draw.circle(sc, green, self.pos, 5)
-        pg.draw.line(sc, green, self.pos, (self.x // 4 + rect_size2d * math.cos(self.ang),
-                                           self.y // 4 + rect_size2d * math.sin(self.ang)), 1)
+        pg.draw.line(sc, green, self.pos, (self.x + rect_size2d * math.cos(self.ang),
+                                           self.y + rect_size2d * math.sin(self.ang)), 1)
+
+    def draw_minamap(self, sc):
+        pg.draw.circle(sc, green, self.pos, 5)
+        pg.draw.line(sc, green, self.pos, (self.x // 4 + rect_size2d // 4 * math.cos(self.ang),
+                                           self.y // 4 + rect_size2d // 4 * math.sin(self.ang)), 1)
 
     def step(self, sc):
         key = pg.key.get_pressed()

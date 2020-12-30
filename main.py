@@ -78,7 +78,7 @@ def draw_minimap(sc, player):
     for i in map_coords:
         # print(i[0], i[1], rect_size2d)
         pg.draw.rect(sc, gray, (i[0] // 4, i[1] // 4, rect_size2d // 4, rect_size2d // 4))
-        player.draw(sc)
+        player.draw_minamap(sc)
 
 
 def draw_3d(sc):
