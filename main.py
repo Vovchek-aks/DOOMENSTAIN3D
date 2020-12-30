@@ -23,37 +23,37 @@ def load_image(name, colorkey=None):
     return image
 
 
-# def raycast(sc, player):
-#     ret = []
-#     for i in range(lines):
-#         dist = 999
-#         a = player.ang + line_step * i - line_step * lines / 2
-#
-#         cos = math.cos(a)
-#         sin = math.sin(a)
-#         for j in range(0, draw_dist, 5):
-#             xx = player.x + j * cos
-#             yy = player.y + j * sin
-#
-#             if (int(xx // rect_size2d * rect_size2d), int(yy // rect_size2d * rect_size2d)) in map_coords:
-#                 j *= math.cos(player.ang - a)
-#
-#                 c = 255 / (1 + j * j * 0.00001)
-#                 color = (int(c / 2), int(c / 3), int(c / 5))
-#
-#                 ret += [((xx, yy), j)]
-#
-#                 pg.draw.rect(sc, color, (i * line_to_px,
-#                                          height / 2 - dist * rect_size2d / (j + 1),
-#                                          line_to_px + 1,
-#                                          dist * rect_size2d / (j + 1) * 2))
-#
-#                 break
-#
-#     return ret
-
-
 def raycast(sc, player):
+    ret = []
+    for i in range(lines):
+        dist = 999
+        a = player.ang + line_step * i - line_step * lines / 2
+
+        cos = math.cos(a)
+        sin = math.sin(a)
+        for j in range(0, draw_dist, 5):
+            xx = player.x + j * cos
+            yy = player.y + j * sin
+
+            if (int(xx // rect_size2d * rect_size2d), int(yy // rect_size2d * rect_size2d)) in map_coords:
+                j *= math.cos(player.ang - a)
+
+                c = 255 / (1 + j * j * 0.00001)
+                color = (int(c / 2), int(c / 3), int(c / 5))
+
+                ret += [((xx, yy), j)]
+
+                pg.draw.rect(sc, color, (i * line_to_px,
+                                         height / 2 - dist * rect_size2d / (j + 1),
+                                         line_to_px + 1,
+                                         dist * rect_size2d / (j + 1) * 2))
+
+                break
+
+    return ret
+
+
+def raycast_fps_stonks(sc, player):
     x, y = player.x // rect_size2d * rect_size2d, player.y // rect_size2d * rect_size2d
 
     for i in range(lines):
