@@ -112,7 +112,6 @@ def main():
                     running = False
 
         draw_3d(sc)
-        g.draw(sc)
         lin = raycast(sc, player)
         # draw_map(sc, player, lin)
         # draw_minimap(sc, player)
