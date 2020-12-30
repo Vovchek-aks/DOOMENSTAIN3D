@@ -8,7 +8,7 @@ import os
 
 
 def load_image(name, colorkey=None):
-    fullname = os.path.join('data', 'sprites', name)
+    fullname = os.path.join('data', name)
     if not os.path.isfile(fullname):
         print(f"Файл с изображением '{fullname}' не найден")
         sys.exit()
@@ -21,6 +21,12 @@ def load_image(name, colorkey=None):
     else:
         image = image.convert_alpha()
     return image
+
+
+g = pg.sprite.Group()
+sh = pg.sprite.Sprite(g)
+sh.image = load_image('shrek2.png')
+sh.rect = sh.image.get_rect()
 
 
 def raycast(sc, player):
@@ -117,6 +123,7 @@ def main():
         # draw_map(sc, player, lin)
         draw_minimap(sc, player)
         player.step(sc)
+        g.draw(sc)
         pg.display.flip()
         clock.tick(FPS)
 
