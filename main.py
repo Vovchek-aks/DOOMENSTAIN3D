@@ -103,10 +103,10 @@ def main():
 
     player = Player()
 
-    g = pg.sprite.Group()
-    sh = pg.sprite.Sprite(g)
-    sh.image = load_image('321.png', -1)
-    sh.rect = sh.image.get_rect()
+    all_sprites = pg.sprite.Group()
+    # sh = pg.sprite.Sprite(all_sprites)
+    # sh.image = load_image('321.png', -1)
+    # sh.rect = sh.image.get_rect()
 
     while running:
         sc.fill((0, 0, 0))
@@ -121,7 +121,7 @@ def main():
         lin = raycast(sc, player)
         # draw_map(sc, player, lin)
         # draw_minimap(sc, player)
-        g.draw(sc)
+        all_sprites.draw(sc)
         player.step(sc)
         pg.display.flip()
         clock.tick(FPS)
