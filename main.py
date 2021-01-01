@@ -41,6 +41,8 @@ class GameObject(pg.sprite.Sprite):
         super().__init__(all_sprites, objects, *groups)
         self.image = load_image(spr)
         self.rect = self.image.get_rect()
+        self.rect.x = -self.rect.w
+        self.rect.y = -self.rect.h
         self.x = x
         self.y = y
         self.pos = x, y
@@ -130,10 +132,7 @@ def main():
 
     player = Player()
 
-    # sh = pg.sprite.Sprite(all_sprites)
-    # sh.image = load_image('shrek3.png', -1)
-    # sh.rect = sh.image.get_rect()
-    # print(all_sprites.sprites()[0])
+    sh = GameObject(half_size[0] * rect_size2d - 48 * 6, half_size[1] * rect_size2d - 48, '1.png')
 
     while running:
         sc.fill((0, 0, 0))
