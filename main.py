@@ -11,6 +11,15 @@ objects = pg.sprite.Group()
 enemies = pg.sprite.Group()
 
 
+def angle_of_points(x1, y1, x2, y2, ang):
+    dx = abs(x1 - x2)
+    dy = abs(y1 - y2)
+    f = math.atan2(dx, dy)
+    if dx < 0 and dy < 0 or dx > 0 and 180 <= math.degrees(ang) <= 360:
+        f *= math.pi * 2
+    return f - ang
+
+
 def load_image(name, colorkey=None):
     fullname = os.path.join('data', 'sprites', name)
     if not os.path.isfile(fullname):
@@ -32,14 +41,18 @@ class GameObject(pg.sprite.Sprite):
         super().__init__(all_sprites, objects, *groups)
         self.image = load_image(spr)
         self.rect = self.image.get_rect()
+        self.rect.x = -self.rect.w
+        self.rect.y = -self.rect.h
         self.x = x
         self.y = y
+        self.pos = x, y
 
     def step(self):
         self.draw3d()
 
     def draw3d(self):
-        pass
+        global player
+        angle_of_points(*player.pos, *self.pos, player.a)
 
 
 class Enemy(GameObject):
@@ -125,10 +138,7 @@ def main():
 
     player = Player()
 
-    # sh = pg.sprite.Sprite(all_sprites)
-    # sh.image = load_image('shrek3.png', -1)
-    # sh.rect = sh.image.get_rect()
-    # print(all_sprites.sprites()[0])
+    sh = GameObject(half_size[0] * rect_size2d - 48 * 6, half_size[1] * rect_size2d - 48, '1.png')
 
     while running:
         sc.fill((0, 0, 0))
