@@ -70,6 +70,7 @@ def raycast(sc, player):
 
 
 def raycast_fps_stonks(sc, player):
+    ret = []
     x, y = player.x // rect_size2d * rect_size2d, player.y // rect_size2d * rect_size2d
 
     for i in range(lines):
@@ -81,9 +82,9 @@ def raycast_fps_stonks(sc, player):
         # смотрим на пересечение с вертикалями
         vertical, dop_inf_x = (x + rect_size2d, 1) if cos >= 0 else (x, -1)
         for j in range(0, width, rect_size2d):
-            rast_vert = (vertical - x) / cos
+            rast_vert = (vertical - player.x) / cos
             y_vert = player.y + rast_vert * sin
-            if rast_vert // rect_size2d * rect_size2d in map_coords and y_vert // rect_size2d * rect_size2d \
+            if (vertical + dop_inf_x) // rect_size2d * rect_size2d in map_coords and y_vert // rect_size2d * rect_size2d \
                     in map_coords:
                 break
             rast_vert += dop_inf_x * rect_size2d
@@ -91,23 +92,28 @@ def raycast_fps_stonks(sc, player):
         # смотрим на пересечение с горизонталями
         horisontal, dop_inf_y = (y + rect_size2d, 1) if sin >= 0 else (y, -1)
         for j in range(0, height, rect_size2d):
-            rast_hor = (horisontal - y) / (sin - 1)
+            rast_hor = (horisontal - player.y) / (sin - 1)
             x_hor = player.x + rast_hor * cos
-            if rast_hor // rect_size2d * rect_size2d in map_coords and x_hor // rect_size2d * rect_size2d \
+            if x_hor // rect_size2d * rect_size2d in map_coords and (horisontal + dop_inf_y) // rect_size2d * rect_size2d \
                     in map_coords:
                 break
             rast_hor += dop_inf_y * rect_size2d
-        rast = rast_vert if rast_hor < rast_hor else rast_hor
+        rast = rast_vert if rast_vert < rast_hor else rast_hor
         rast *= math.cos(player.ang - a)
+        ret += [((x, y), -rast, i)]
+        print(ret)
+        xx = player.x + j * cos
+        yy = player.y + j * sin
+        if (int(xx // rect_size2d * rect_size2d), int(yy // rect_size2d * rect_size2d)) in map_coords:
+            rast *= math.cos(player.ang - a)
 
-        c = 255 / (1 + rast * rast * 0.00001)
-        color = (int(c / 2), int(c / 3), int(c / 5))
-
-        pg.draw.rect(sc, color, (i * line_to_px,
-                                 height / 2 - 999 * rect_size2d // 2,
-                                 line_to_px + 1,
-                                 rast * rect_size2d // 2))
-
+            ret += [((xx, yy), rast, i)]
+        #
+        # pg.draw.rect(sc, color, (i * line_to_px,
+        #                          height / 2 - 999 * rect_size2d // 2,
+        #                          line_to_px + 1,
+        #                          rast * rect_size2d // 2))
+    return ret
 
 def main():
     pg.init()
@@ -133,7 +139,7 @@ def main():
                 if event.key == pg.K_ESCAPE:
                     running = False
 
-        lin = raycast(sc, player)
+        lin = raycast_fps_stonks(sc, player)
         draw_3d(sc, lin)
         # draw_map(sc, player, lin)
         draw_minimap(sc, player)
