@@ -128,6 +128,7 @@ def raycast_fps_stonks(sc, player):
         #                          rast * rect_size2d // 2))
     return ret
 
+
 def main():
     pg.init()
     sc = pg.display.set_mode((width, height))
@@ -149,7 +150,7 @@ def main():
                 if event.key == pg.K_ESCAPE:
                     running = False
 
-        lin = raycast_fps_stonks(sc, player)
+        lin = raycast(sc, player)
         draw_3d(sc, lin)
         # draw_map(sc, player, lin)
         draw_minimap(sc, player)
