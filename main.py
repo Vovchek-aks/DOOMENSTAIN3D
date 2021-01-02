@@ -20,6 +20,13 @@ def angle_of_points(x1, y1, x2, y2, ang):
     return f - ang
 
 
+def dist_of_points(x1, y1, x2, y2):
+    global player
+    dx = abs(x1 - x2)
+    dy = abs(y1 - y2)
+    return (dx ** 2 + dy ** 2) ** 0.5
+
+
 def load_image(name, colorkey=None):
     fullname = os.path.join('data', 'sprites', name)
     if not os.path.isfile(fullname):
@@ -39,7 +46,8 @@ def load_image(name, colorkey=None):
 class GameObject(pg.sprite.Sprite):
     def __init__(self, x, y, spr, *groups):
         super().__init__(all_sprites, objects, *groups)
-        self.image = load_image(spr)
+        self.base_im = load_image(spr)
+        self.image = self.base_im
         self.rect = self.image.get_rect()
         self.rect.x = -self.rect.w
         self.rect.y = -self.rect.h
@@ -47,12 +55,14 @@ class GameObject(pg.sprite.Sprite):
         self.y = y
         self.pos = x, y
 
-    def step(self):
-        self.draw3d()
+    def step(self, player):
+        self.draw3d(player)
 
-    def draw3d(self):
-        global player
-        angle_of_points(*player.pos, *self.pos, player.a)
+    def draw3d(self, player):
+        self.rect.x = angle_of_points(*player.pos, *self.pos, player.ang) / line_step * line_to_px
+        self.image = pg.transform.scale(self.base_im,
+                                        (round(self.rect.w / (dist_of_points(*self.pos, *player.pos) * 0.01)),
+                                         round(self.rect.h / (dist_of_points(*self.pos, *player.pos) * 0.01))))
 
 
 class Enemy(GameObject):
@@ -107,7 +117,8 @@ def raycast_fps_stonks(sc, player):
         for j in range(0, height, rect_size2d):
             rast_hor = (horisontal - player.y) / (sin - 1)
             x_hor = player.x + rast_hor * cos
-            if x_hor // rect_size2d * rect_size2d in map_coords and (horisontal + dop_inf_y) // rect_size2d * rect_size2d \
+            if x_hor // rect_size2d * rect_size2d in map_coords and (
+                    horisontal + dop_inf_y) // rect_size2d * rect_size2d \
                     in map_coords:
                 break
             rast_hor += dop_inf_y * rect_size2d
@@ -139,7 +150,7 @@ def main():
 
     player = Player()
 
-    sh = GameObject(half_size[0] * rect_size2d - 48 * 6, half_size[1] * rect_size2d - 48, '1.png')
+    sh = GameObject(half_size[0] + rect_size2d, half_size[1] + rect_size2d, '1.png')
 
     while running:
         sc.fill((0, 0, 0))
@@ -154,6 +165,7 @@ def main():
         draw_3d(sc, lin)
         # draw_map(sc, player, lin)
         draw_minimap(sc, player)
+        sh.step(player)
         all_sprites.draw(sc)
         player.step(sc)
         pg.display.flip()
@@ -176,6 +188,11 @@ def draw_minimap(sc, player):
         # print(i[0], i[1], rect_size2d)
         pg.draw.rect(sc, gray, (i[0] // 4, i[1] // 4, rect_size2d // 4, rect_size2d // 4))
         player.draw_minamap(sc)
+    for i in all_sprites.sprites():
+        pg.draw.circle(sc, red, i.pos, 5)
+        # pg.draw.line(sc, green, i.pos, (i.x // 4 + rect_size2d // 4 * math.cos(i.ang),
+        #                                    i.y // 4 + rect_size2d // 4 * math.sin(i.ang)), 1)
+        # print(i.pos)
 
 
 def draw_3d(sc, lin):

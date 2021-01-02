@@ -41,6 +41,7 @@ class Player:
             self.ang -= 0.05
         elif key[pg.K_e]:
             self.ang += 0.05
+        # self.ang %= math.pi * 2
 
         self.pos = self.x // 4, self.y // 4
 
