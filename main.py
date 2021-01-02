@@ -12,6 +12,7 @@ enemies = pg.sprite.Group()
 
 
 def angle_of_points(x1, y1, x2, y2, ang):
+    ang %= 1
     dx = abs(x1 - x2)
     dy = abs(y1 - y2)
     f = math.atan2(dx, dy)
@@ -49,8 +50,8 @@ class GameObject(pg.sprite.Sprite):
         self.base_im = load_image(spr)
         self.image = self.base_im
         self.rect = self.image.get_rect()
-        self.rect.x = -self.rect.w
-        self.rect.y = -self.rect.h
+        # self.rect.x = -self.rect.w
+        # self.rect.y = -self.rect.h
         self.x = x
         self.y = y
         self.pos = x, y
@@ -59,10 +60,11 @@ class GameObject(pg.sprite.Sprite):
         self.draw3d(player)
 
     def draw3d(self, player):
+        pass
         self.rect.x = angle_of_points(*player.pos, *self.pos, player.ang) / line_step * line_to_px
-        self.image = pg.transform.scale(self.base_im,
-                                        (round(self.rect.w / (dist_of_points(*self.pos, *player.pos) * 0.01)),
-                                         round(self.rect.h / (dist_of_points(*self.pos, *player.pos) * 0.01))))
+        # self.image = pg.transform.scale(self.base_im,
+        #                                 (round(self.rect.w / (dist_of_points(*self.pos, *player.pos) * 0.01)),
+        #                                  round(self.rect.h / (dist_of_points(*self.pos, *player.pos) * 0.01))))
 
 
 class Enemy(GameObject):
@@ -183,8 +185,8 @@ def draw_minimap(sc, player, lines):
         # print(i[0], i[1], rect_size2d)
         pg.draw.rect(sc, gray, (i[0] // 4, i[1] // 4, rect_size2d // 4, rect_size2d // 4))
         player.draw_minamap(sc)
-    for i in lines:
-        pg.draw.line(sc, white, player.pos, (i[0][0] // 4, i[0][1] // 4), 1)
+    # for i in lines:
+    #     pg.draw.line(sc, white, player.pos, (i[0][0] // 4, i[0][1] // 4), 1)
     for i in all_sprites.sprites():
         pg.draw.circle(sc, red, i.pos, 5)
         # pg.draw.line(sc, green, i.pos, (i.x // 4 + rect_size2d // 4 * math.cos(i.ang),
