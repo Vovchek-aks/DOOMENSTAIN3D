@@ -10,7 +10,7 @@ class Player:
         self.sp = 3
 
     def draw(self, sc):
-        pg.draw.circle(sc, green, self.pos, 5)
+        pg.draw.circle(sc, green, (self.pos[0] * rect_size2d, self.pos[1] * rect_size2d), 5)
         pg.draw.line(sc, green, self.pos, (self.x + rect_size2d * math.cos(self.ang),
                                            self.y + rect_size2d * math.sin(self.ang)), 1)
 

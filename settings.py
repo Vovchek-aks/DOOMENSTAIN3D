@@ -2,17 +2,17 @@ import math
 
 FPS = 60
 
-width = 1920
-height = 1080
+width = 1366
+height = 769
 
 size = 32, 16  # размер карты
 half_size = size[0] // 2, size[1] // 2  # центр карты и начальнаяпозиция игрока
 rect_size2d = 1920 // size[0]  # размер 2д прямоугольника на карте
 
-draw_dist = 2000  # Длина лучей
+draw_dist = 20000  # Длина лучей
 
 fow = 60  # область видимости
-lines = 200  # Количество лучей
+lines = 500  # Количество лучей
 line_step = fow / lines / 50  # угол между лучами
 line_to_px = width / lines  # ширина линии в 3д
 
