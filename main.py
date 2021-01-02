@@ -12,10 +12,10 @@ enemies = pg.sprite.Group()
 
 
 def angle_of_points(x1, y1, x2, y2, ang):
-    ang %= 1
+    # ang = (ang - 1.2) % 5
     dx = abs(x1 - x2)
     dy = abs(y1 - y2)
-    f = math.atan2(dx, dy)
+    f = math.atan(dx / (dy + 0.01))
     if dx < 0 and dy < 0 or dx > 0 and 180 <= math.degrees(ang) <= 360:
         f *= math.pi * 2
     return f - ang
@@ -61,7 +61,7 @@ class GameObject(pg.sprite.Sprite):
 
     def draw3d(self, player):
         pass
-        self.rect.x = angle_of_points(*player.pos, *self.pos, player.ang) / line_step * line_to_px
+        self.rect.x = angle_of_points(*player.pos, *self.pos, player.ang) / line_step * line_to_px - self.rect.w // 2
         # self.image = pg.transform.scale(self.base_im,
         #                                 (round(self.rect.w / (dist_of_points(*self.pos, *player.pos) * 0.01)),
         #                                  round(self.rect.h / (dist_of_points(*self.pos, *player.pos) * 0.01))))
@@ -145,6 +145,8 @@ def main():
     running = True
     clock = pg.time.Clock()
 
+    font = pygame.font.Font(None, 24)
+
     player = Player()
 
     sh = GameObject(half_size[0] + rect_size2d, half_size[1] + rect_size2d, '1.png')
@@ -165,6 +167,8 @@ def main():
         sh.step(player)
         all_sprites.draw(sc)
         player.step(sc)
+        # angle_of_points(*player.pos, *sh.pos, player.ang)
+        sc.blit(font.render(str(player.ang), False, red), (width - 200, 50))
         pg.display.flip()
         clock.tick(FPS)
 
