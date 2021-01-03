@@ -12,13 +12,19 @@ enemies = pg.sprite.Group()
 
 
 def angle_of_points(x1, y1, x2, y2, ang):
+    '''
+    fuck this
+    i hate this fucking shit
+    nastya, please, kill this fucking function case i cant
+    im going to make sth else..
+    '''
     # ang = (ang - 1.2) % 5
-    dx = abs(x1 - x2)
-    dy = abs(y1 - y2)
-    f = math.atan(dx / (dy + 0.01))
+    dx = x1 - x2
+    dy = y1 - y2
+    f = math.atan2(dx, dy)
     if dx < 0 and dy < 0 or dx > 0 and 180 <= math.degrees(ang) <= 360:
         f *= math.pi * 2
-    return f - ang
+    return math.radians(180) + f - ang
 
 
 def dist_of_points(x1, y1, x2, y2):
@@ -168,7 +174,7 @@ def main():
         all_sprites.draw(sc)
         player.step(sc)
         # angle_of_points(*player.pos, *sh.pos, player.ang)
-        sc.blit(font.render(str(player.ang), False, red), (width - 200, 50))
+        sc.blit(font.render(str(angle_of_points(*player.pos, *sh.pos, player.ang)), False, red), (width - 200, 50))
         pg.display.flip()
         clock.tick(FPS)
 
