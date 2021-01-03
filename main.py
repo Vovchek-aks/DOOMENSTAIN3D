@@ -56,8 +56,6 @@ class GameObject(pg.sprite.Sprite):
         self.base_im = load_image(spr)
         self.image = self.base_im
         self.rect = self.image.get_rect()
-        # self.rect.x = -self.rect.w
-        # self.rect.y = -self.rect.h
         self.x = x
         self.y = y
         self.pos = x, y
