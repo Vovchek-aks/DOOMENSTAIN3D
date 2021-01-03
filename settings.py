@@ -2,8 +2,8 @@ import math
 
 FPS = 60
 
-width = 1920
-height = 1080
+width = 1366
+height = 768
 
 size = 32, 16  # размер карты
 half_size = size[0] // 2, size[1] // 2  # центр карты и начальнаяпозиция игрока
