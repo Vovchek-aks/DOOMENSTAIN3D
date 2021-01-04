@@ -13,13 +13,13 @@ enemies = pg.sprite.Group()
 
 def angle_of_points(x1, y1, x2, y2, ang):
     # ang = (ang - 1.2) % 5
-    dx = x1 - x2
-    dy = y1 - y2
+    dx = -(x1 - x2)
+    dy = (y1 - y2)
     f = math.atan2(dx, dy)
     r = f - ang
-    if dx < 0 and dy < 0 or dx > 0 and 180 <= math.degrees(ang) <= 360:
+    if not (y1 < y2 and x1 < x2):
         r += math.pi * 2
-    return r
+    return r - 1
 
 
 def dist_of_points(x1, y1, x2, y2):
@@ -60,6 +60,7 @@ class GameObject(pg.sprite.Sprite):
     def draw3d(self, player):
         pass
         self.rect.x = angle_of_points(*player.pos, *self.pos, player.ang) / line_step * line_to_px - self.rect.w // 2
+
         # self.image = pg.transform.scale(self.base_im,
         #                                 (round(self.rect.w / (dist_of_points(*self.pos, *player.pos) * 0.01)),
         #                                  round(self.rect.h / (dist_of_points(*self.pos, *player.pos) * 0.01))))
