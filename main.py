@@ -10,6 +10,8 @@ all_sprites = pg.sprite.Group()
 objects = pg.sprite.Group()
 enemies = pg.sprite.Group()
 
+znak = lambda x: x // x if x > 0 else -x // x
+
 
 def angle_of_points(x1, y1, x2, y2, ang):
     # ang = (ang - 1.2) % 5
@@ -45,21 +47,48 @@ def load_image(name, colorkey=None):
 
 
 class GameObject(pg.sprite.Sprite):
-    def __init__(self, x, y, spr, *groups):
+    def __init__(self, x, y, spr, *groups, marsh=None):
         super().__init__(all_sprites, objects, *groups)
         self.base_im = load_image(spr)
         self.image = self.base_im
         self.rect = self.image.get_rect()
         self.x = x
         self.y = y
+        self.rect.x = -self.rect.w
         self.pos = x, y
+        self.sp = 1
+
+        self.marsh = []
+        self.mc = 0
+
+        if marsh is not None:
+            self.marsh = marsh
 
     def step(self, player):
+        self.go_marsh()
         self.draw3d(player)
+
+    def go_marsh(self):
+        if self.pos != self.marsh[self.mc]:
+            self.move(*self.marsh[self.mc])
+        else:
+            self.mc += 1
+            self.mc %= len(self.marsh)
+
+    def move(self, x, y):
+        if abs(self.x - x) > self.sp:
+            self.x -= self.sp * znak(self.x - x)
+        else:
+            self.x = x
+        if abs(self.y - y) > self.sp:
+            self.y -= self.sp * znak(self.y - y)
+        else:
+            self.y = y
+        self.pos = self.x, self.y
 
     def draw3d(self, player):
         pass
-        self.rect.x = angle_of_points(*player.pos, *self.pos, player.ang) / line_step * line_to_px - self.rect.w // 2
+        # self.rect.x = angle_of_points(*player.pos, *self.pos, player.ang) / line_step * line_to_px - self.rect.w // 2
         # self.image = pg.transform.scale(self.base_im,
         #                                 (round(self.rect.w / (dist_of_points(*self.pos, *player.pos) * 0.01)),
         #                                  round(self.rect.h / (dist_of_points(*self.pos, *player.pos) * 0.01))))
@@ -147,7 +176,11 @@ def main():
 
     player = Player()
 
-    sh = GameObject(half_size[0] + rect_size2d * 3, half_size[1] + rect_size2d, '1.png')
+    sh = GameObject(half_size[0] + rect_size2d * 3, half_size[1] + rect_size2d, '1.png',
+                    marsh=[(200, 110),
+                           (200, 205),
+                           (325, 205),
+                           (325, 110)])
 
     while running:
         sc.fill((0, 0, 0))
@@ -166,7 +199,7 @@ def main():
         all_sprites.draw(sc)
         player.step(sc)
         # angle_of_points(*player.pos, *sh.pos, player.ang)
-        sc.blit(font.render(str(angle_of_points(*player.pos, *sh.pos, player.ang)), False, red), (width - 200, 50))
+        sc.blit(font.render(str(player.pos), False, red), (width - 200, 50))
         pg.display.flip()
         clock.tick(FPS)
 
