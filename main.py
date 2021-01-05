@@ -197,12 +197,11 @@ def main():
                     running = False
 
         lin = raycast_fps_stonks(sc, player)
-        draw_3d(sc, lin)
+        draw_3d(sc, lin, all_sprites.sprites(), player.pos)
         # draw_map(sc, player, lin)
         draw_minimap(sc, player, lin)
         sh.step(player)
-        sc.blit(sh.image, (sh.rect.x, sh.rect.y))
-        player.step(sc)
+        player.step()
         # angle_of_points(*player.pos, *sh.pos, player.ang)
         sc.blit(font.render(str(clock.get_fps()), False, red), (width - 200, 50))
         pg.display.flip()
@@ -234,21 +233,28 @@ def draw_minimap(sc, player, lines):
         # print(i.pos)
 
 
-def draw_3d(sc, lin):
+def draw_3d(sc, lin, sp, ppos):
     pg.draw.rect(sc, (50, 30, 0), (0, 0, width, height / 2))
     pg.draw.rect(sc, (40, 30, 0), (0, height / 2, width, height))
     dist = 999
-    for ret in lin:
-        i = ret[2]
-        j = ret[1]
+    lin = [(True, i, i[1]) for i in lin]
+    sp = [(False, i, dist_of_points(*ppos, *i.pos) * 3.5) for i in sp]
+    lis = sorted(lin + sp, key=lambda x: -x[-1])
+    print([(i[-1], i[0]) for i in lis])
+    for ret in lis:
+        if ret[0]:
+            i = ret[1][2]
+            j = ret[1][1]
 
-        c = 255 / (1 + j * j * 0.00001)
+            c = 255 / (1 + j * j * 0.00001)
 
-        color = (int(c / 2), int(c / 3), int(c / 5))
-        pg.draw.rect(sc, color, (i * line_to_px,
-                                 height / 2 - dist * rect_size2d / (j + 1),
-                                 line_to_px + 1,
-                                 dist * rect_size2d / (j + 1) * 2))
+            color = (int(c / 2), int(c / 3), int(c / 5))
+            pg.draw.rect(sc, color, (i * line_to_px,
+                                     height / 2 - dist * rect_size2d / (j + 1),
+                                     line_to_px + 1,
+                                     dist * rect_size2d / (j + 1) * 2))
+        else:
+            sc.blit(ret[1].image, (ret[1].rect.x, ret[1].rect.y))
 
 
 if __name__ == '__main__':

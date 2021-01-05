@@ -19,7 +19,7 @@ class Player:
         pg.draw.line(sc, green, self.pos, (self.x // 4 + rect_size2d // 4 * math.cos(self.ang),
                                            self.y // 4 + rect_size2d // 4 * math.sin(self.ang)), 1)
 
-    def step(self, sc):
+    def step(self):
         key = pg.key.get_pressed()
 
         cos = math.cos(self.ang)
