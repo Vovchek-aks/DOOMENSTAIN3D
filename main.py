@@ -240,7 +240,6 @@ def draw_3d(sc, lin, sp, ppos):
     lin = [(True, i, i[1]) for i in lin]
     sp = [(False, i, dist_of_points(*ppos, *i.pos) * 3.5) for i in sp]
     lis = sorted(lin + sp, key=lambda x: -x[-1])
-    print([(i[-1], i[0]) for i in lis])
     for ret in lis:
         if ret[0]:
             i = ret[1][2]
