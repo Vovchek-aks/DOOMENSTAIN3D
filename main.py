@@ -88,6 +88,8 @@ class GameObject(pg.sprite.Sprite):
 
     def draw3d(self, player):
         dist = dist_of_points(*self.pos, *player.pos)
+        if dist < 10:
+            dist = 10
         self.rect.x = angle_of_points(*player.pos, *self.pos,
                                       player.ang) / line_step * line_to_px - self.image.get_rect().w // 2
 
@@ -199,10 +201,10 @@ def main():
         # draw_map(sc, player, lin)
         draw_minimap(sc, player, lin)
         sh.step(player)
-        all_sprites.draw(sc)
+        sc.blit(sh.image, (sh.rect.x, sh.rect.y))
         player.step(sc)
         # angle_of_points(*player.pos, *sh.pos, player.ang)
-        sc.blit(font.render(str(angle_of_points(*player.pos, *sh.pos, player.ang)), False, red), (width - 200, 50))
+        sc.blit(font.render(str(clock.get_fps()), False, red), (width - 200, 50))
         pg.display.flip()
         clock.tick(FPS)
 
