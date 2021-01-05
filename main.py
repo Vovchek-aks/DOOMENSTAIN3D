@@ -56,9 +56,9 @@ class GameObject(pg.sprite.Sprite):
         self.y = y
         self.rect.x = -self.rect.w
         self.pos = x, y
-        self.sp = 1
+        self.sp = 0.25
 
-        self.marsh = []
+        self.marsh = [self.pos]
         self.mc = 0
 
         if marsh is not None:
@@ -87,12 +87,14 @@ class GameObject(pg.sprite.Sprite):
         self.pos = self.x, self.y
 
     def draw3d(self, player):
-        pass
-        self.rect.x = angle_of_points(*player.pos, *self.pos, player.ang) / line_step * line_to_px - self.rect.w // 2
+        dist = dist_of_points(*self.pos, *player.pos)
+        self.rect.x = angle_of_points(*player.pos, *self.pos,
+                                      player.ang) / line_step * line_to_px - self.image.get_rect().w // 2
 
-        # self.image = pg.transform.scale(self.base_im,
-        #                                 (round(self.rect.w / (dist_of_points(*self.pos, *player.pos) * 0.01)),
-        #                                  round(self.rect.h / (dist_of_points(*self.pos, *player.pos) * 0.01))))
+        self.image = pg.transform.scale(self.base_im,
+                                        (round(self.rect.w / (dist * 0.02)),
+                                         round(self.rect.h / (dist * 0.02))))
+        self.rect.y = height / 2 - (dist * 0.05) - self.image.get_rect().h // 2
 
 
 class Enemy(GameObject):
@@ -177,11 +179,7 @@ def main():
 
     player = Player()
 
-    sh = GameObject(half_size[0] + rect_size2d * 3, half_size[1] + rect_size2d, '1.png',
-                    marsh=[(200, 110),
-                           (200, 205),
-                           (325, 205),
-                           (325, 110)])
+    sh = GameObject(half_size[0] + rect_size2d * 3, half_size[1] + rect_size2d, '1.png')
 
     while running:
         sc.fill((0, 0, 0))
@@ -200,7 +198,7 @@ def main():
         all_sprites.draw(sc)
         player.step(sc)
         # angle_of_points(*player.pos, *sh.pos, player.ang)
-        sc.blit(font.render(str(player.pos), False, red), (width - 200, 50))
+        sc.blit(font.render(str(angle_of_points(*player.pos, *sh.pos, player.ang)), False, red), (width - 200, 50))
         pg.display.flip()
         clock.tick(FPS)
 
