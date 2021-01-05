@@ -96,7 +96,7 @@ class GameObject(pg.sprite.Sprite):
         self.image = pg.transform.scale(self.base_im,
                                         (round(self.rect.w / (dist * 0.02)),
                                          round(self.rect.h / (dist * 0.02))))
-        self.rect.y = height / 2 - (dist * 0.05) - self.image.get_rect().h // 2 + 20
+        self.rect.y = height / 2 - (dist * 0.05) - self.image.get_rect().h // 2 + 20 + self.rect.h / 40
 
 
 class Enemy(GameObject):
@@ -181,7 +181,7 @@ def main():
 
     player = Player()
 
-    sh = GameObject(half_size[0] + rect_size2d * 3, half_size[1] + rect_size2d, '1.jpg',
+    sh = GameObject(half_size[0] + rect_size2d * 3, half_size[1] + rect_size2d, '31.png',
                     marsh=[(200, 110),
                            (200, 205),
                            (325, 205),
@@ -238,7 +238,7 @@ def draw_3d(sc, lin, sp, ppos):
     pg.draw.rect(sc, (40, 30, 0), (0, height / 2, width, height))
     dist = 999
     lin = [(True, i, i[1]) for i in lin]
-    sp = [(False, i, dist_of_points(*ppos, *i.pos) * 3.5) for i in sp]
+    sp = [(False, i, dist_of_points(*ppos, *i.pos) * 3.6) for i in sp]
     lis = sorted(lin + sp, key=lambda x: -x[-1])
     for ret in lis:
         if ret[0]:
