@@ -94,7 +94,7 @@ class GameObject(pg.sprite.Sprite):
         self.image = pg.transform.scale(self.base_im,
                                         (round(self.rect.w / (dist * 0.02)),
                                          round(self.rect.h / (dist * 0.02))))
-        self.rect.y = height / 2 - (dist * 0.05) - self.image.get_rect().h // 2
+        self.rect.y = height / 2 - (dist * 0.05) - self.image.get_rect().h // 2 + 20
 
 
 class Enemy(GameObject):
@@ -179,7 +179,11 @@ def main():
 
     player = Player()
 
-    sh = GameObject(half_size[0] + rect_size2d * 3, half_size[1] + rect_size2d, '1.png')
+    sh = GameObject(half_size[0] + rect_size2d * 3, half_size[1] + rect_size2d, '1.jpg',
+                    marsh=[(200, 110),
+                           (200, 205),
+                           (325, 205),
+                           (325, 110)])
 
     while running:
         sc.fill((0, 0, 0))
