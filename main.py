@@ -30,12 +30,11 @@ def dist_of_points(x1, y1, x2, y2):
     return (dx ** 2 + dy ** 2) ** 0.5
 
 
-def lines_collision(x1_1, y1_1,
-                    x1_2, y1_2,
-                    x2_1, y2_1,
-                    x2_2, y2_2):
-    def point(x):
-        if min(x1_1, x1_2) <= x <= max(x1_1, x1_2):
+def lines_collision(x1_1, y1_1, x1_2, y1_2,
+                    x2_1, y2_1, x2_2, y2_2):
+
+    def point(xx):
+        if min(x1_1, x1_2) <= xx <= max(x1_1, x1_2):
             return True
         return False
 
@@ -57,7 +56,11 @@ def lines_collision(x1_1, y1_1,
     return False
 
 
-# def
+def lines_from_square(x, y, size=rect_size2d):
+    return [(x, y, x + size, y),
+            (x, y, x, y + size),
+            (x + size, y, x + size, y + size),
+            (x, y + size, x + size, y + size)]
 
 
 def load_image(name, colorkey=None):
@@ -146,10 +149,9 @@ class Enemy(GameObject):
         #     self.mc = 0
 
 
-def raycast(sc, player):
+def raycast(player):
     ret = []
     for i in range(lines):
-        dist = 999
         a = player.ang + line_step * i - line_step * lines / 2
 
         cos = math.cos(a)
@@ -172,7 +174,7 @@ def dop_shtyki(x, y):
     return (x // rect_size2d) * rect_size2d, (y // rect_size2d) * rect_size2d
 
 
-def raycast_fps_stonks(sc, player):
+def raycast_fps_stonks(player):
     ret = []
     x, y = dop_shtyki(player.x, player.y)
     for i in range(lines):
@@ -239,7 +241,7 @@ def main():
                 if event.key == pg.K_ESCAPE:
                     running = False
 
-        lin = raycast_fps_stonks(sc, player)
+        lin = raycast_fps_stonks(player)
         draw_3d(sc, lin, all_sprites.sprites(), player.pos)
         # draw_map(sc, player, lin)
         draw_minimap(sc, player, lin)
