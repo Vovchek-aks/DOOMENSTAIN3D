@@ -41,6 +41,7 @@ map_ = [
 # ]
 
 map_coords = set()
+map_list = [[True if j == '-' else False for j in i] for i in map_]
 
 for i, f in enumerate(map_):
     for j, g in enumerate(f):

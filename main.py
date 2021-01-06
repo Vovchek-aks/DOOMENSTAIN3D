@@ -47,7 +47,7 @@ def load_image(name, colorkey=None):
 
 
 class GameObject(pg.sprite.Sprite):
-    def __init__(self, x, y, spr, *groups, marsh=None):
+    def __init__(self, x, y, spr, *groups, sp=0.25, marsh=None, do_marsh=True):
         super().__init__(all_sprites, objects, *groups)
         self.base_im = load_image(spr)
         self.image = self.base_im
@@ -56,10 +56,11 @@ class GameObject(pg.sprite.Sprite):
         self.y = y
         self.rect.x = -self.rect.w
         self.pos = x, y
-        self.sp = 0.25
+        self.sp = sp
 
         self.marsh = [self.pos]
         self.mc = 0
+        self.do_marsh = do_marsh
 
         if marsh is not None:
             self.marsh = marsh
@@ -69,11 +70,12 @@ class GameObject(pg.sprite.Sprite):
         self.draw3d(player)
 
     def go_marsh(self):
-        if self.pos != self.marsh[self.mc]:
-            self.move(*self.marsh[self.mc])
-        else:
-            self.mc += 1
-            self.mc %= len(self.marsh)
+        if self.do_marsh:
+            if self.pos != self.marsh[self.mc]:
+                self.move(*self.marsh[self.mc])
+            else:
+                self.mc += 1
+                self.mc %= len(self.marsh)
 
     def move(self, x, y):
         if abs(self.x - x) > self.sp:
@@ -88,8 +90,8 @@ class GameObject(pg.sprite.Sprite):
 
     def draw3d(self, player):
         dist = dist_of_points(*self.pos, *player.pos)
-        if dist < 10:
-            dist = 10
+        if dist < 20:
+            dist = 20
         self.rect.x = angle_of_points(*player.pos, *self.pos,
                                       player.ang) / line_step * line_to_px - self.image.get_rect().w // 2
 
@@ -100,8 +102,18 @@ class GameObject(pg.sprite.Sprite):
 
 
 class Enemy(GameObject):
-    def __init__(self, x, y, spr):
-        super().__init__(x, y, spr, enemies)
+    def __init__(self, x, y, spr, sp=0.25, marsh=None, do_marsh=True):
+        super().__init__(x, y, spr, enemies, sp=sp, marsh=marsh, do_marsh=do_marsh)
+
+    def step(self, player):
+        # self.find_player(player)
+        super().step(player)
+
+    def find_player(self, player):
+        pass
+        # if dist_of_points(*self.pos, *player.pos) < 85:
+        #     self.marsh = [player.pos]
+        #     self.mc = 0
 
 
 def raycast(sc, player):
@@ -179,13 +191,14 @@ def main():
 
     font = pygame.font.Font(None, 24)
 
-    player = Player()
+    player = Player(half_size[0] * rect_size2d - 48 * 4, half_size[1] // 2 * rect_size2d - 48)
 
-    sh = GameObject(half_size[0] + rect_size2d * 3, half_size[1] + rect_size2d, '31.png',
-                    marsh=[(200, 110),
-                           (200, 205),
-                           (325, 205),
-                           (325, 110)])
+    sh = Enemy(half_size[0] + rect_size2d * 3, half_size[1] + rect_size2d, '321.png',
+               marsh=[(200, 110),
+                      (200, 205),
+                      (325, 205),
+                      (325, 110)],
+               do_marsh=False)
 
     while running:
         sc.fill((0, 0, 0))
@@ -203,7 +216,7 @@ def main():
         sh.step(player)
         player.step()
         # angle_of_points(*player.pos, *sh.pos, player.ang)
-        sc.blit(font.render(str(clock.get_fps()), False, red), (width - 200, 50))
+        sc.blit(font.render(str(dist_of_points(*sh.pos, *player.pos)), False, red), (width - 200, 50))
         pg.display.flip()
         clock.tick(FPS)
 

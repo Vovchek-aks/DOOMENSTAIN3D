@@ -4,8 +4,8 @@ import math
 
 
 class Player:
-    def __init__(self):
-        self.pos = self.x, self.y = half_size[0] * rect_size2d - 48 * 4, half_size[1] * rect_size2d - 48
+    def __init__(self, x, y):
+        self.pos = self.x, self.y = x, y
         self.ang = 0
         self.sp = 3
 
