@@ -3,8 +3,9 @@ from map import *
 from settings import *
 from player import Player
 import math
-import sys
+# import sys
 import os
+# import numpy as np
 
 all_sprites = pg.sprite.Group()
 objects = pg.sprite.Group()
@@ -56,11 +57,34 @@ def lines_collision(x1_1, y1_1, x1_2, y1_2,
     return False
 
 
+# def lines_collision(x1_1, y1_1, x1_2, y1_2,
+#                     x2_1, y2_1, x2_2, y2_2):
+#     """
+#     Returns the point of intersection of the lines passing through a2,a1 and b2,b1.
+#     a1: [x, y] a point on the first line
+#     a2: [x, y] another point on the first line
+#     b1: [x, y] a point on the second line
+#     b2: [x, y] another point on the second line
+#     """
+#
+#     a1, a2 = (x1_1, y1_1), (x1_2, y1_2)
+#     b1, b2 = (x2_1, y2_1), (x2_2, y2_2)
+#
+#     s = np.vstack([a1,a2,b1,b2])        # s for stacked
+#     h = np.hstack((s, np.ones((4, 1)))) # h for homogeneous
+#     l1 = np.cross(h[0], h[1])           # get first line
+#     l2 = np.cross(h[2], h[3])           # get second line
+#     x, y, z = np.cross(l1, l2)          # point of intersection
+#     if z == 0:                          # lines are parallel
+#         return False
+#     return True
+
+
 def lines_from_square(x, y, size=rect_size2d):
-    return [(x, y, x + size, y),
+    return ((x, y, x + size, y),
             (x, y, x, y + size),
             (x + size, y, x + size, y + size),
-            (x, y + size, x + size, y + size)]
+            (x, y + size, x + size, y + size))
 
 
 def load_image(name, colorkey=None):
@@ -139,14 +163,27 @@ class Enemy(GameObject):
         super().__init__(x, y, spr, enemies, sp=sp, marsh=marsh, do_marsh=do_marsh)
 
     def step(self, player):
-        # self.find_player(player)
+        self.find_player(player)
         super().step(player)
 
     def find_player(self, player):
         pass
-        # if dist_of_points(*self.pos, *player.pos) < 85:
-        #     self.marsh = [player.pos]
-        #     self.mc = 0
+        f = False
+        lsp = (*self.pos, *player.pos)
+        lin = []
+        for i in range(len(map_list)):
+            for j in range(len(map_list[i])):
+                lin += [*lines_from_square(j * rect_size2d, i * rect_size2d)]
+        # print(lin)
+
+        for i in lin:
+            if lines_collision(*i, *lsp):
+                f = True
+                break
+
+        if not f and dist_of_points(*self.pos, *player.pos) < 85:
+            self.marsh = [player.pos]
+            self.mc = 0
 
 
 def raycast(player):
@@ -225,12 +262,7 @@ def main():
 
     player = Player(half_size[0] * rect_size2d - 48 * 4, half_size[1] // 2 * rect_size2d - 48)
 
-    sh = Enemy(half_size[0] + rect_size2d * 3, half_size[1] + rect_size2d, '321.png',
-               marsh=[(200, 110),
-                      (200, 205),
-                      (325, 205),
-                      (325, 110)],
-               do_marsh=False)
+    sh = Enemy(half_size[0] + rect_size2d * 3, half_size[1] + rect_size2d, '321.png')
 
     while running:
         sc.fill((0, 0, 0))
