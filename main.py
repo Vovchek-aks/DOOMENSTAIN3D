@@ -30,6 +30,36 @@ def dist_of_points(x1, y1, x2, y2):
     return (dx ** 2 + dy ** 2) ** 0.5
 
 
+def lines_collision(x1_1, y1_1,
+                    x1_2, y1_2,
+                    x2_1, y2_1,
+                    x2_2, y2_2):
+    def point(x):
+        if min(x1_1, x1_2) <= x <= max(x1_1, x1_2):
+            return True
+        return False
+
+    A1 = y1_1 - y1_2
+    B1 = x1_2 - x1_1
+    C1 = x1_1 * y1_2 - x1_2 * y1_1
+    A2 = y2_1 - y2_2
+    B2 = x2_2 - x2_1
+    C2 = x2_1 * y2_2 - x2_2 * y2_1
+
+    if B1 * A2 - B2 * A1 and A1:
+        y = (C2 * A1 - C1 * A2) / (B1 * A2 - B2 * A1)
+        x = (-C1 - B1 * y) / A1
+        return point(x)
+    elif B1 * A2 - B2 * A1 and A2:
+        y = (C2 * A1 - C1 * A2) / (B1 * A2 - B2 * A1)
+        x = (-C2 - B2 * y) / A2
+        return point(x)
+    return False
+
+
+# def
+
+
 def load_image(name, colorkey=None):
     fullname = os.path.join('data', 'sprites', name)
     if not os.path.isfile(fullname):
