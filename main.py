@@ -86,6 +86,13 @@ def lines_from_square(x, y, size=rect_size2d):
             (x, y + size, x + size, y + size))
 
 
+def point_in_square(x, y, xx, yy, size=rect_size2d):
+    if xx * size <= x <= (xx + 1) * size and \
+       yy * size <= y <= (yy + 1) * size:
+        return True
+    return False
+
+
 def load_image(name, colorkey=None):
     fullname = os.path.join('data', 'sprites', name)
     if not os.path.isfile(fullname):
@@ -170,6 +177,7 @@ class Enemy(GameObject):
         f = False
         lsp = (*self.pos, *player.pos)
         lin = []
+        print(lsp)
         for i in range(len(map_list)):
             for j in range(len(map_list[i])):
                 lin += [*lines_from_square(j * rect_size2d, i * rect_size2d)]
