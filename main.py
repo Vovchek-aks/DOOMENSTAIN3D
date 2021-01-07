@@ -180,19 +180,15 @@ class Enemy(GameObject):
 
         for g in range(1, disk + 1):
             g = g / disk
-            for i in range(len(map_list)):
-                for j in range(len(map_list[i])):
-                    if map_list[i][j]:
-                        print(self.x + lsp[0] * g, self.y + lsp[1] * g,
-                              i * rect_size2d, j* rect_size2d, point_in_square(self.x + lsp[0] * g, self.y + lsp[1] * g,
-                                                                               i * rect_size2d, j * rect_size2d))
-                    if map_list[i][j] and point_in_square(self.x + lsp[0] * g, self.y + lsp[1] * g,
-                                                          i * rect_size2d, j * rect_size2d):
-                        f = True
-                        break
+            for i in sorted(map_coords):
+                print(self.x + lsp[0] * g, self.y + lsp[1] * g, *i,
+                      point_in_square(self.x + lsp[0] * g, self.y + lsp[1] * g, *i))
+                if point_in_square(self.x + lsp[0] * g, self.y + lsp[1] * g, *i):
+                    f = True
+                    break
         print('\n' * 10)
 
-        if not f and dist_of_points(*self.pos, *player.pos) < 85:
+        if not f:
             self.marsh = [player.pos]
             self.mc = 0
 
