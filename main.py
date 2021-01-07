@@ -5,13 +5,14 @@ from player import Player
 import math
 # import sys
 import os
+
 # import numpy as np
 
 all_sprites = pg.sprite.Group()
 objects = pg.sprite.Group()
 enemies = pg.sprite.Group()
 
-znak = lambda x: x // x if x > 0 else -x // x
+znak = lambda x: 1 if x > 0 else -1
 
 
 def angle_of_points(x1, y1, x2, y2, ang):
@@ -21,6 +22,9 @@ def angle_of_points(x1, y1, x2, y2, ang):
     r = f - ang
     if not (y1 < y2 and x1 < x2 or ang == 0 and y1 >= y2) or y1 < y2 and ang >= math.radians(270):
         r += math.pi * 2
+
+    if x1 < x2 and y1 > y2 and ang < math.radians(90):
+        r -= math.pi * 2
     return r - 1
 
 
@@ -32,7 +36,6 @@ def dist_of_points(x1, y1, x2, y2):
 
 def lines_collision(x1_1, y1_1, x1_2, y1_2,
                     x2_1, y2_1, x2_2, y2_2):
-
     def point(xx):
         if min(x1_1, x1_2) <= xx <= max(x1_1, x1_2):
             return True
@@ -88,7 +91,7 @@ def lines_from_square(x, y, size=rect_size2d):
 
 def point_in_square(x, y, xx, yy, size=rect_size2d):
     if xx * size <= x <= (xx + 1) * size and \
-       yy * size <= y <= (yy + 1) * size:
+            yy * size <= y <= (yy + 1) * size:
         return True
     return False
 
@@ -176,21 +179,26 @@ class Enemy(GameObject):
         pass
         f = False
         lsp = (player.pos[0] - self.x, player.pos[1] - self.y)
-        disk = 10
+        disk = round(dist_of_points(*self.pos, *player.pos))
 
         for g in range(1, disk + 1):
             g = g / disk
-            for i in sorted(map_coords):
-                print(self.x + lsp[0] * g, self.y + lsp[1] * g, *i,
-                      point_in_square(self.x + lsp[0] * g, self.y + lsp[1] * g, *i))
-                if point_in_square(self.x + lsp[0] * g, self.y + lsp[1] * g, *i):
-                    f = True
-                    break
-        print('\n' * 10)
+            if ((self.x + lsp[0] * g) // rect_size2d * rect_size2d,
+                (self.y + lsp[1] * g) // rect_size2d * rect_size2d) in map_coords:
+                f = False
+                # print(((self.x + lsp[0] * g) // rect_size2d * rect_size2d,
+                #     (self.y + lsp[1] * g) // rect_size2d * rect_size2d))
+                break
 
         if not f:
             self.marsh = [player.pos]
             self.mc = 0
+
+    def move(self, x, y):
+
+        if (self.x // rect_size2d * rect_size2d, self.y // rect_size2d * rect_size2d) not in map_coords:
+
+            super().move(x, y)
 
 
 def raycast(player):
@@ -269,7 +277,7 @@ def main():
 
     player = Player(half_size[0] * rect_size2d - 48 * 4, half_size[1] // 2 * rect_size2d - 48)
 
-    sh = Enemy(half_size[0] + rect_size2d * 3, half_size[1] + rect_size2d, '321.png')
+    sh = Enemy(half_size[0] + rect_size2d * 3, half_size[1] + rect_size2d, '321.png', do_marsh=False)
 
     while running:
         sc.fill((0, 0, 0))
