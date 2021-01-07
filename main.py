@@ -175,18 +175,22 @@ class Enemy(GameObject):
     def find_player(self, player):
         pass
         f = False
-        lsp = (*self.pos, *player.pos)
-        lin = []
-        print(lsp)
-        for i in range(len(map_list)):
-            for j in range(len(map_list[i])):
-                lin += [*lines_from_square(j * rect_size2d, i * rect_size2d)]
-        # print(lin)
+        lsp = (player.pos[0] - self.x, player.pos[1] - self.y)
+        disk = 10
 
-        for i in lin:
-            if lines_collision(*i, *lsp):
-                f = True
-                break
+        for g in range(1, disk + 1):
+            g = g / disk
+            for i in range(len(map_list)):
+                for j in range(len(map_list[i])):
+                    if map_list[i][j]:
+                        print(self.x + lsp[0] * g, self.y + lsp[1] * g,
+                              i * rect_size2d, j* rect_size2d, point_in_square(self.x + lsp[0] * g, self.y + lsp[1] * g,
+                                                                               i * rect_size2d, j * rect_size2d))
+                    if map_list[i][j] and point_in_square(self.x + lsp[0] * g, self.y + lsp[1] * g,
+                                                          i * rect_size2d, j * rect_size2d):
+                        f = True
+                        break
+        print('\n' * 10)
 
         if not f and dist_of_points(*self.pos, *player.pos) < 85:
             self.marsh = [player.pos]
