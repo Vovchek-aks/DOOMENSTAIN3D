@@ -15,12 +15,11 @@ znak = lambda x: x // x if x > 0 else -x // x
 
 
 def angle_of_points(x1, y1, x2, y2, ang):
-    # ang = (ang - 1.2) % 5
     dx = -(x1 - x2)
     dy = (y1 - y2)
     f = math.atan2(dx, dy)
     r = f - ang
-    if not (y1 < y2 and x1 < x2):
+    if not (y1 < y2 and x1 < x2 or ang == 0 and y1 >= y2) or y1 < y2 and ang >= math.radians(270):
         r += math.pi * 2
     return r - 1
 
@@ -280,7 +279,7 @@ def main():
         sh.step(player)
         player.step()
         # angle_of_points(*player.pos, *sh.pos, player.ang)
-        sc.blit(font.render(str(dist_of_points(*sh.pos, *player.pos)), False, red), (width - 200, 50))
+        sc.blit(font.render(str(angle_of_points(*player.pos, *sh.pos, player.ang)), False, red), (width - 200, 50))
         pg.display.flip()
         clock.tick(FPS)
 
