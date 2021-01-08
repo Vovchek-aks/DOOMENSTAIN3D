@@ -1,6 +1,11 @@
 import pygame as pg
 from settings import *
 import math
+from map import *
+
+
+def grid_pos(x, y):
+    return x // rect_size2d * rect_size2d, y // rect_size2d * rect_size2d
 
 
 class Player:
@@ -25,6 +30,8 @@ class Player:
         cos = math.cos(self.ang)
         sin = math.sin(self.ang)
 
+        xx, yy = self.pos
+
         if key[pg.K_w]:
             self.x += self.sp * cos
             self.y += self.sp * sin
@@ -44,6 +51,10 @@ class Player:
         self.ang %= math.pi * 2
 
         self.pos = self.x // 4, self.y // 4
+
+        if grid_pos(self.x, self.y) in map_coords:
+            self.x, self.y = xx * 4, yy * 4
+            self.pos = self.x // 4, self.y // 4
 
         # self.draw(sc)
 
