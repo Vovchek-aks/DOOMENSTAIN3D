@@ -186,12 +186,12 @@ class Enemy(GameObject):
             g = g / disk
             if ((self.x + lsp[0] * g) // rect_size2d * rect_size2d,
                 (self.y + lsp[1] * g) // rect_size2d * rect_size2d) in map_coords:
-                f = False
+                f = True
                 # print(((self.x + lsp[0] * g) // rect_size2d * rect_size2d,
                 #     (self.y + lsp[1] * g) // rect_size2d * rect_size2d))
                 break
 
-        if not f:
+        if not f and dist_of_points(*self.pos, *player.pos) <= 100:
             self.marsh = [player.pos]
             self.mc = 0
 
@@ -199,7 +199,7 @@ class Enemy(GameObject):
         xx, yy = self.pos
         super().move(x, y)
         self.in_wall = False
-        if (grid_pos(*self.pos)[0], grid_pos(*self.pos)[1]) in map_coords:
+        if grid_pos(self.x * 4, self.y * 4) in map_coords:
             self.pos = self.x, self.y = xx, yy
             self.in_wall = True
 
@@ -298,7 +298,7 @@ def main():
         sh.step(player)
         player.step()
         # angle_of_points(*player.pos, *sh.pos, player.ang)
-        sc.blit(font.render(str(angle_of_points(*player.pos, *sh.pos, player.ang)), False, red), (width - 500, 50))
+        sc.blit(font.render(str(dist_of_points(*sh.pos, *player.pos)), False, red), (width - 500, 50))
         # sc.blit(font.render(str((sh.x, sh.y,)), False, red), (width - 500, 100))
         # if sh.in_wall:
         #     color = red
