@@ -221,13 +221,13 @@ def raycast(player):
     return ret
 
 
-def dop_shtyki(x, y):
-    return (x // rect_size2d) * rect_size2d, (y // rect_size2d) * rect_size2d
+def grid_pos(x, y):
+    return x // rect_size2d * rect_size2d, y // rect_size2d * rect_size2d
 
 
 def raycast_fps_stonks(player):
     ret = []
-    x, y = dop_shtyki(player.x, player.y)
+    x, y = grid_pos(player.x, player.y)
     for i in range(lines):
 
         a = player.ang + line_step * i - line_step * lines / 2
@@ -239,7 +239,7 @@ def raycast_fps_stonks(player):
         for j in range(0, width, rect_size2d):
             rast_vert = (vertical - player.x) / cos
             y_vert = player.y + rast_vert * sin
-            if dop_shtyki(vertical + dop_inf_x, y_vert) in map_coords:
+            if grid_pos(vertical + dop_inf_x, y_vert) in map_coords:
                 break
             vertical += dop_inf_x * rect_size2d
 
@@ -248,7 +248,7 @@ def raycast_fps_stonks(player):
         for j in range(0, height, rect_size2d):
             rast_hor = (horisontal - player.y) / (sin + 0.00001)
             x_hor = player.x + rast_hor * cos
-            if dop_shtyki(x_hor, horisontal + dop_inf_y) in map_coords:
+            if grid_pos(x_hor, horisontal + dop_inf_y) in map_coords:
                 break
             horisontal += dop_inf_y * rect_size2d
         if rast_vert < rast_hor:
