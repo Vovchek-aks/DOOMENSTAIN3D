@@ -23,7 +23,7 @@ def angle_of_points(x1, y1, x2, y2, ang):
     if not (y1 < y2 and x1 < x2 or ang == 0 and y1 >= y2) or y1 < y2 and ang >= math.radians(270):
         r += math.pi * 2
 
-    if x1 < x2 and y1 > y2 and ang < math.radians(90):
+    if x1 < x2 and y1 > y2 and math.radians(90) > ang > 0:
         r -= math.pi * 2
     return r - 1
 
@@ -197,7 +197,6 @@ class Enemy(GameObject):
     def move(self, x, y):
 
         if (self.x // rect_size2d * rect_size2d, self.y // rect_size2d * rect_size2d) not in map_coords:
-
             super().move(x, y)
 
 
