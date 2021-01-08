@@ -123,6 +123,7 @@ class GameObject(pg.sprite.Sprite):
         self.rect.x = -self.rect.w
         self.pos = x, y
         self.sp = sp
+        self.is_ded = False
 
         self.marsh = [self.pos]
         self.mc = 0
@@ -154,8 +155,8 @@ class GameObject(pg.sprite.Sprite):
             self.y = y
         self.pos = self.x, self.y
 
-    def draw3d(self, player):
-        dist = dist_of_points(*self.pos, *player.pos)
+    def draw3d(self, player, distd=1, sh=0):
+        dist = dist_of_points(*self.pos, *player.pos) / distd
         if dist < 20:
             dist = 20
         self.rect.x = angle_of_points(*player.pos, *self.pos,
@@ -164,7 +165,10 @@ class GameObject(pg.sprite.Sprite):
         self.image = pg.transform.scale(self.base_im,
                                         (round(self.rect.w / (dist * 0.02)),
                                          round(self.rect.h / (dist * 0.02))))
-        self.rect.y = height / 2 - (dist * 0.05) - self.image.get_rect().h // 2 + 20 + self.rect.h / 40
+        self.rect.y = height / 2 - (dist * 0.05) - self.image.get_rect().h // 2 + 20 + self.rect.h / 40 + sh
+
+    def __del__(self):
+        del self
 
 
 class Enemy(GameObject):
@@ -202,6 +206,26 @@ class Enemy(GameObject):
         if grid_pos(self.x * 4, self.y * 4) in map_coords:
             self.pos = self.x, self.y = xx, yy
             self.in_wall = True
+
+
+class Door(GameObject):
+    def __init__(self, x, y, spr, sp=0.25, marsh=None, do_marsh=False):
+        super().__init__(x, y, spr, enemies, sp=sp, marsh=marsh, do_marsh=do_marsh)
+
+    def go_marsh(self):
+        super().go_marsh()
+        if self.pos == self.marsh[-1]:
+            self.is_ded = True
+
+    def step(self, player):
+        if dist_of_points(*self.pos, *player.pos) < 25 and \
+           0.3 < angle_of_points(*player.pos, *self.pos, player.ang) < 0.8:
+            self.do_marsh = True
+        super().step(player)
+
+    def draw3d(self, player, distd=2.5, sh=1):
+        sh = -dist_of_points(*self.pos, *player.pos) // 10
+        super().draw3d(player, distd=distd, sh=sh)
 
 
 def raycast(player):
@@ -280,7 +304,8 @@ def main():
 
     player = Player(half_size[0] * rect_size2d - 48 * 4, half_size[1] // 2 * rect_size2d - 48)
 
-    sh = Enemy(half_size[0] + rect_size2d * 3, half_size[1] + rect_size2d, '321.png', do_marsh=True)
+    sh = Enemy(half_size[0] + rect_size2d * 3, half_size[1] + rect_size2d, '321.png', do_marsh=False)
+    d = Door(6.1 * rect_size2d, 0.4 * rect_size2d, 'дверь.png', marsh=[(6 * rect_size2d, 0.20 * rect_size2d)])
 
     while running:
         sc.fill((0, 0, 0))
@@ -295,10 +320,12 @@ def main():
         draw_3d(sc, lin, all_sprites.sprites(), player.pos)
         # draw_map(sc, player, lin)
         draw_minimap(sc, player, lin)
-        sh.step(player)
+        for i in all_sprites.sprites():
+            if not i.is_ded:
+                i.step(player)
         player.step()
         # angle_of_points(*player.pos, *sh.pos, player.ang)
-        sc.blit(font.render(str(dist_of_points(*sh.pos, *player.pos)), False, red), (width - 500, 50))
+        # sc.blit(font.render(str(dist_of_points(*sh.pos, *player.pos)), False, red), (width - 500, 50))
         # sc.blit(font.render(str((sh.x, sh.y,)), False, red), (width - 500, 100))
         # if sh.in_wall:
         #     color = red
@@ -331,7 +358,12 @@ def draw_minimap(sc, player, lines):
     # for i in lines:
     #     pg.draw.line(sc, white, player.pos, (i[0][0] // 4, i[0][1] // 4), 1)
     for i in all_sprites.sprites():
-        pg.draw.circle(sc, red, i.pos, 5)
+        if i.__class__ == Enemy:
+            color = red
+        else:
+            color = blue
+        if not i.is_ded:
+            pg.draw.circle(sc, color, i.pos, 5)
         # pg.draw.line(sc, green, i.pos, (i.x // 4 + rect_size2d // 4 * math.cos(i.ang),
         #                                    i.y // 4 + rect_size2d // 4 * math.sin(i.ang)), 1)
         # print(i.pos)
@@ -342,7 +374,7 @@ def draw_3d(sc, lin, sp, ppos):
     pg.draw.rect(sc, (40, 30, 0), (0, height / 2, width, height))
     dist = 999
     lin = [(True, i, i[1]) for i in lin]
-    sp = [(False, i, dist_of_points(*ppos, *i.pos) * 3.6) for i in sp]
+    sp = [(False, i, dist_of_points(*ppos, *i.pos) * 3.6) for i in sp if not i.is_ded]
     lis = sorted(lin + sp, key=lambda x: -x[-1])
     for ret in lis:
         if ret[0]:
