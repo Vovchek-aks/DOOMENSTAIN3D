@@ -23,7 +23,7 @@ def angle_of_points(x1, y1, x2, y2, ang):
     if not (y1 < y2 and x1 < x2 or ang == 0 and y1 >= y2) or y1 < y2 and ang >= math.radians(270):
         r += math.pi * 2
 
-    if x1 < x2 and y1 > y2 and math.radians(90) > ang > 0:
+    if x1 < x2 and y1 >= y2 and math.radians(90) > ang > 0:
         r -= math.pi * 2
     return r - 1
 
@@ -170,6 +170,7 @@ class GameObject(pg.sprite.Sprite):
 class Enemy(GameObject):
     def __init__(self, x, y, spr, sp=0.25, marsh=None, do_marsh=True):
         super().__init__(x, y, spr, enemies, sp=sp, marsh=marsh, do_marsh=do_marsh)
+        self.in_wall = False
 
     def step(self, player):
         self.find_player(player)
@@ -195,9 +196,12 @@ class Enemy(GameObject):
             self.mc = 0
 
     def move(self, x, y):
-
-        if (self.x // rect_size2d * rect_size2d, self.y // rect_size2d * rect_size2d) not in map_coords:
-            super().move(x, y)
+        xx, yy = self.pos
+        super().move(x, y)
+        self.in_wall = False
+        if (grid_pos(*self.pos)[0], grid_pos(*self.pos)[1]) in map_coords:
+            self.pos = self.x, self.y = xx, yy
+            self.in_wall = True
 
 
 def raycast(player):
@@ -276,7 +280,7 @@ def main():
 
     player = Player(half_size[0] * rect_size2d - 48 * 4, half_size[1] // 2 * rect_size2d - 48)
 
-    sh = Enemy(half_size[0] + rect_size2d * 3, half_size[1] + rect_size2d, '321.png', do_marsh=False)
+    sh = Enemy(half_size[0] + rect_size2d * 3, half_size[1] + rect_size2d, '321.png', do_marsh=True)
 
     while running:
         sc.fill((0, 0, 0))
@@ -294,7 +298,16 @@ def main():
         sh.step(player)
         player.step()
         # angle_of_points(*player.pos, *sh.pos, player.ang)
-        sc.blit(font.render(str(angle_of_points(*player.pos, *sh.pos, player.ang)), False, red), (width - 200, 50))
+        sc.blit(font.render(str(angle_of_points(*player.pos, *sh.pos, player.ang)), False, red), (width - 500, 50))
+        # sc.blit(font.render(str((sh.x, sh.y,)), False, red), (width - 500, 100))
+        # if sh.in_wall:
+        #     color = red
+        # else:
+        #     color = green
+        # pg.draw.rect(sc, color, (sh.pos[0] // (rect_size2d // 4) * (rect_size2d // 4),
+        #                          sh.pos[1] // (rect_size2d // 4) * (rect_size2d // 4),
+        #                          rect_size2d // 4,
+        #                          rect_size2d // 4))
         pg.display.flip()
         clock.tick(FPS)
 
