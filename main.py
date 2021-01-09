@@ -5,6 +5,7 @@ from player import Player
 import math
 # import sys
 import os
+from time import time
 
 # import numpy as np
 
@@ -217,11 +218,14 @@ class Enemy(GameObject):
         super().move(x, y, player)
 
         can_move = True
-        for i in all_sprites:
+        for i in objects:
             if (i.__class__ in solid_cl or i.__class__.__bases__[0] in solid_cl) and i is not self and \
-               dist_of_points(*self.pos, *i.pos) <= 20 or dist_of_points(*self.pos, *player.pos) <= 20:
+               dist_of_points(*self.pos, *i.pos) <= 20:
                 can_move = False
                 break
+        if dist_of_points(*self.pos, *player.pos) <= 20:
+            can_move = False
+            player.hp -= obj_dam.get(self.__class__, 0)
         if grid_pos(self.x * 4, self.y * 4) in map_coords or not can_move:
             self.pos = self.x, self.y = xx, yy
 
@@ -365,21 +369,48 @@ egip_stena = None
 
 
 def shoot(player):
-    for i in all_sprites.sprites():
-        if 0.2 < i.ang < 0.8 and dist_of_points(*player.pos, *i.pos) < rect_size2d:
-            i.hp -= 1
-            break
+    if player.ammo1 and time() - player.last_shoot >= 1:
+        player.ammo1 -= 1
+        player.last_shoot = time()
+        for i in objects.sprites():
+            if 0.2 < i.ang < 0.8 and dist_of_points(*player.pos, *i.pos) < rect_size2d * 3:
+                i.hp -= 1
+                break
+
+
+def draw_bar(sc, font, text, color, num, max_, sz, pos):
+    if color != white:
+        c = white
+    else:
+        c = black
+    sc.blit(font.render(text, False, gray), pos)
+    lsz = sz * (num / max_)
+    if num > 0:
+        pg.draw.rect(sc, color, (font.size(text + ' ')[0] + pos[0], pos[1],
+                                 lsz,  font.size(' ')[1]))
+        sc.blit(font.render(str(num), False, c), (font.size(text + ' ')[0] + pos[0] +
+                                                  (lsz - font.size(str(num))[1]) / 2,
+                                                  pos[1]))
+
+
+def draw_interface(sc, player, font):
+    draw_minimap(sc, player)
+    pg.draw.rect(sc, dk_gray, (0, height - 200, width, height))
+    draw_bar(sc, font, 'AMMO', red, player.ammo1, 20, 500, (20, height - 150))
+    draw_bar(sc, font, 'HP       ', red, round(player.hp), 100, 500, (20, height - 80))
 
 
 solid_cl = {Door, Enemy}
 obj_hp = {Spider: 10,
           Door: 1000000}
+
+obj_dam = {Spider: 1}
 obj_spr = {}
 im_sh = None
 
 
 def main():
-    global key_d, obj_spr, im_sh
+    global key_d, obj_spr, im_sh, stena, egip_stena, all_sprites, enemies, objects
     pg.init()
     sc = pg.display.set_mode((width, height))
     # pg.display.toggle_fullscreen()
@@ -396,11 +427,16 @@ def main():
     egip_stena = load_image('египецкая стена ураааоаоаоаоаоао.jpg')
 
     font = pygame.font.Font(None, 24)
+    font2 = pygame.font.Font(None, 48)
+
+    all_sprites = pg.sprite.Group()
+    objects = pg.sprite.Group()
+    enemies = pg.sprite.Group()
 
     player = Player(half_size[0] * rect_size2d - 48 * 4, half_size[1] // 2 * rect_size2d - 48,
-                    all_sprites, solid_cl)
+                    objects, solid_cl)
 
-    Spider(5 * rect_size2d, 1 * rect_size2d, do_marsh=True)
+    sh = Spider(5 * rect_size2d, 1 * rect_size2d, do_marsh=True)
     Spider(7 * rect_size2d, 0.55 * rect_size2d, do_marsh=True)
     Door(6.2 * rect_size2d, 0.4 * rect_size2d, marsh=[(6.2 * rect_size2d, 0.10 * rect_size2d)])
 
@@ -414,17 +450,20 @@ def main():
                 key_d = event.key
                 if event.key == pg.K_ESCAPE:
                     running = False
+                    exit(0)
                 elif event.key == pg.K_SPACE:
                     shoot(player)
 
         lin = raycast_fps_stonks(player)
-        draw_3d(sc, lin, all_sprites.sprites(), player.pos)
+        draw_3d(sc, lin, objects.sprites(), player.pos)
         # draw_map(sc, player, lin)
-        draw_minimap(sc, player, lin)
-        for i in all_sprites.sprites():
+        draw_interface(sc, player, font2)
+        for i in objects.sprites():
             if not i.is_ded:
                 i.step(player)
         player.step()
+        if player.hp <= 0:
+            return
         # angle_of_points(*player.pos, *sh.pos, player.ang)
         sc.blit(font.render(str(clock.get_fps()), False, red), (width - 500, 50))
         # sc.blit(font.render(str((sh.x, sh.y,)), False, red), (width - 500, 100))
@@ -450,7 +489,7 @@ def draw_map(sc, player, lines):
         pg.draw.line(sc, gray, player.pos, i[0], 1)
 
 
-def draw_minimap(sc, player, lines):
+def draw_minimap(sc, player):
     pg.draw.rect(sc, black, (0, 0, rect_size2d // 4 * len(map_[0]), rect_size2d // 4 * len(map_)))
     for i in map_coords:
         # print(i[0], i[1], rect_size2d)
@@ -458,7 +497,7 @@ def draw_minimap(sc, player, lines):
         player.draw_minamap(sc)
     # for i in lines:
     #     pg.draw.line(sc, white, player.pos, (i[0][0] // 4, i[0][1] // 4), 1)
-    for i in all_sprites.sprites():
+    for i in objects.sprites():
         if i.__class__ == Enemy or i.__class__.__bases__[0] == Enemy:
             color = red
         else:
@@ -526,4 +565,5 @@ def draw_3d_png(sc, lin, sp, ppos):
 
 
 if __name__ == '__main__':
-    main()
+    while 1:
+        main()
