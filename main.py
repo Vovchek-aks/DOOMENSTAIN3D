@@ -494,5 +494,36 @@ def draw_3d(sc, lin, sp, ppos):
                 sc.blit(ret[1].image, (ret[1].rect.x, ret[1].rect.y))
 
 
+def draw_3d_png(sc, lin, sp, ppos):
+    pg.draw.rect(sc, (50, 30, 0), (0, 0, width, height / 2))
+    pg.draw.rect(sc, (40, 30, 0), (0, height / 2, width, height))
+    dist = 999
+
+    lin = [(True, i, i[1]) for i in lin]
+    sp = [(False, i, dist_of_points(*ppos, *i.pos) * 3.6) for i in sp if not i.is_ded]
+    lis = sorted(lin + sp, key=lambda x: -x[-1])
+    for i in lis:
+        if i[0]:
+            pass
+            ii = i[1]
+            j = ii[1]
+            print(ii[2])
+            # if ii[2] >= 256:
+            #     ii[2] = 253
+            wall = stena.subsurface(ii[2], 0, round(line_to_px), stena.get_rect().h)
+            wall = pg.transform.scale(wall, (round(line_to_px), round(dist * rect_size2d / (j + 1))))
+            sc.blit(wall, (ii[0] * round(line_to_px), (height / 2 - dist * rect_size2d) / (j + 1) + 300))
+            # c = 255 / (1 + j * j * 0.00001)
+            #
+            # color = (int(c / 2), int(c / 3), int(c / 5))
+            # pg.draw.rect(sc, color, (i * line_to_px,
+            #                          height / 2 - dist * rect_size2d / (j + 1),
+            #                          line_to_px + 1,
+            #                          dist * rect_size2d / (j + 1) * 2))
+        else:
+            if -i[1].rect.w * 8 <= i[1].rect.x <= width or False:
+                sc.blit(i[1].image, (i[1].rect.x, i[1].rect.y))
+
+
 if __name__ == '__main__':
     main()
