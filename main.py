@@ -304,6 +304,7 @@ def raycast_fps_stonks(player):
             if grid_pos(x_hor, horisontal + dop_inf_y) in map_coords:
                 break
             horisontal += dop_inf_y * rect_size2d
+
         if rast_vert < rast_hor:
             rast = rast_vert
         else:
@@ -315,6 +316,52 @@ def raycast_fps_stonks(player):
         ret += [((xx, yy), rast, i)]
 
     return ret
+
+
+def raycast_png(player):
+    ret = []
+    x, y = grid_pos(player.x, player.y)
+    for i in range(lines):
+        a = player.ang + line_step * i - line_step * lines / 2
+        cos = math.cos(a)
+        sin = math.sin(a)
+
+        # смотрим на пересечение с вертикалями
+        vertical, dop_inf_x = (x + rect_size2d, 1) if cos >= 0 else (x, -1)
+        for j in range(0, width, rect_size2d):
+            rast_vert = (vertical - player.x) / cos
+            y_vert = player.y + rast_vert * sin
+            if grid_pos(vertical + dop_inf_x, y_vert) in map_coords:
+                break
+            vertical += dop_inf_x * rect_size2d
+
+        # смотрим на пересечение с горизонталями
+        horisontal, dop_inf_y = (y + rect_size2d, 1) if sin >= 0 else (y, -1)
+        for j in range(0, height, rect_size2d):
+            rast_hor = (horisontal - player.y) / (sin + 0.00001)
+            x_hor = player.x + rast_hor * cos
+            if grid_pos(x_hor, horisontal + dop_inf_y) in map_coords:
+                break
+            horisontal += dop_inf_y * rect_size2d
+
+        if rast_vert < rast_hor:
+            rast = rast_vert
+            shift = y_vert
+        else:
+            rast = rast_hor
+            shift = x_hor
+
+        rast *= math.cos(player.ang - a)  # стены прямые, без округлостей
+        xx = player.x + rast * cos
+        yy = player.y + rast * sin
+
+        ret += [(i, rast, round(shift / 1920 * 253))]
+
+    return ret
+
+
+stena = None
+egip_stena = None
 
 
 def shoot(player):
@@ -344,6 +391,9 @@ def main():
                Spider: load_image('321.png')}
 
     im_sh = load_image('shrek3.png')
+
+    stena = load_image('стена обыкновенная.png')
+    egip_stena = load_image('египецкая стена ураааоаоаоаоаоао.jpg')
 
     font = pygame.font.Font(None, 24)
 
