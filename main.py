@@ -157,17 +157,17 @@ class GameObject(pg.sprite.Sprite):
             self.y = y
         self.pos = self.x, self.y
 
-    def draw3d(self, player, distd=1, sh=0):
+    def draw3d(self, player, distd=1, sh=0, shx=0):
         dist = dist_of_points(*self.pos, *player.pos) / distd
         # if dist < 20:
         #     dist = 20
         self.rect.x = angle_of_points(*player.pos, *self.pos,
-                                      player.ang) / line_step * line_to_px - self.image.get_rect().w // 2
+                                      player.ang) / line_step * line_to_px - self.image.get_rect().w // 2 + shx
 
         self.image = pg.transform.scale(self.base_im,
                                         (round(self.rect.w / (dist * 0.02)),
                                          round(self.rect.h / (dist * 0.02))))
-        self.rect.y = height / 2 - (dist * 0.05) - self.image.get_rect().h // 2 + 20 + self.rect.h / 40 + sh
+        self.rect.y = height / 2 - (dist * 0.05) - self.image.get_rect().h // 2 + 20 + self.rect.h / 40 + sh - 15
 
     def ded(self):
         self.is_ded = True
@@ -227,9 +227,11 @@ class Door(GameObject):
             self.do_marsh = True
         super().step(player)
 
-    def draw3d(self, player, distd=2.5, sh=1):
-        sh = -dist_of_points(*self.pos, *player.pos) // 10
-        super().draw3d(player, distd=distd, sh=sh)
+    def draw3d(self, player, distd=2.5, sh=1, shx=10):
+        d = dist_of_points(*self.pos, *player.pos)
+        sh = -d**0.9 / 20
+        shx *= d/100
+        super().draw3d(player, distd=distd, sh=sh, shx=shx)
 
 
 def raycast(player):
@@ -313,8 +315,8 @@ def main():
     player = Player(half_size[0] * rect_size2d - 48 * 4, half_size[1] // 2 * rect_size2d - 48,
                     all_sprites, solid_cl)
 
-    sh = Enemy(half_size[0] + rect_size2d * 3, half_size[1] + rect_size2d, '321.png', do_marsh=False)
-    d = Door(6.1 * rect_size2d, 0.4 * rect_size2d, 'дверь.png', marsh=[(6.1 * rect_size2d, 0.10 * rect_size2d)])
+    sh = Enemy(7 * rect_size2d, 0.5 * rect_size2d, '321.png', do_marsh=True)
+    d = Door(6.2 * rect_size2d, 0.4 * rect_size2d, 'дверь.png', marsh=[(6.2 * rect_size2d, 0.10 * rect_size2d)])
 
     while running:
         sc.fill((0, 0, 0))

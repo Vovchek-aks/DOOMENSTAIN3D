@@ -63,7 +63,7 @@ class Player:
 
         can_move = True
         for i in self.all_sp:
-            if i.__class__ in self.solid_sp and dist_of_points(*self.pos, *i.pos) <= 15:
+            if i.__class__ in self.solid_sp and dist_of_points(*self.pos, *i.pos) <= 20:
                 can_move = False
                 break
 
