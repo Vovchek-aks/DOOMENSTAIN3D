@@ -115,9 +115,9 @@ def load_image(name, colorkey=None):
 
 
 class GameObject(pg.sprite.Sprite):
-    def __init__(self, x, y, spr, *groups, sp=0.25, marsh=None, do_marsh=True):
+    def __init__(self, x, y, *groups, sp=0.25, marsh=None, do_marsh=True):
         super().__init__(all_sprites, objects, *groups)
-        self.base_im = load_image(spr)
+        self.base_im = obj_spr.get(self.__class__, im_sh)
         self.image = self.base_im
         self.rect = self.image.get_rect()
         self.x = x
@@ -175,8 +175,8 @@ class GameObject(pg.sprite.Sprite):
 
 
 class Enemy(GameObject):
-    def __init__(self, x, y, spr, sp=0.25, marsh=None, do_marsh=True):
-        super().__init__(x, y, spr, enemies, sp=sp, marsh=marsh, do_marsh=do_marsh)
+    def __init__(self, x, y, sp=0.25, marsh=None, do_marsh=True):
+        super().__init__(x, y, enemies, sp=sp, marsh=marsh, do_marsh=do_marsh)
         self.in_wall = False
 
     def step(self, player):
@@ -212,8 +212,8 @@ class Enemy(GameObject):
 
 
 class Door(GameObject):
-    def __init__(self, x, y, spr, sp=0.25, marsh=None, do_marsh=False):
-        super().__init__(x, y, spr, enemies, sp=sp, marsh=marsh, do_marsh=do_marsh)
+    def __init__(self, x, y, sp=0.25, marsh=None, do_marsh=False):
+        super().__init__(x, y, enemies, sp=sp, marsh=marsh, do_marsh=do_marsh)
 
     def go_marsh(self):
         super().go_marsh()
@@ -304,10 +304,12 @@ def raycast_fps_stonks(player):
 
 solid_cl = {Door, Enemy}
 hp = {Spider: 10}
+obj_spr = {}
+im_sh = None
 
 
 def main():
-    global key_d
+    global key_d, obj_spr, im_sh
     pg.init()
     sc = pg.display.set_mode((width, height))
     # pg.display.toggle_fullscreen()
@@ -315,13 +317,18 @@ def main():
     running = True
     clock = pg.time.Clock()
 
+    obj_spr = {Door: load_image('дверь.png'),
+               Spider: load_image('321.png')}
+
+    im_sh = load_image('shrek3.png')
+
     font = pygame.font.Font(None, 24)
 
     player = Player(half_size[0] * rect_size2d - 48 * 4, half_size[1] // 2 * rect_size2d - 48,
                     all_sprites, solid_cl)
 
-    Spider(7 * rect_size2d, 0.55 * rect_size2d, '321.png', do_marsh=True)
-    Door(6.2 * rect_size2d, 0.4 * rect_size2d, 'дверь.png', marsh=[(6.2 * rect_size2d, 0.10 * rect_size2d)])
+    Spider(7 * rect_size2d, 0.55 * rect_size2d, do_marsh=True)
+    Door(6.2 * rect_size2d, 0.4 * rect_size2d, marsh=[(6.2 * rect_size2d, 0.10 * rect_size2d)])
 
     while running:
         sc.fill((0, 0, 0))
