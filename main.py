@@ -135,18 +135,18 @@ class GameObject(pg.sprite.Sprite):
         self.do_marsh = do_marsh
 
     def step(self, player):
-        self.go_marsh()
+        self.go_marsh(player)
         self.draw3d(player)
 
-    def go_marsh(self):
+    def go_marsh(self, player):
         if self.do_marsh:
             if self.pos != self.marsh[self.mc]:
-                self.move(*self.marsh[self.mc])
+                self.move(*self.marsh[self.mc], player)
             else:
                 self.mc += 1
                 self.mc %= len(self.marsh)
 
-    def move(self, x, y):
+    def move(self, x, y, player):
         if abs(self.x - x) > self.sp:
             self.x -= self.sp * znak(self.x - x)
         else:
@@ -177,7 +177,6 @@ class GameObject(pg.sprite.Sprite):
 class Enemy(GameObject):
     def __init__(self, x, y, sp=0.25, marsh=None, do_marsh=True):
         super().__init__(x, y, enemies, sp=sp, marsh=marsh, do_marsh=do_marsh)
-        self.in_wall = False
 
     def step(self, player):
         self.find_player(player)
@@ -202,21 +201,26 @@ class Enemy(GameObject):
             self.marsh = [player.pos]
             self.mc = 0
 
-    def move(self, x, y):
+    def move(self, x, y, player):
         xx, yy = self.pos
-        super().move(x, y)
-        self.in_wall = False
-        if grid_pos(self.x * 4, self.y * 4) in map_coords:
+        super().move(x, y, player)
+
+        can_move = True
+        for i in all_sprites:
+            if (i.__class__ in solid_cl or i.__class__.__bases__[0] in solid_cl) and i is not self and \
+               dist_of_points(*self.pos, *i.pos) <= 20 or dist_of_points(*self.pos, *player.pos) <= 20:
+                can_move = False
+                break
+        if grid_pos(self.x * 4, self.y * 4) in map_coords or not can_move:
             self.pos = self.x, self.y = xx, yy
-            self.in_wall = True
 
 
 class Door(GameObject):
     def __init__(self, x, y, sp=0.25, marsh=None, do_marsh=False):
         super().__init__(x, y, enemies, sp=sp, marsh=marsh, do_marsh=do_marsh)
 
-    def go_marsh(self):
-        super().go_marsh()
+    def go_marsh(self, player):
+        super().go_marsh(player)
         if self.pos == self.marsh[-1]:
             self.ded()
 
@@ -327,6 +331,7 @@ def main():
     player = Player(half_size[0] * rect_size2d - 48 * 4, half_size[1] // 2 * rect_size2d - 48,
                     all_sprites, solid_cl)
 
+    Spider(5 * rect_size2d, 2 * rect_size2d, do_marsh=True)
     Spider(7 * rect_size2d, 0.55 * rect_size2d, do_marsh=True)
     Door(6.2 * rect_size2d, 0.4 * rect_size2d, marsh=[(6.2 * rect_size2d, 0.10 * rect_size2d)])
 
