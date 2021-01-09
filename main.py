@@ -346,10 +346,10 @@ def raycast_png(player):
 
         if rast_vert < rast_hor:
             rast = rast_vert
-            shift = y_vert
+            shift = y_vert + 1
         else:
             rast = rast_hor
-            shift = x_hor
+            shift = x_hor + 1
 
         rast *= math.cos(player.ang - a)  # стены прямые, без округлостей
         xx = player.x + rast * cos
@@ -379,7 +379,7 @@ im_sh = None
 
 
 def main():
-    global key_d, obj_spr, im_sh
+    global key_d, obj_spr, im_sh, stena, egip_stena
     pg.init()
     sc = pg.display.set_mode((width, height))
     # pg.display.toggle_fullscreen()
@@ -417,8 +417,10 @@ def main():
                 elif event.key == pg.K_SPACE:
                     shoot(player)
 
-        lin = raycast_fps_stonks(player)
-        draw_3d(sc, lin, all_sprites.sprites(), player.pos)
+        lin = raycast_png(player)
+        draw_3d_png(sc, lin, all_sprites.sprites(), player.pos)
+        # lin = raycast_fps_stonks(player)
+        # draw_3d(sc, lin, all_sprites.sprites(), player.pos)
         # draw_map(sc, player, lin)
         draw_minimap(sc, player, lin)
         for i in all_sprites.sprites():
@@ -511,8 +513,8 @@ def draw_3d_png(sc, lin, sp, ppos):
             # if ii[2] >= 256:
             #     ii[2] = 253
             wall = stena.subsurface(ii[2], 0, round(line_to_px), stena.get_rect().h)
-            wall = pg.transform.scale(wall, (round(line_to_px), round(dist * rect_size2d / (j + 1))))
-            sc.blit(wall, (ii[0] * round(line_to_px), (height / 2 - dist * rect_size2d) / (j + 1) + 300))
+            wall = pg.transform.scale(wall, (round(line_to_px), round(dist * rect_size2d / (j + 1)) * 2))
+            sc.blit(wall, (ii[0] * round(line_to_px), height / 2 - dist * rect_size2d / (j + 1)))
             # c = 255 / (1 + j * j * 0.00001)
             #
             # color = (int(c / 2), int(c / 3), int(c / 5))
