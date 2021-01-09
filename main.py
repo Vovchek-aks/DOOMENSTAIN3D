@@ -126,6 +126,9 @@ class GameObject(pg.sprite.Sprite):
         self.pos = x, y
         self.sp = sp
         self.is_ded = False
+        self.ang = -1
+
+        self.past_d = -1
 
         self.marsh = [self.pos]
         if marsh is not None:
@@ -134,7 +137,11 @@ class GameObject(pg.sprite.Sprite):
         self.mc = 0
         self.do_marsh = do_marsh
 
+        self.hp = obj_hp.get(self.__class__, 1)
+
     def step(self, player):
+        if self.hp <= 0:
+            self.ded()
         self.go_marsh(player)
         self.draw3d(player)
 
@@ -159,15 +166,19 @@ class GameObject(pg.sprite.Sprite):
 
     def draw3d(self, player, distd=1, sh=0, shx=0):
         dist = dist_of_points(*self.pos, *player.pos) / distd
+        self.ang = angle_of_points(*player.pos, *self.pos,
+                                      player.ang)
         # if dist < 20:
         #     dist = 20
-        self.rect.x = angle_of_points(*player.pos, *self.pos,
-                                      player.ang) / line_step * line_to_px - self.image.get_rect().w // 2 + shx
+        self.rect.x = self.ang / line_step * line_to_px - self.image.get_rect().w // 2 + shx
 
-        self.image = pg.transform.scale(self.base_im,
-                                        (round(self.rect.w / (dist * 0.02)),
-                                         round(self.rect.h / (dist * 0.02))))
+        if dist != self.past_d:
+            self.image = pg.transform.scale(self.base_im,
+                                            (round(self.rect.w / (dist * 0.02)),
+                                             round(self.rect.h / (dist * 0.02))))
         self.rect.y = height / 2 - (dist * 0.05) - self.image.get_rect().h // 2 + 20 + self.rect.h / 40 + sh - 15
+
+        self.past_d = dist
 
     def ded(self):
         self.is_ded = True
@@ -306,8 +317,16 @@ def raycast_fps_stonks(player):
     return ret
 
 
+def shoot(player):
+    for i in all_sprites.sprites():
+        if 0.2 < i.ang < 0.8 and dist_of_points(*player.pos, *i.pos) < rect_size2d:
+            i.hp -= 1
+            break
+
+
 solid_cl = {Door, Enemy}
-hp = {Spider: 10}
+obj_hp = {Spider: 10,
+          Door: 1000000}
 obj_spr = {}
 im_sh = None
 
@@ -331,7 +350,7 @@ def main():
     player = Player(half_size[0] * rect_size2d - 48 * 4, half_size[1] // 2 * rect_size2d - 48,
                     all_sprites, solid_cl)
 
-    Spider(5 * rect_size2d, 2 * rect_size2d, do_marsh=True)
+    Spider(5 * rect_size2d, 1 * rect_size2d, do_marsh=True)
     Spider(7 * rect_size2d, 0.55 * rect_size2d, do_marsh=True)
     Door(6.2 * rect_size2d, 0.4 * rect_size2d, marsh=[(6.2 * rect_size2d, 0.10 * rect_size2d)])
 
@@ -345,6 +364,8 @@ def main():
                 key_d = event.key
                 if event.key == pg.K_ESCAPE:
                     running = False
+                elif event.key == pg.K_SPACE:
+                    shoot(player)
 
         lin = raycast_fps_stonks(player)
         draw_3d(sc, lin, all_sprites.sprites(), player.pos)
@@ -355,7 +376,7 @@ def main():
                 i.step(player)
         player.step()
         # angle_of_points(*player.pos, *sh.pos, player.ang)
-        # sc.blit(font.render(str(dist_of_points(*sh.pos, *player.pos)), False, red), (width - 500, 50))
+        sc.blit(font.render(str(clock.get_fps()), False, red), (width - 500, 50))
         # sc.blit(font.render(str((sh.x, sh.y,)), False, red), (width - 500, 100))
         # if sh.in_wall:
         #     color = red

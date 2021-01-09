@@ -68,7 +68,7 @@ class Player:
                 can_move = False
                 break
 
-        if grid_pos(self.x, self.y) in map_coords or not can_move:
+        if (grid_pos(self.x, self.y) in map_coords or not can_move) and True:
             self.x, self.y = xx * 4, yy * 4
             self.pos = self.x // 4, self.y // 4
 
