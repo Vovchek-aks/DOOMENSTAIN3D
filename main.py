@@ -234,6 +234,10 @@ class Door(GameObject):
         super().draw3d(player, distd=distd, sh=sh, shx=shx)
 
 
+class Spider(Enemy):
+    pass
+
+
 def raycast(player):
     ret = []
     for i in range(lines):
@@ -299,6 +303,7 @@ def raycast_fps_stonks(player):
 
 
 solid_cl = {Door, Enemy}
+hp = {Spider: 10}
 
 
 def main():
@@ -315,8 +320,8 @@ def main():
     player = Player(half_size[0] * rect_size2d - 48 * 4, half_size[1] // 2 * rect_size2d - 48,
                     all_sprites, solid_cl)
 
-    sh = Enemy(7 * rect_size2d, 0.5 * rect_size2d, '321.png', do_marsh=True)
-    d = Door(6.2 * rect_size2d, 0.4 * rect_size2d, 'дверь.png', marsh=[(6.2 * rect_size2d, 0.10 * rect_size2d)])
+    Spider(7 * rect_size2d, 0.55 * rect_size2d, '321.png', do_marsh=True)
+    Door(6.2 * rect_size2d, 0.4 * rect_size2d, 'дверь.png', marsh=[(6.2 * rect_size2d, 0.10 * rect_size2d)])
 
     while running:
         sc.fill((0, 0, 0))
@@ -371,7 +376,7 @@ def draw_minimap(sc, player, lines):
     # for i in lines:
     #     pg.draw.line(sc, white, player.pos, (i[0][0] // 4, i[0][1] // 4), 1)
     for i in all_sprites.sprites():
-        if i.__class__ == Enemy:
+        if i.__class__ == Enemy or i.__class__.__bases__[0] == Enemy:
             color = red
         else:
             color = blue
