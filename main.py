@@ -159,8 +159,8 @@ class GameObject(pg.sprite.Sprite):
 
     def draw3d(self, player, distd=1, sh=0):
         dist = dist_of_points(*self.pos, *player.pos) / distd
-        if dist < 20:
-            dist = 20
+        # if dist < 20:
+        #     dist = 20
         self.rect.x = angle_of_points(*player.pos, *self.pos,
                                       player.ang) / line_step * line_to_px - self.image.get_rect().w // 2
 
@@ -314,7 +314,7 @@ def main():
                     all_sprites, solid_cl)
 
     sh = Enemy(half_size[0] + rect_size2d * 3, half_size[1] + rect_size2d, '321.png', do_marsh=False)
-    d = Door(6.1 * rect_size2d, 0.4 * rect_size2d, 'дверь.png', marsh=[(6.1 * rect_size2d, 0.20 * rect_size2d)])
+    d = Door(6.1 * rect_size2d, 0.4 * rect_size2d, 'дверь.png', marsh=[(6.1 * rect_size2d, 0.10 * rect_size2d)])
 
     while running:
         sc.fill((0, 0, 0))
@@ -400,7 +400,8 @@ def draw_3d(sc, lin, sp, ppos):
                                      line_to_px + 1,
                                      dist * rect_size2d / (j + 1) * 2))
         else:
-            sc.blit(ret[1].image, (ret[1].rect.x, ret[1].rect.y))
+            if -ret[1].rect.w * 8 <= ret[1].rect.x <= width or False:
+                sc.blit(ret[1].image, (ret[1].rect.x, ret[1].rect.y))
 
 
 if __name__ == '__main__':
