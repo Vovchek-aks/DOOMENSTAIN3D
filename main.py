@@ -279,6 +279,7 @@ def raycast_fps_stonks(player):
             if grid_pos(x_hor, horisontal + dop_inf_y) in map_coords:
                 break
             horisontal += dop_inf_y * rect_size2d
+
         if rast_vert < rast_hor:
             rast = rast_vert
         else:
@@ -292,13 +293,63 @@ def raycast_fps_stonks(player):
     return ret
 
 
+def raycast_png(player):
+    ret = []
+    x, y = grid_pos(player.x, player.y)
+    for i in range(lines):
+        a = player.ang + line_step * i - line_step * lines / 2
+        cos = math.cos(a)
+        sin = math.sin(a)
+
+        # смотрим на пересечение с вертикалями
+        vertical, dop_inf_x = (x + rect_size2d, 1) if cos >= 0 else (x, -1)
+        for j in range(0, width, rect_size2d):
+            rast_vert = (vertical - player.x) / cos
+            y_vert = player.y + rast_vert * sin
+            if grid_pos(vertical + dop_inf_x, y_vert) in map_coords:
+                break
+            vertical += dop_inf_x * rect_size2d
+
+        # смотрим на пересечение с горизонталями
+        horisontal, dop_inf_y = (y + rect_size2d, 1) if sin >= 0 else (y, -1)
+        for j in range(0, height, rect_size2d):
+            rast_hor = (horisontal - player.y) / (sin + 0.00001)
+            x_hor = player.x + rast_hor * cos
+            if grid_pos(x_hor, horisontal + dop_inf_y) in map_coords:
+                break
+            horisontal += dop_inf_y * rect_size2d
+
+        if rast_vert < rast_hor:
+            rast = rast_vert
+            shift = y_vert
+        else:
+            rast = rast_hor
+            shift = x_hor
+
+        rast *= math.cos(player.ang - a)  # стены прямые, без округлостей
+        xx = player.x + rast * cos
+        yy = player.y + rast * sin
+
+        ret += [(i, rast, round(shift / 1920 * 253))]
+
+    return ret
+
+
+stena = None
+egip_stena = None
+
+
 def main():
+    global stena, egip_stena
     pg.init()
     sc = pg.display.set_mode((width, height))
     # pg.display.toggle_fullscreen()
 
     running = True
     clock = pg.time.Clock()
+
+    stena = load_image('стена обыкновенная.png')
+    egip_stena = load_image('египецкая стена ураааоаоаоаоаоао.jpg')
 
     font = pygame.font.Font(None, 24)
 
@@ -316,8 +367,9 @@ def main():
                 if event.key == pg.K_ESCAPE:
                     running = False
 
-        lin = raycast_fps_stonks(player)
-        draw_3d(sc, lin, all_sprites.sprites(), player.pos)
+        lin = raycast_png(player)
+        draw_3d_png(sc, lin, all_sprites.sprites(), player.pos)
+        print('\n' * 10)
         # draw_map(sc, player, lin)
         draw_minimap(sc, player, lin)
         for i in all_sprites.sprites():
@@ -369,27 +421,34 @@ def draw_minimap(sc, player, lines):
         # print(i.pos)
 
 
-def draw_3d(sc, lin, sp, ppos):
+def draw_3d_png(sc, lin, sp, ppos):
     pg.draw.rect(sc, (50, 30, 0), (0, 0, width, height / 2))
     pg.draw.rect(sc, (40, 30, 0), (0, height / 2, width, height))
     dist = 999
+
     lin = [(True, i, i[1]) for i in lin]
     sp = [(False, i, dist_of_points(*ppos, *i.pos) * 3.6) for i in sp if not i.is_ded]
     lis = sorted(lin + sp, key=lambda x: -x[-1])
-    for ret in lis:
-        if ret[0]:
-            i = ret[1][2]
-            j = ret[1][1]
-
-            c = 255 / (1 + j * j * 0.00001)
-
-            color = (int(c / 2), int(c / 3), int(c / 5))
-            pg.draw.rect(sc, color, (i * line_to_px,
-                                     height / 2 - dist * rect_size2d / (j + 1),
-                                     line_to_px + 1,
-                                     dist * rect_size2d / (j + 1) * 2))
+    for i in lis:
+        if i[0]:
+            pass
+            ii = i[1]
+            j = ii[1]
+            print(ii[2])
+            # if ii[2] >= 256:
+            #     ii[2] = 253
+            wall = stena.subsurface(ii[2], 0, round(line_to_px), stena.get_rect().h)
+            wall = pg.transform.scale(wall, (round(line_to_px), round(dist * rect_size2d / (j + 1))))
+            sc.blit(wall, (ii[0] * round(line_to_px), (height / 2 - dist * rect_size2d + 300) / (j + 1) + 500))
+            # c = 255 / (1 + j * j * 0.00001)
+            #
+            # color = (int(c / 2), int(c / 3), int(c / 5))
+            # pg.draw.rect(sc, color, (i * line_to_px,
+            #                          height / 2 - dist * rect_size2d / (j + 1),
+            #                          line_to_px + 1,
+            #                          dist * rect_size2d / (j + 1) * 2))
         else:
-            sc.blit(ret[1].image, (ret[1].rect.x, ret[1].rect.y))
+            sc.blit(i[1].image, (i[1].rect.x, i[1].rect.y))
 
 
 if __name__ == '__main__':
