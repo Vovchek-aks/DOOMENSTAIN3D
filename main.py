@@ -12,6 +12,8 @@ all_sprites = pg.sprite.Group()
 objects = pg.sprite.Group()
 enemies = pg.sprite.Group()
 
+key_d = -1
+
 znak = lambda x: 1 if x > 0 else -1
 
 
@@ -126,11 +128,11 @@ class GameObject(pg.sprite.Sprite):
         self.is_ded = False
 
         self.marsh = [self.pos]
-        self.mc = 0
-        self.do_marsh = do_marsh
-
         if marsh is not None:
             self.marsh = marsh
+
+        self.mc = 0
+        self.do_marsh = do_marsh
 
     def step(self, player):
         self.go_marsh()
@@ -167,8 +169,9 @@ class GameObject(pg.sprite.Sprite):
                                          round(self.rect.h / (dist * 0.02))))
         self.rect.y = height / 2 - (dist * 0.05) - self.image.get_rect().h // 2 + 20 + self.rect.h / 40 + sh
 
-    def __del__(self):
-        del self
+    def ded(self):
+        self.is_ded = True
+        self.pos = -100, -100
 
 
 class Enemy(GameObject):
@@ -215,11 +218,12 @@ class Door(GameObject):
     def go_marsh(self):
         super().go_marsh()
         if self.pos == self.marsh[-1]:
-            self.is_ded = True
+            self.ded()
 
     def step(self, player):
         if dist_of_points(*self.pos, *player.pos) < 25 and \
-           0.3 < angle_of_points(*player.pos, *self.pos, player.ang) < 0.8:
+           0.3 < angle_of_points(*player.pos, *self.pos, player.ang) < 0.8 and \
+           key_d == pg.K_f:
             self.do_marsh = True
         super().step(player)
 
@@ -292,7 +296,11 @@ def raycast_fps_stonks(player):
     return ret
 
 
+solid_cl = {Door, Enemy}
+
+
 def main():
+    global key_d
     pg.init()
     sc = pg.display.set_mode((width, height))
     # pg.display.toggle_fullscreen()
@@ -302,17 +310,20 @@ def main():
 
     font = pygame.font.Font(None, 24)
 
-    player = Player(half_size[0] * rect_size2d - 48 * 4, half_size[1] // 2 * rect_size2d - 48)
+    player = Player(half_size[0] * rect_size2d - 48 * 4, half_size[1] // 2 * rect_size2d - 48,
+                    all_sprites, solid_cl)
 
     sh = Enemy(half_size[0] + rect_size2d * 3, half_size[1] + rect_size2d, '321.png', do_marsh=False)
-    d = Door(6.1 * rect_size2d, 0.4 * rect_size2d, 'дверь.png', marsh=[(6 * rect_size2d, 0.20 * rect_size2d)])
+    d = Door(6.1 * rect_size2d, 0.4 * rect_size2d, 'дверь.png', marsh=[(6.1 * rect_size2d, 0.20 * rect_size2d)])
 
     while running:
         sc.fill((0, 0, 0))
+        key_d = -1
         for event in pygame.event.get():
             if event.type == pg.QUIT:
                 running = False
             elif event.type == pg.KEYDOWN:
+                key_d = event.key
                 if event.key == pg.K_ESCAPE:
                     running = False
 

@@ -8,11 +8,20 @@ def grid_pos(x, y):
     return x // rect_size2d * rect_size2d, y // rect_size2d * rect_size2d
 
 
+def dist_of_points(x1, y1, x2, y2):
+    dx = abs(x1 - x2)
+    dy = abs(y1 - y2)
+    return (dx ** 2 + dy ** 2) ** 0.5
+
+
 class Player:
-    def __init__(self, x, y):
+    def __init__(self, x, y, all_s, solid_cl):
         self.pos = self.x, self.y = x, y
         self.ang = 0
         self.sp = 3
+
+        self.all_sp = all_s
+        self.solid_sp = solid_cl
 
     def draw(self, sc):
         pg.draw.circle(sc, green, (self.pos[0] * rect_size2d, self.pos[1] * rect_size2d), 5)
@@ -52,7 +61,13 @@ class Player:
 
         self.pos = self.x // 4, self.y // 4
 
-        if grid_pos(self.x, self.y) in map_coords:
+        can_move = True
+        for i in self.all_sp:
+            if i.__class__ in self.solid_sp and dist_of_points(*self.pos, *i.pos) <= 15:
+                can_move = False
+                break
+
+        if grid_pos(self.x, self.y) in map_coords or not can_move:
             self.x, self.y = xx * 4, yy * 4
             self.pos = self.x // 4, self.y // 4
 
