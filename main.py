@@ -370,6 +370,7 @@ def raycast_png(player):
 
 stena = None
 egip_stena = None
+stena_pre_render = []
 
 
 def shoot(player):
@@ -414,7 +415,7 @@ im_sh = None
 
 
 def main():
-    global key_d, obj_spr, im_sh, stena, egip_stena, all_sprites, enemies, objects
+    global key_d, obj_spr, im_sh, stena, egip_stena, all_sprites, enemies, objects, stena_pre_render
     pg.init()
     sc = pg.display.set_mode((width, height))
     # pg.display.toggle_fullscreen()
@@ -429,6 +430,9 @@ def main():
 
     stena = load_image('стена обыкновенная.png')
     egip_stena = load_image('египецкая стена ураааоаоаоаоаоао.jpg')
+
+    for i in range(256 - round(line_to_px)):
+        stena_pre_render += [stena.subsurface(i, 0, round(line_to_px), stena.get_rect().h)]
 
     font = pygame.font.Font(None, 24)
     font2 = pygame.font.Font(None, 48)
@@ -554,7 +558,9 @@ def draw_3d_png(sc, lin, sp, ppos):
             j = ii[1]
             # if ii[2] >= 256:
             #     ii[2] = 253
-            wall = stena.subsurface(ii[2], 0, round(line_to_px), stena.get_rect().h)
+
+            wall = stena_pre_render[ii[2] - 1]
+
             wall = pg.transform.scale(wall, (round(line_to_px), round(dist * rect_size2d / (j + 1)) * 2))
             sc.blit(wall, (ii[0] * round(line_to_px), height / 2 - dist * rect_size2d / (j + 1)))
             # c = 255 / (1 + j * j * 0.00001)
