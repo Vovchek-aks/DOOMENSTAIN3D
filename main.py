@@ -183,7 +183,7 @@ class GameObject(pg.sprite.Sprite):
 
     def ded(self):
         self.is_ded = True
-        self.pos = -100, -100
+        self.pos = self.x, self.y = -100, -100
 
 
 class Enemy(GameObject):
@@ -447,7 +447,7 @@ def main():
     player = Player(half_size[0] * rect_size2d - 48 * 4, half_size[1] // 2 * rect_size2d - 48,
                     objects, solid_cl)
 
-    # sh = Spider(5 * rect_size2d, 1 * rect_size2d, do_marsh=True)
+    sh = Spider(5 * rect_size2d, 1 * rect_size2d, do_marsh=True)
     Spider(7 * rect_size2d, 0.55 * rect_size2d, do_marsh=True)
     Door(6.2 * rect_size2d, 0.4 * rect_size2d, marsh=[(6.2 * rect_size2d, 0.10 * rect_size2d)])
 
