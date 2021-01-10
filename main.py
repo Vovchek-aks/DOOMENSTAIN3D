@@ -270,6 +270,28 @@ class Key(GameObject):
         super().step(player)
 
 
+class Trigger(GameObject):
+    def __init__(self, x, y, foo=lambda: None):
+        super().__init__(x, y, sp=0)
+        self.foo = foo
+        self.rect.x, self.rect.y = -1000, -1000
+
+    def step(self, player):
+        if dist_of_points(*self.pos, *player.pos) <= 20:
+            self.foo()
+            self.ded()
+        super().step(player)
+
+    def draw3d(self, player, distd=1, sh=0, shx=0):
+        pass
+
+
+class Spr(GameObject):
+    def __init__(self, x, y, spr):
+        super().__init__(x, y, sp=0)
+        self.base_im = self.image = spr
+
+
 def raycast(player):
     ret = []
     for i in range(lines):
@@ -384,6 +406,10 @@ def raycast_png(player):
     return ret
 
 
+def game_stop():
+    exit(0)
+
+
 def shoot(player):
     if player.ammo[player.gun] and time() - player.last_shoot >= gun_rt[player.gun]:
         player.ammo[player.gun] -= 1
@@ -429,6 +455,7 @@ stena_pre_render = []
 
 
 solid_cl = {Door, Enemy}
+obj_nd = {Trigger, Spr}
 obj_hp = {Spider: 10}
 
 obj_dam = {Spider: 1}
@@ -455,7 +482,8 @@ def main():
 
     obj_spr = {Door: load_image('дверь.png'),
                Spider: load_image('321.png'),
-               Key: load_image('ключ.png')}
+               Key: load_image('ключ.png'),
+               'portal': load_image('portal.png')}
 
     im_sh = load_image('shrek3.png')
 
@@ -487,6 +515,10 @@ def main():
              key=0)
 
         Key(30 * rect_size2d // 4, 2.5 * rect_size2d // 4, key=0)
+
+        Trigger(30 * rect_size2d // 4, 14.7 * rect_size2d // 4, foo=game_stop)
+
+        Spr(31 * rect_size2d // 4, 14.7 * rect_size2d // 4, spr=obj_spr['portal'])
 
         while running:
             sc.fill((0, 0, 0))
@@ -557,7 +589,7 @@ def draw_minimap(sc, player):
             color = red
         else:
             color = blue
-        if not i.is_ded:
+        if not i.is_ded and i.__class__ not in obj_nd:
             pg.draw.circle(sc, color, i.pos, 5)
         # pg.draw.line(sc, green, i.pos, (i.x // 4 + rect_size2d // 4 * math.cos(i.ang),
         #                                    i.y // 4 + rect_size2d // 4 * math.sin(i.ang)), 1)
