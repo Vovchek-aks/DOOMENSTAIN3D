@@ -1,9 +1,10 @@
 import math
+from screeninfo import get_monitors
 
 FPS = 60
 
-width = 1920
-height = 1080
+width = get_monitors()[0].width
+height = get_monitors()[0].height
 
 size = 32, 32  # размер карты
 half_size = size[0] // 2, size[1] // 2  # центр карты и начальнаяпозиция игрока

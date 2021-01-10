@@ -3,7 +3,7 @@ from map import *
 from settings import *
 from player import Player
 import math
-# import sys
+import sys
 import os
 from time import time
 
