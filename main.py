@@ -371,18 +371,13 @@ def raycast_png(player):
     return ret
 
 
-stena = None
-egip_stena = None
-stena_pre_render = []
-
-
 def shoot(player):
-    if player.ammo1 and time() - player.last_shoot >= 1:
-        player.ammo1 -= 1
+    if player.ammo[player.gun] and time() - player.last_shoot >= gun_rt[player.gun]:
+        player.ammo[player.gun] -= 1
         player.last_shoot = time()
         for i in objects.sprites():
             if 0.2 < i.ang < 0.8 and dist_of_points(*player.pos, *i.pos) < rect_size2d * 3:
-                i.hp -= 1
+                i.hp -= gun_dam[player.gun]
                 break
 
 
@@ -404,8 +399,16 @@ def draw_bar(sc, font, text, color, num, max_, sz, pos):
 def draw_interface(sc, player, font):
     draw_minimap(sc, player)
     pg.draw.rect(sc, dk_gray, (0, height - 200, width, height))
-    draw_bar(sc, font, 'AMMO', red, player.ammo1, 20, 500, (20, height - 150))
-    draw_bar(sc, font, 'HP       ', red, round(player.hp), 100, 500, (20, height - 80))
+
+    draw_bar(sc, font, f'AMMO{player.gun + 1}', red, player.ammo[player.gun], gun_amst[player.gun],
+             500, (20, height - 150))
+
+    draw_bar(sc, font, 'HP         ', red, round(player.hp), 100, 500, (20, height - 80))
+
+
+stena = None
+egip_stena = None
+stena_pre_render = []
 
 
 solid_cl = {Door, Enemy}
@@ -413,6 +416,10 @@ obj_hp = {Spider: 10,
           Door: 1000000}
 
 obj_dam = {Spider: 1}
+gun_dam = [1, 5]
+gun_rt = [1, 3]
+gun_amst = [20, 5]
+
 obj_spr = {}
 im_sh = None
 
@@ -444,7 +451,7 @@ def main():
     objects = pg.sprite.Group()
     enemies = pg.sprite.Group()
 
-    player = Player(half_size[0] * rect_size2d - 48 * 4, half_size[1] // 2 * rect_size2d - 48,
+    player = Player(10 * rect_size2d, 10 * rect_size2d,
                     objects, solid_cl)
 
     sh = Spider(5 * rect_size2d, 1 * rect_size2d, do_marsh=True)
@@ -464,6 +471,10 @@ def main():
                     exit(0)
                 elif event.key == pg.K_SPACE:
                     shoot(player)
+                elif event.key == pg.K_1:
+                    player.gun = 0
+                elif event.key == pg.K_2:
+                    player.gun = 1
 
         lin = raycast_png(player)
         draw_3d_png(sc, lin, all_sprites.sprites(), player.pos)

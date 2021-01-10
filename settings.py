@@ -6,8 +6,8 @@ FPS = 60
 width = get_monitors()[0].width
 height = get_monitors()[0].height
 
-size = 32, 32  # размер карты
-half_size = size[0] // 2, size[1] // 2  # центр карты и начальнаяпозиция игрока
+# size = 32, 32  # размер карты
+# half_size = size[0] // 2, size[1] // 2  # центр карты и начальнаяпозиция игрока
 rect_size2d = 60  # размер 2д прямоугольника на карте
 
 draw_dist = 20000  # Длина лучей

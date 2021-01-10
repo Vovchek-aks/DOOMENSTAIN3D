@@ -21,7 +21,8 @@ class Player:
         self.sp = 3
 
         self.hp = 100
-        self.ammo1 = 20
+        self.ammo = [20, 5]
+        self.gun = 0
 
         self.last_shoot = 0
 
