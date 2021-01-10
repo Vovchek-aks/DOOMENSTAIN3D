@@ -2,8 +2,8 @@ import math
 
 FPS = 60
 
-width = 1366
-height = 768
+width = 1920
+height = 1080
 
 size = 32, 32  # размер карты
 half_size = size[0] // 2, size[1] // 2  # центр карты и начальнаяпозиция игрока
@@ -23,6 +23,7 @@ white = (255, 255, 255)
 green = (0, 255, 0)
 red = (255, 0, 0)
 gray = (128, 128, 128)
+dk_gray = (16, 16, 16)
 black = (0, 0, 0)
 blue = (10, 128, 255)
 

@@ -20,6 +20,11 @@ class Player:
         self.ang = 0
         self.sp = 3
 
+        self.hp = 100
+        self.ammo1 = 20
+
+        self.last_shoot = 0
+
         self.all_sp = all_s
         self.solid_sp = solid_cl
 
