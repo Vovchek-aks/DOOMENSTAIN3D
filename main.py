@@ -138,7 +138,7 @@ class GameObject(pg.sprite.Sprite):
         self.mc = 0
         self.do_marsh = do_marsh
 
-        self.hp = obj_hp.get(self.__class__, 1)
+        self.hp = obj_hp.get(self.__class__, 1000000)
 
     def step(self, player):
         if self.hp <= 0:
@@ -231,8 +231,9 @@ class Enemy(GameObject):
 
 
 class Door(GameObject):
-    def __init__(self, x, y, sp=0.25, marsh=None, do_marsh=False):
-        super().__init__(x, y, enemies, sp=sp, marsh=marsh, do_marsh=do_marsh)
+    def __init__(self, x, y, sp=0.25, marsh=None, do_marsh=False, key=-1):
+        super().__init__(x, y, sp=sp, marsh=marsh, do_marsh=do_marsh)
+        self.key = key
 
     def go_marsh(self, player):
         super().go_marsh(player)
@@ -240,9 +241,9 @@ class Door(GameObject):
             self.ded()
 
     def step(self, player):
-        if dist_of_points(*self.pos, *player.pos) < 25 and \
+        if not self.do_marsh and dist_of_points(*self.pos, *player.pos) < 25 and \
            0.3 < angle_of_points(*player.pos, *self.pos, player.ang) < 0.8 and \
-           key_d == pg.K_f:
+           key_d == pg.K_f and self.key in player.keys:
             self.do_marsh = True
         super().step(player)
 
@@ -255,6 +256,18 @@ class Door(GameObject):
 
 class Spider(Enemy):
     pass
+
+
+class Key(GameObject):
+    def __init__(self, x, y, key=-1):
+        super().__init__(x, y, sp=0)
+        self.key = key
+
+    def step(self, player):
+        if dist_of_points(*self.pos, *player.pos) <= 20:
+            player.keys.add(self.key)
+            self.ded()
+        super().step(player)
 
 
 def raycast(player):
@@ -416,8 +429,7 @@ stena_pre_render = []
 
 
 solid_cl = {Door, Enemy}
-obj_hp = {Spider: 10,
-          Door: 1000000}
+obj_hp = {Spider: 10}
 
 obj_dam = {Spider: 1}
 gun_dam = [1, 5]
@@ -442,7 +454,8 @@ def main():
     clock = pg.time.Clock()
 
     obj_spr = {Door: load_image('дверь.png'),
-               Spider: load_image('321.png')}
+               Spider: load_image('321.png'),
+               Key: load_image('ключ.png')}
 
     im_sh = load_image('shrek3.png')
 
@@ -466,9 +479,14 @@ def main():
         player = Player(10 * rect_size2d, 10 * rect_size2d,
                         objects, solid_cl)
 
-        sh = Spider(5 * rect_size2d, 1 * rect_size2d, do_marsh=True)
+        Spider(5 * rect_size2d, 1 * rect_size2d, do_marsh=True)
         Spider(7 * rect_size2d, 0.55 * rect_size2d, do_marsh=True)
+
         Door(6.2 * rect_size2d, 0.4 * rect_size2d, marsh=[(6.2 * rect_size2d, 0.10 * rect_size2d)])
+        Door(27 * rect_size2d // 4, 14.7 * rect_size2d // 4, marsh=[(27 * rect_size2d // 4, 13.5 * rect_size2d // 4)],
+             key=0)
+
+        Key(30 * rect_size2d // 4, 2.5 * rect_size2d // 4, key=0)
 
         while running:
             sc.fill((0, 0, 0))

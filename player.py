@@ -23,8 +23,9 @@ class Player:
         self.hp = 100
         self.ammo = [20, 5]
         self.gun = 0
-
         self.last_shoot = 0
+
+        self.keys = {-1}
 
         self.all_sp = all_s
         self.solid_sp = solid_cl
