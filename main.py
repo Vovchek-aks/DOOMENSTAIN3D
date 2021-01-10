@@ -249,7 +249,7 @@ class Door(GameObject):
     def draw3d(self, player, distd=2.5, sh=1, shx=10):
         d = dist_of_points(*self.pos, *player.pos)
         sh = -d**0.9 / 20
-        shx *= d/100
+        shx *= d*0.5/20
         super().draw3d(player, distd=distd, sh=sh, shx=shx)
 
 
@@ -353,15 +353,18 @@ def raycast_png(player):
         if rast_vert < rast_hor:
             rast = rast_vert
             yt = grid_pos(x_vert, y_vert)[1]
-            shift = (y_vert - yt) / rect_size2d * (256 - round(line_to_px))
+            shift = (y_vert - yt) / rect_size2d * (stena.get_rect().w - round(line_to_px))
         else:
             rast = rast_hor
             xt = grid_pos(x_hor, y_hor)[0]
-            shift = (x_hor - xt) / rect_size2d * (256 - round(line_to_px))
+            shift = (x_hor - xt) / rect_size2d * (stena.get_rect().w - round(line_to_px))
 
         rast *= math.cos(player.ang - a)  # стены прямые, без округлостей
         xx = player.x + rast * cos
         yy = player.y + rast * sin
+
+        if rast < 10:
+            rast = 10
 
         ret += [(i, rast, round(shift))]
 
@@ -431,7 +434,7 @@ def main():
     stena = load_image('стена обыкновенная.png')
     egip_stena = load_image('египецкая стена ураааоаоаоаоаоао.jpg')
 
-    for i in range(256 - round(line_to_px)):
+    for i in range(stena.get_rect().w - round(line_to_px)):
         stena_pre_render += [stena.subsurface(i, 0, round(line_to_px), stena.get_rect().h)]
 
     font = pygame.font.Font(None, 24)
@@ -444,7 +447,7 @@ def main():
     player = Player(half_size[0] * rect_size2d - 48 * 4, half_size[1] // 2 * rect_size2d - 48,
                     objects, solid_cl)
 
-    sh = Spider(5 * rect_size2d, 1 * rect_size2d, do_marsh=True)
+    # sh = Spider(5 * rect_size2d, 1 * rect_size2d, do_marsh=True)
     Spider(7 * rect_size2d, 0.55 * rect_size2d, do_marsh=True)
     Door(6.2 * rect_size2d, 0.4 * rect_size2d, marsh=[(6.2 * rect_size2d, 0.10 * rect_size2d)])
 
