@@ -363,8 +363,8 @@ def raycast_png(player):
         xx = player.x + rast * cos
         yy = player.y + rast * sin
 
-        if rast < 10:
-            rast = 10
+        if rast < 20:
+            rast = 20
 
         ret += [(i, rast, round(shift))]
 
@@ -376,34 +376,38 @@ def shoot(player):
         player.ammo[player.gun] -= 1
         player.last_shoot = time()
         for i in objects.sprites():
-            if 0.2 < i.ang < 0.8 and dist_of_points(*player.pos, *i.pos) < rect_size2d * 3:
+            if 0.2 < i.ang < 0.8 and dist_of_points(*player.pos, *i.pos) < rect_size2d * 2:
                 i.hp -= gun_dam[player.gun]
                 break
 
 
-def draw_bar(sc, font, text, color, num, max_, sz, pos):
+def draw_bar(sc, ft, text, color, num, max_, sz, pos):
     if color != white:
         c = white
     else:
         c = black
-    sc.blit(font.render(text, False, gray), pos)
+    sc.blit(ft.render(text, False, gray), pos)
     lsz = sz * (num / max_)
     if num > 0:
-        pg.draw.rect(sc, color, (font.size(text + ' ')[0] + pos[0], pos[1],
-                                 lsz,  font.size(' ')[1]))
-        sc.blit(font.render(str(num), False, c), (font.size(text + ' ')[0] + pos[0] +
-                                                  (lsz - font.size(str(num))[1]) / 2,
-                                                  pos[1]))
+        pg.draw.rect(sc, color, (ft.size(text + ' ')[0] + pos[0], pos[1],
+                                 lsz, ft.size(' ')[1]))
+        sc.blit(ft.render(str(num), False, c), (ft.size(text + ' ')[0] + pos[0] +
+                                                (lsz - ft.size(str(num))[1]) / 2,
+                                                pos[1]))
 
 
-def draw_interface(sc, player, font):
+def draw_interface(sc, player):
+    # global font, font2, font3
     draw_minimap(sc, player)
     pg.draw.rect(sc, dk_gray, (0, height - 200, width, height))
 
-    draw_bar(sc, font, f'AMMO{player.gun + 1}', red, player.ammo[player.gun], gun_amst[player.gun],
+    draw_bar(sc, font2, f'AMMO{player.gun + 1}', red, player.ammo[player.gun], gun_amst[player.gun],
              500, (20, height - 150))
 
-    draw_bar(sc, font, 'HP         ', red, round(player.hp), 100, 500, (20, height - 80))
+    draw_bar(sc, font2, 'HP         ', red, round(player.hp), 100, 500, (20, height - 80))
+
+    draw_bar(sc, font3, '', blue, round((gun_rt[player.gun] - time() + player.last_shoot) * 100),
+             gun_rt[player.gun] * 100, 500, (150, height - 170))
 
 
 stena = None
@@ -423,14 +427,18 @@ gun_amst = [20, 5]
 obj_spr = {}
 im_sh = None
 
+font = None
+font2 = None
+font3 = None
+
 
 def main():
-    global key_d, obj_spr, im_sh, stena, egip_stena, all_sprites, enemies, objects, stena_pre_render
+    global key_d, obj_spr, im_sh, stena, egip_stena, all_sprites, enemies, \
+           objects, stena_pre_render, font, font2, font3
     pg.init()
     sc = pg.display.set_mode((width, height))
     # pg.display.toggle_fullscreen()
 
-    running = True
     clock = pg.time.Clock()
 
     obj_spr = {Door: load_image('дверь.png'),
@@ -446,63 +454,68 @@ def main():
 
     font = pygame.font.Font(None, 24)
     font2 = pygame.font.Font(None, 48)
+    font3 = pygame.font.Font(None, 10)
 
-    all_sprites = pg.sprite.Group()
-    objects = pg.sprite.Group()
-    enemies = pg.sprite.Group()
+    while True:
+        running = True
 
-    player = Player(10 * rect_size2d, 10 * rect_size2d,
-                    objects, solid_cl)
+        all_sprites = pg.sprite.Group()
+        objects = pg.sprite.Group()
+        enemies = pg.sprite.Group()
 
-    sh = Spider(5 * rect_size2d, 1 * rect_size2d, do_marsh=True)
-    Spider(7 * rect_size2d, 0.55 * rect_size2d, do_marsh=True)
-    Door(6.2 * rect_size2d, 0.4 * rect_size2d, marsh=[(6.2 * rect_size2d, 0.10 * rect_size2d)])
+        player = Player(10 * rect_size2d, 10 * rect_size2d,
+                        objects, solid_cl)
 
-    while running:
-        sc.fill((0, 0, 0))
-        key_d = -1
-        for event in pygame.event.get():
-            if event.type == pg.QUIT:
-                running = False
-            elif event.type == pg.KEYDOWN:
-                key_d = event.key
-                if event.key == pg.K_ESCAPE:
+        sh = Spider(5 * rect_size2d, 1 * rect_size2d, do_marsh=True)
+        Spider(7 * rect_size2d, 0.55 * rect_size2d, do_marsh=True)
+        Door(6.2 * rect_size2d, 0.4 * rect_size2d, marsh=[(6.2 * rect_size2d, 0.10 * rect_size2d)])
+
+        while running:
+            sc.fill((0, 0, 0))
+            key_d = -1
+            for event in pygame.event.get():
+                if event.type == pg.QUIT:
                     running = False
                     exit(0)
-                elif event.key == pg.K_SPACE:
-                    shoot(player)
-                elif event.key == pg.K_1:
-                    player.gun = 0
-                elif event.key == pg.K_2:
-                    player.gun = 1
+                elif event.type == pg.KEYDOWN:
+                    key_d = event.key
+                    if event.key == pg.K_ESCAPE:
+                        running = False
+                        exit(0)
+                    elif event.key == pg.K_SPACE:
+                        shoot(player)
+                    elif event.key == pg.K_1:
+                        player.gun = 0
+                    elif event.key == pg.K_2:
+                        player.gun = 1
 
-        lin = raycast_png(player)
-        draw_3d_png(sc, lin, all_sprites.sprites(), player.pos)
-        # lin = raycast_fps_stonks(player)
-        # draw_3d(sc, lin, all_sprites.sprites(), player.pos)
-        # draw_map(sc, player, lin)
-        draw_interface(sc, player, font2)
-        for i in objects.sprites():
-            if not i.is_ded:
-                i.step(player)
-        player.step()
-        if player.hp <= 0:
-            return
-        # angle_of_points(*player.pos, *sh.pos, player.ang)
-        sc.blit(font.render(str(clock.get_fps()), False, red), (width - 500, 50))
-        # sc.blit(font.render(str((sh.x, sh.y,)), False, red), (width - 500, 100))
-        # if sh.in_wall:
-        #     color = red
-        # else:
-        #     color = green
-        # pg.draw.rect(sc, color, (sh.pos[0] // (rect_size2d // 4) * (rect_size2d // 4),
-        #                          sh.pos[1] // (rect_size2d // 4) * (rect_size2d // 4),
-        #                          rect_size2d // 4,
-        #                          rect_size2d // 4))
-        pg.display.flip()
-        clock.tick(FPS)
+            lin = raycast_png(player)
+            draw_3d_png(sc, lin, all_sprites.sprites(), player.pos)
+            # lin = raycast_fps_stonks(player)
+            # draw_3d(sc, lin, all_sprites.sprites(), player.pos)
+            # draw_map(sc, player, lin)
+            draw_interface(sc, player)
+            for i in objects.sprites():
+                if not i.is_ded:
+                    i.step(player)
+            player.step()
+            if player.hp <= 0:
+                running = False
+            # angle_of_points(*player.pos, *sh.pos, player.ang)
+            sc.blit(font.render(str(clock.get_fps()), False, red), (width - 500, 50))
+            # sc.blit(font.render(str((sh.x, sh.y,)), False, red), (width - 500, 100))
+            # if sh.in_wall:
+            #     color = red
+            # else:
+            #     color = green
+            # pg.draw.rect(sc, color, (sh.pos[0] // (rect_size2d // 4) * (rect_size2d // 4),
+            #                          sh.pos[1] // (rect_size2d // 4) * (rect_size2d // 4),
+            #                          rect_size2d // 4,
+            #                          rect_size2d // 4))
+            pg.display.flip()
+            clock.tick(FPS)
 
-    pg.quit()
+    # pg.quit()
 
 
 def draw_map(sc, player, lines):
@@ -590,5 +603,4 @@ def draw_3d_png(sc, lin, sp, ppos):
 
 
 if __name__ == '__main__':
-    while 1:
-        main()
+    main()
