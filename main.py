@@ -371,7 +371,11 @@ def raycast_png(player):
             rast_vert = (vertical - player.x) / cos  # расстояние до вертикали
             y_vert = player.y + rast_vert * sin      # координата y
             x_vert = player.x + rast_vert * cos
-            if grid_pos(vertical + dop_inf_x, y_vert) in map_coords:
+            if grid_pos(vertical + dop_inf_x, y_vert) in egeptal_coords:
+                is_egipt_vert = True
+                break
+            elif grid_pos(vertical + dop_inf_x, y_vert) in vall_coords:
+                is_egipt_vert = False
                 break
             vertical += dop_inf_x * rect_size2d
 
@@ -381,7 +385,11 @@ def raycast_png(player):
             rast_hor = (horisontal - player.y) / (sin + 0.00001)  # расстояние до горизонтали
             x_hor = player.x + rast_hor * cos                     # координата x
             y_hor = player.y + rast_hor * sin
-            if grid_pos(x_hor, horisontal + dop_inf_y) in map_coords:
+            if grid_pos(x_hor, horisontal + dop_inf_y) in egeptal_coords:
+                is_egipt_hor = True
+                break
+            elif grid_pos(x_hor, horisontal + dop_inf_y) in vall_coords:
+                is_egipt_hor = False
                 break
             horisontal += dop_inf_y * rect_size2d
 
@@ -389,10 +397,12 @@ def raycast_png(player):
             rast = rast_vert
             yt = grid_pos(x_vert, y_vert)[1]
             shift = (y_vert - yt) / rect_size2d * (stena.get_rect().w - round(line_to_px))
+            pict = is_egipt_vert
         else:
             rast = rast_hor
             xt = grid_pos(x_hor, y_hor)[0]
             shift = (x_hor - xt) / rect_size2d * (stena.get_rect().w - round(line_to_px))
+            pict = is_egipt_hor
 
         rast *= math.cos(player.ang - a)  # стены прямые, без округлостей
         xx = player.x + rast * cos
@@ -401,7 +411,7 @@ def raycast_png(player):
         if rast < 20:
             rast = 20
 
-        ret += [(i, rast, round(shift))]
+        ret += [(i, rast, round(shift), pict)]
 
     return ret
 
@@ -452,7 +462,7 @@ def draw_interface(sc, player):
 stena = None
 egip_stena = None
 stena_pre_render = []
-
+egipt_stena_pre_render = []
 
 solid_cl = {Door, Enemy}
 obj_nd = {Trigger, Spr}
@@ -473,7 +483,7 @@ font3 = None
 
 def main():
     global key_d, obj_spr, im_sh, stena, egip_stena, all_sprites, enemies, \
-           objects, stena_pre_render, font, font2, font3
+           objects, stena_pre_render, font, font2, font3, egipt_stena_pre_render
     pg.init()
     sc = pg.display.set_mode((width, height))
     # pg.display.toggle_fullscreen()
@@ -492,6 +502,7 @@ def main():
 
     for i in range(stena.get_rect().w - round(line_to_px)):
         stena_pre_render += [stena.subsurface(i, 0, round(line_to_px), stena.get_rect().h)]
+        egipt_stena_pre_render += [egip_stena.subsurface(i, 0, round(line_to_px), egip_stena.get_rect().h)]
 
     font = pygame.font.Font(None, 24)
     font2 = pygame.font.Font(None, 48)
@@ -635,8 +646,10 @@ def draw_3d_png(sc, lin, sp, ppos):
             j = ii[1]
             # if ii[2] >= 256:
             #     ii[2] = 253
-
-            wall = stena_pre_render[ii[2] - 1]
+            if ii[3]:
+                wall = egipt_stena_pre_render[ii[2] - 1]
+            else:
+                wall = stena_pre_render[ii[2] - 1]
 
             wall = pg.transform.scale(wall, (round(line_to_px), round(dist * rect_size2d / (j + 1)) * 2))
             sc.blit(wall, (ii[0] * round(line_to_px), height / 2 - dist * rect_size2d / (j + 1)))
