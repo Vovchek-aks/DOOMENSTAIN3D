@@ -368,7 +368,8 @@ def raycast_png(player):
         a = player.ang + line_step * i - line_step * lines / 2
         cos = math.cos(a)
         sin = math.sin(a)
-
+        is_egipt_vert = False
+        is_egipt_hor = False
         # смотрим на пересечение с вертикалями
         vertical, dop_inf_x = (x + rect_size2d, 1) if cos >= 0 else (x, -1)
         for j in range(0, width, rect_size2d):
@@ -521,7 +522,7 @@ def main():
     im_sh = load_image('shrek3.png')
 
     stena = load_image('стена обыкновенная.png')
-    egip_stena = load_image('египецкая стена ураааоаоаоаоаоао.jpg')
+    egip_stena = load_image('египецкая стена ураааоаоаоаоаоао.png')
 
     for i in range(stena.get_rect().w - round(line_to_px)):
         stena_pre_render += [stena.subsurface(i, 0, round(line_to_px), stena.get_rect().h)]
