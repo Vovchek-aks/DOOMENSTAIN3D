@@ -587,7 +587,7 @@ def main():
             if player.hp <= 0:
                 running = False
             # angle_of_points(*player.pos, *sh.pos, player.ang)
-            sc.blit(font.render(str(clock.get_fps()), False, red), (width - 500, 50))
+            sc.blit(font.render(str(round(clock.get_fps())), False, red), (width - 100, 50))
             # sc.blit(font.render(str((sh.x, sh.y,)), False, red), (width - 500, 100))
             # if sh.in_wall:
             #     color = red
