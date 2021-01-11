@@ -243,8 +243,11 @@ class Door(GameObject):
     def step(self, player):
         if not self.do_marsh and dist_of_points(*self.pos, *player.pos) < 25 and \
            0.3 < angle_of_points(*player.pos, *self.pos, player.ang) < 0.8 and \
-           key_d == pg.K_f and self.key in player.keys:
-            self.do_marsh = True
+           key_d == pg.K_f:
+            if self.key in player.keys:
+                self.do_marsh = True
+            else:
+                set_message(f'Вам нужен ключ {self.key}', 3)
         super().step(player)
 
     def draw3d(self, player, distd=2.5, sh=1, shx=10):
@@ -265,6 +268,7 @@ class Key(GameObject):
 
     def step(self, player):
         if dist_of_points(*self.pos, *player.pos) <= 20:
+            set_message(f'Вы подобрали ключ {self.key}', 3)
             player.keys.add(self.key)
             self.ded()
         super().step(player)
@@ -435,9 +439,24 @@ def draw_bar(sc, ft, text, color, num, max_, sz, pos):
                                                 pos[1]))
 
 
+def draw_message(sc, ft):
+    if time() - tsm <= ttd:
+        sc.blit(ft.render(message, False, red), (width // 2 - ft.size(message)[0] // 2, 20))
+
+
+def set_message(text, t):
+    global message, ttd, tsm
+    message = text
+    tsm = time()
+    ttd = t
+
+
 def draw_interface(sc, player):
     # global font, font2, font3
     draw_minimap(sc, player)
+
+    draw_message(sc, font2)
+
     pg.draw.rect(sc, dk_gray, (0, height - 200, width, height))
 
     draw_bar(sc, font2, f'AMMO{player.gun + 1}', red, player.ammo[player.gun], gun_amst[player.gun],
@@ -469,6 +488,10 @@ im_sh = None
 font = None
 font2 = None
 font3 = None
+
+message = ''
+tsm = 0
+ttd = 0
 
 
 def main():
