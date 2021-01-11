@@ -15,6 +15,8 @@ enemies = pg.sprite.Group()
 
 key_d = -1
 
+map_n = 0
+
 znak = lambda x: 1 if x > 0 else -1
 
 
@@ -203,7 +205,7 @@ class Enemy(GameObject):
         for g in range(1, disk + 1):
             g = g / disk
             if ((self.x + lsp[0] * g) // rect_size2d * rect_size2d,
-                (self.y + lsp[1] * g) // rect_size2d * rect_size2d) in map_coords:
+                (self.y + lsp[1] * g) // rect_size2d * rect_size2d) in maps[map_n]['map_coords']:
                 f = True
                 # print(((self.x + lsp[0] * g) // rect_size2d * rect_size2d,
                 #     (self.y + lsp[1] * g) // rect_size2d * rect_size2d))
@@ -226,7 +228,7 @@ class Enemy(GameObject):
         if dist_of_points(*self.pos, *player.pos) <= 20:
             can_move = False
             player.hp -= obj_dam.get(self.__class__, 0)
-        if grid_pos(self.x * 4, self.y * 4) in map_coords or not can_move:
+        if grid_pos(self.x * 4, self.y * 4) in maps[map_n]['map_coords'] or not can_move:
             self.pos = self.x, self.y = xx, yy
 
 
@@ -376,10 +378,10 @@ def raycast_png(player):
             rast_vert = (vertical - player.x) / cos  # расстояние до вертикали
             y_vert = player.y + rast_vert * sin      # координата y
             x_vert = player.x + rast_vert * cos
-            if grid_pos(vertical + dop_inf_x, y_vert) in egeptal_coords:
+            if grid_pos(vertical + dop_inf_x, y_vert) in maps[map_n]['egypt_coords']:
                 is_egipt_vert = True
                 break
-            elif grid_pos(vertical + dop_inf_x, y_vert) in vall_coords:
+            elif grid_pos(vertical + dop_inf_x, y_vert) in maps[map_n]['wall_coords']:
                 is_egipt_vert = False
                 break
             vertical += dop_inf_x * rect_size2d
@@ -390,10 +392,10 @@ def raycast_png(player):
             rast_hor = (horisontal - player.y) / (sin + 0.00001)  # расстояние до горизонтали
             x_hor = player.x + rast_hor * cos                     # координата x
             y_hor = player.y + rast_hor * sin
-            if grid_pos(x_hor, horisontal + dop_inf_y) in egeptal_coords:
+            if grid_pos(x_hor, horisontal + dop_inf_y) in maps[map_n]['egypt_coords']:
                 is_egipt_hor = True
                 break
-            elif grid_pos(x_hor, horisontal + dop_inf_y) in vall_coords:
+            elif grid_pos(x_hor, horisontal + dop_inf_y) in maps[map_n]['wall_coords']:
                 is_egipt_hor = False
                 break
             horisontal += dop_inf_y * rect_size2d
@@ -612,8 +614,8 @@ def draw_map(sc, player, lines):
 
 
 def draw_minimap(sc, player):
-    pg.draw.rect(sc, black, (0, 0, rect_size2d // 4 * len(map_[0]), rect_size2d // 4 * len(map_)))
-    for i in map_coords:
+    pg.draw.rect(sc, black, (0, 0, rect_size2d // 4 * len(map_[map_n][0]), rect_size2d // 4 * len(map_[map_n])))
+    for i in maps[map_n]['map_coords']:
         # print(i[0], i[1], rect_size2d)
         pg.draw.rect(sc, gray, (i[0] // 4, i[1] // 4, rect_size2d // 4, rect_size2d // 4))
         player.draw_minamap(sc)
@@ -677,10 +679,10 @@ def draw_3d_png(sc, lin, sp, ppos):
 
             wall = pg.transform.scale(wall, (round(line_to_px), round(dist * rect_size2d / (j + 1)) * 2))
             sc.blit(wall, (ii[0] * round(line_to_px), height / 2 - dist * rect_size2d / (j + 1)))
+
             # c = 255 / (1 + j * j * 0.00001)
-            #
-            # color = (int(c / 2), int(c / 3), int(c / 5))
-            # pg.draw.rect(sc, color, (i * line_to_px,
+            # color = (c, c, c)
+            # pg.draw.rect(sc, color, (ii[2] * line_to_px,
             #                          height / 2 - dist * rect_size2d / (j + 1),
             #                          line_to_px + 1,
             #                          dist * rect_size2d / (j + 1) * 2))
