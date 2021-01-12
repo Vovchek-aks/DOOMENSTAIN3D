@@ -304,7 +304,8 @@ def start_screen():
     sc.blit(fon, (0, 0))
     clock = pygame.time.Clock()
     running = True
-    rect_b_lv = [[92, 326], [217, 325], [92, 390], [218, 390]]
+    rect_b_lv = [[187, 487], [473, 487], [473, 592], [187, 592]]
+    rect_b_quit = [[184, 600], [600, 600], [600, 700], [184, 700]]
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -314,13 +315,18 @@ def start_screen():
                 if event.key == pg.K_ESCAPE:
                     running = False
                     exit(0)
-            elif event.type == pygame.MOUSEMOTION:
-                if event.pos[0] > rect_b_lv[0][0] and event.pos[1] > rect_b_lv[0][1]:
-                    if event.pos[0] < rect_b_lv[1][0] and event.pos[1] > rect_b_lv[1][1]:
-                        if event.pos[0] > rect_b_lv[2][0] and event.pos[1] < rect_b_lv[2][1]:
-                            if event.pos[0] < rect_b_lv[3][0] and event.pos[1] < rect_b_lv[3][1]:
-                                print("Some button was pressed!")
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if event.pos[0] >= rect_b_lv[0][0] and event.pos[1] >= rect_b_lv[0][1]:
+                    if event.pos[0] <= rect_b_lv[1][0] and event.pos[1] >= rect_b_lv[1][1]:
+                        if event.pos[0] <= rect_b_lv[2][0] and event.pos[1] <= rect_b_lv[2][1]:
+                            if event.pos[0] >= rect_b_lv[3][0] and event.pos[1] <= rect_b_lv[3][1]:
                                 return
+                if event.pos[0] >= rect_b_quit[0][0] and event.pos[1] >= rect_b_quit[0][1]:
+                    if event.pos[0] <= rect_b_quit[1][0] and event.pos[1] >= rect_b_quit[1][1]:
+                        if event.pos[0] <= rect_b_quit[2][0] and event.pos[1] <= rect_b_quit[2][1]:
+                            if event.pos[0] >= rect_b_quit[3][0] and event.pos[1] <= rect_b_quit[3][1]:
+                                pygame.quit()
+                                sys.exit()
         pygame.display.flip()
         clock.tick(FPS)
 
