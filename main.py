@@ -300,12 +300,17 @@ class Spr(GameObject):
 
 def start_screen():
     sc = pg.display.set_mode((width, height))
-    fon = pygame.transform.scale(load_image('fon_primer.jpg'), (width, height))
+    fon = pygame.transform.scale(load_image('fon.jpg'), (width, height))
+    but_menu = load_image('levels.png')
     sc.blit(fon, (0, 0))
+    sc.blit(but_menu, (width / 4, height / 4))
+    pygame.font.get_fonts()
+    quitt = load_image('quit.png')
+    sc.blit(quitt, (width // 4, height // 2))
     clock = pygame.time.Clock()
     running = True
-    rect_b_lv = [[187, 487], [473, 487], [473, 592], [187, 592]]
-    rect_b_quit = [[184, 600], [600, 600], [600, 700], [184, 700]]
+    rect_b_lv = [width / 3.74, height / 3.6]
+    rect_b_quit = [width / 3.74, height / 1.9]
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -316,15 +321,19 @@ def start_screen():
                     running = False
                     exit(0)
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                if event.pos[0] >= rect_b_lv[0][0] and event.pos[1] >= rect_b_lv[0][1]:
-                    if event.pos[0] <= rect_b_lv[1][0] and event.pos[1] >= rect_b_lv[1][1]:
-                        if event.pos[0] <= rect_b_lv[2][0] and event.pos[1] <= rect_b_lv[2][1]:
-                            if event.pos[0] >= rect_b_lv[3][0] and event.pos[1] <= rect_b_lv[3][1]:
+                print(event.pos)
+                if event.pos[0] >= rect_b_lv[0] and event.pos[1] >= rect_b_lv[1]:
+                    if event.pos[0] <= rect_b_lv[0] + but_menu.get_rect().w and event.pos[1] >= rect_b_lv[1]:
+                        if event.pos[0] <= rect_b_lv[0] + but_menu.get_rect().w and \
+                                event.pos[1] <= rect_b_lv[1] + but_menu.get_rect().h:
+                            if event.pos[0] >= rect_b_lv[0] and event.pos[1] <= rect_b_lv[1] + but_menu.get_rect().h:
                                 return
-                if event.pos[0] >= rect_b_quit[0][0] and event.pos[1] >= rect_b_quit[0][1]:
-                    if event.pos[0] <= rect_b_quit[1][0] and event.pos[1] >= rect_b_quit[1][1]:
-                        if event.pos[0] <= rect_b_quit[2][0] and event.pos[1] <= rect_b_quit[2][1]:
-                            if event.pos[0] >= rect_b_quit[3][0] and event.pos[1] <= rect_b_quit[3][1]:
+                if event.pos[0] >= rect_b_quit[0] and event.pos[1] >= rect_b_quit[1]:
+                    if event.pos[0] <= rect_b_quit[0] + but_menu.get_rect().w and event.pos[1] >= rect_b_quit[1]:
+                        if event.pos[0] <= rect_b_quit[0] + but_menu.get_rect().w and \
+                                event.pos[1] <= rect_b_quit[1] + but_menu.get_rect().h:
+                            if event.pos[0] >= rect_b_quit[0] and \
+                                    event.pos[1] <= rect_b_quit[1] + but_menu.get_rect().h:
                                 pygame.quit()
                                 sys.exit()
         pygame.display.flip()
@@ -514,6 +523,7 @@ def draw_interface(sc, player):
              gun_rt[player.gun] * 100, 500, (150, height - 170))
 
 
+
 stena = None
 egip_stena = None
 stena_pre_render = []
@@ -566,6 +576,7 @@ def main():
     font = pygame.font.Font(None, 24)
     font2 = pygame.font.Font(None, 48)
     font3 = pygame.font.Font(None, 10)
+
 
     start_screen()
 
