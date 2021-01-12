@@ -94,9 +94,9 @@ def lines_from_square(x, y, size=rect_size2d):
             (x, y + size, x + size, y + size))
 
 
-def point_in_square(x, y, xx, yy, size=rect_size2d):
-    if xx * size <= x <= (xx + 1) * size and \
-            yy * size <= y <= (yy + 1) * size:
+def point_in_square(x, y, xx, yy, sizex, sizey):
+    if xx * sizex <= x <= (xx + 1) * sizex and \
+            yy * sizey <= y <= (yy + 1) * sizey:
         return True
     return False
 
