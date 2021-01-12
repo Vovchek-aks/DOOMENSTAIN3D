@@ -15,7 +15,7 @@ def dist_of_points(x1, y1, x2, y2):
 
 
 class Player:
-    def __init__(self, x, y, all_s, solid_cl):
+    def __init__(self, x, y, all_s, solid_cl, map_n):
         self.pos = self.x, self.y = x, y
         self.ang = 0
         self.sp = 3
@@ -29,6 +29,8 @@ class Player:
 
         self.all_sp = all_s
         self.solid_sp = solid_cl
+
+        self.map_n = map_n
 
     def draw(self, sc):
         pg.draw.circle(sc, green, (self.pos[0] * rect_size2d, self.pos[1] * rect_size2d), 5)
@@ -75,7 +77,7 @@ class Player:
                 can_move = False
                 break
 
-        if (grid_pos(self.x, self.y) in map_coords or not can_move) and True:
+        if (grid_pos(self.x, self.y) in maps[self.map_n]['map_coords'] or not can_move) and True:
             self.x, self.y = xx * 4, yy * 4
             self.pos = self.x // 4, self.y // 4
 

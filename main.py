@@ -577,7 +577,7 @@ def main():
         enemies = pg.sprite.Group()
 
         player = Player(10 * rect_size2d, 10 * rect_size2d,
-                        objects, solid_cl)
+                        objects, solid_cl, map_n)
 
         Spider(5 * rect_size2d, 1 * rect_size2d, do_marsh=True)
         Spider(7 * rect_size2d, 0.55 * rect_size2d, do_marsh=True)
