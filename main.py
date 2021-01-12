@@ -321,7 +321,6 @@ def start_screen():
                     running = False
                     exit(0)
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                print(event.pos)
                 if event.pos[0] >= rect_b_lv[0] and event.pos[1] >= rect_b_lv[1]:
                     if event.pos[0] <= rect_b_lv[0] + but_menu.get_rect().w and event.pos[1] >= rect_b_lv[1]:
                         if event.pos[0] <= rect_b_lv[0] + but_menu.get_rect().w and \
@@ -508,11 +507,15 @@ def set_message(text, t):
 
 def draw_interface(sc, player):
     # global font, font2, font3
+    global rect_b_menu
     draw_minimap(sc, player)
 
     draw_message(sc, font2)
 
     pg.draw.rect(sc, dk_gray, (0, height - 200, width, height))
+
+    menu = load_image('menu.png')
+    sc.blit(menu, (width / 1.05, height / 1.35))
 
     draw_bar(sc, font2, f'AMMO{player.gun + 1}', red, player.ammo[player.gun], gun_amst[player.gun],
              500, (20, height - 150))
@@ -521,13 +524,17 @@ def draw_interface(sc, player):
 
     draw_bar(sc, font3, '', blue, round((gun_rt[player.gun] - time() + player.last_shoot) * 100),
              gun_rt[player.gun] * 100, 500, (150, height - 170))
+    rect_b_menu = [width / 1.047, height / 1.3426573]
+
 
 
 
 stena = None
+menu = None
 egip_stena = None
 stena_pre_render = []
 egipt_stena_pre_render = []
+rect_b_menu = []
 
 solid_cl = {Door, Enemy}
 obj_nd = {Trigger, Spr}
@@ -565,6 +572,9 @@ def main():
                'portal': load_image('portal.png')}
 
     im_sh = load_image('shrek3.png')
+
+    menu = load_image('menu.png')
+    sc.blit(menu, (width / 1.05, height / 1.35))
 
     stena = load_image('стена обыкновенная.png')
     egip_stena = load_image('египецкая стена ураааоаоаоаоаоао.png')
@@ -621,6 +631,13 @@ def main():
                         player.gun = 0
                     elif event.key == pg.K_2:
                         player.gun = 1
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    if event.pos[0] >= rect_b_menu[0] and event.pos[1] >= rect_b_menu[1]:
+                        if event.pos[0] <= rect_b_menu[0] + menu.get_rect().w and event.pos[1] >= rect_b_menu[1]:
+                            if event.pos[0] <= rect_b_menu[0] + menu.get_rect().w and \
+                                    event.pos[1] <= rect_b_menu[1] + menu.get_rect().h:
+                                if event.pos[0] >= rect_b_menu[0] and event.pos[1] <= rect_b_menu[1] + menu.get_rect().h:
+                                    start_screen()
 
             lin = raycast_png(player)
             draw_3d_png(sc, lin, all_sprites.sprites(), player.pos)

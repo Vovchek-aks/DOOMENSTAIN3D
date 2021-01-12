@@ -3,7 +3,7 @@ from screeninfo import get_monitors
 
 FPS = 60
 
-width = get_monitors()[0].width
+width = 1000
 height = get_monitors()[0].height
 
 # size = 32, 32  # размер карты
