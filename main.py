@@ -299,22 +299,11 @@ class Spr(GameObject):
 
 
 def start_screen():
-    intro_text = ["Перемещение героя", "",
-                  "Герой двигается",
-                  "Карта на месте"]
     font = pygame.font.Font(None, 25)
     sc = pg.display.set_mode((width, height))
     fon = pygame.transform.scale(load_image('fon_primer.jpg'), (width, height))
     sc.blit(fon, (0, 0))
     text_coord = 10
-    for line in intro_text:
-        string_rendered = font.render(line, 1, pygame.Color('black'))
-        intro_rect = string_rendered.get_rect()
-        text_coord += 10
-        intro_rect.top = text_coord
-        intro_rect.x = 10
-        text_coord += intro_rect.height
-        sc.blit(string_rendered, intro_rect)
     clock = pygame.time.Clock()
     running = True
     while running:
