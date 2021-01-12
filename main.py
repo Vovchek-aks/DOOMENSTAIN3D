@@ -298,6 +298,42 @@ class Spr(GameObject):
         self.base_im = self.image = spr
 
 
+def start_screen():
+    intro_text = ["Перемещение героя", "",
+                  "Герой двигается",
+                  "Карта на месте"]
+    font = pygame.font.Font(None, 25)
+    sc = pg.display.set_mode((width, height))
+    fon = pygame.transform.scale(load_image('fon_primer.jpg'), (width, height))
+    sc.blit(fon, (0, 0))
+    text_coord = 10
+    for line in intro_text:
+        string_rendered = font.render(line, 1, pygame.Color('black'))
+        intro_rect = string_rendered.get_rect()
+        text_coord += 10
+        intro_rect.top = text_coord
+        intro_rect.x = 10
+        text_coord += intro_rect.height
+        sc.blit(string_rendered, intro_rect)
+    clock = pygame.time.Clock()
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == pg.KEYDOWN:
+                if event.key == pg.K_ESCAPE:
+                    running = False
+                    exit(0)
+            elif event.type == pygame.KEYDOWN or \
+                    event.type == pygame.MOUSEBUTTONDOWN:
+                return  # начинаем игру
+
+        pygame.display.flip()
+        clock.tick(FPS)
+
+
 def raycast(player):
     ret = []
     for i in range(lines):
@@ -533,6 +569,8 @@ def main():
     font = pygame.font.Font(None, 24)
     font2 = pygame.font.Font(None, 48)
     font3 = pygame.font.Font(None, 10)
+
+    start_screen()
 
     while True:
         running = True
