@@ -299,13 +299,12 @@ class Spr(GameObject):
 
 
 def start_screen():
-    font = pygame.font.Font(None, 25)
     sc = pg.display.set_mode((width, height))
     fon = pygame.transform.scale(load_image('fon_primer.jpg'), (width, height))
     sc.blit(fon, (0, 0))
-    text_coord = 10
     clock = pygame.time.Clock()
     running = True
+    rect_b_lv = [[92, 326], [217, 325], [92, 390], [218, 390]]
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -315,10 +314,13 @@ def start_screen():
                 if event.key == pg.K_ESCAPE:
                     running = False
                     exit(0)
-            elif event.type == pygame.KEYDOWN or \
-                    event.type == pygame.MOUSEBUTTONDOWN:
-                return  # начинаем игру
-
+            elif event.type == pygame.MOUSEMOTION:
+                if event.pos[0] > rect_b_lv[0][0] and event.pos[1] > rect_b_lv[0][1]:
+                    if event.pos[0] < rect_b_lv[1][0] and event.pos[1] > rect_b_lv[1][1]:
+                        if event.pos[0] > rect_b_lv[2][0] and event.pos[1] < rect_b_lv[2][1]:
+                            if event.pos[0] < rect_b_lv[3][0] and event.pos[1] < rect_b_lv[3][1]:
+                                print("Some button was pressed!")
+                                return
         pygame.display.flip()
         clock.tick(FPS)
 
