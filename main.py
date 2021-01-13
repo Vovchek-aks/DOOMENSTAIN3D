@@ -425,14 +425,14 @@ def raycast_png(player):
 
 def start_screen(sc):
     sc.blit(fon, (0, 0))
-    sc.blit(but_menu, ((width - menu.get_rect().w) / 4, (height - menu.get_rect().h) / 4))
+    sc.blit(but_menu, (width // 2 - menu.get_rect().h * 6, (height - menu.get_rect().h) / 2))
     pygame.font.get_fonts()
-    sc.blit(quitt, ((width - menu.get_rect().w) / 4, (height - menu.get_rect().h) / 2))
+    sc.blit(quitt, (width // 2 - menu.get_rect().h * 6, (height - menu.get_rect().h) / 2 + 200))
     clock = pygame.time.Clock()
     running = True
     # sc, width - menu.get_rect().w - 20, height - 180
-    rect_b_lv = [(width - menu.get_rect().w) / 4, (height - menu.get_rect().h) / 4]
-    rect_b_quit = [(width - menu.get_rect().w) / 4, (height - menu.get_rect().h) / 2]
+    rect_b_lv = [width // 2 - menu.get_rect().h * 6, (height - menu.get_rect().h) / 2]
+    rect_b_quit = [width // 2 - menu.get_rect().h * 6, (height - menu.get_rect().h) / 2 + 200]
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
