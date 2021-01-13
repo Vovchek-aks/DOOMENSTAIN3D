@@ -567,7 +567,7 @@ def main():
     font2 = pygame.font.Font(None, 48)
     font3 = pygame.font.Font(None, 10)
 
-    start_screen()
+    # start_screen()
 
     while True:
         running = True
@@ -576,11 +576,13 @@ def main():
         objects = pg.sprite.Group()
         enemies = pg.sprite.Group()
 
+        ppos = None
+
         player = Player(10 * rect_size2d, 10 * rect_size2d,
                         objects, solid_cl, map_n)
 
-        Spider(5 * rect_size2d, 1 * rect_size2d, do_marsh=True)
-        Spider(7 * rect_size2d, 0.55 * rect_size2d, do_marsh=True)
+        Spider(5 * rect_size2d, 1 * rect_size2d)
+        Spider(7 * rect_size2d, 0.55 * rect_size2d)
 
         Door(6.2 * rect_size2d, 0.4 * rect_size2d, marsh=[(6.2 * rect_size2d, 0.10 * rect_size2d)])
         Door(27 * rect_size2d // 4, 14.7 * rect_size2d // 4, marsh=[(27 * rect_size2d // 4, 13.5 * rect_size2d // 4)],
@@ -611,7 +613,8 @@ def main():
                     elif event.key == pg.K_2:
                         player.gun = 1
 
-            lin = raycast_png(player)
+            if (player.pos, player.ang) != ppos:
+                lin = raycast_png(player)
             draw_3d_png(sc, lin, all_sprites.sprites(), player.pos)
             # lin = raycast_fps_stonks(player)
             # draw_3d(sc, lin, all_sprites.sprites(), player.pos)
@@ -620,6 +623,8 @@ def main():
             for i in objects.sprites():
                 if not i.is_ded:
                     i.step(player)
+
+            ppos = (player.pos, player.ang)
             player.step()
             if player.hp <= 0:
                 running = False
@@ -636,6 +641,7 @@ def main():
             #                          rect_size2d // 4))
             pg.display.flip()
             clock.tick(FPS)
+
 
     # pg.quit()
 
@@ -698,7 +704,7 @@ def draw_3d_png(sc, lin, sp, ppos):
     dist = 999
 
     lin = [(True, i, i[1]) for i in lin]
-    sp = [(False, i, dist_of_points(*ppos, *i.pos) * 3.6) for i in sp if not i.is_ded]
+    sp = [(False, i, dist_of_points(*ppos, *i.pos) * 4) for i in sp if not i.is_ded]
     lis = sorted(lin + sp, key=lambda x: -x[-1])
     for i in lis:
         if i[0]:
