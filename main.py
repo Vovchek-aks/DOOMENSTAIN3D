@@ -423,9 +423,7 @@ def raycast_png(player):
     return ret
 
 
-def start_screen():
-    sc = pg.display.set_mode((width, height))
-    fon = pygame.transform.scale(menu_fon, (width, height))
+def start_screen(sc):
     sc.blit(fon, (0, 0))
     sc.blit(but_menu, (width / 4, height / 4))
     pygame.font.get_fonts()
@@ -538,6 +536,7 @@ quitt = None
 egip_stena = None
 menu_fon = None
 but_menu = None
+fon = None
 
 stena_pre_render = []
 egipt_stena_pre_render = []
@@ -569,7 +568,7 @@ need_break = False
 def main():
     global key_d, obj_spr, im_sh, stena, egip_stena, all_sprites, enemies, \
         objects, stena_pre_render, font, font2, font3, egipt_stena_pre_render, menu, need_break, quitt, menu_fon, \
-        but_menu
+        but_menu, fon
 
     pg.init()
     sc = pg.display.set_mode((width, height))
@@ -587,6 +586,7 @@ def main():
     quitt = load_image('quit.png')
     menu_fon = load_image('fon.jpg')
     but_menu = load_image('levels.png')
+    fon = pygame.transform.scale(menu_fon, (width, height))
 
     stena = load_image('стена обыкновенная.png')
     egip_stena = load_image('египецкая стена ураааоаоаоаоаоао.png')
@@ -599,7 +599,7 @@ def main():
     font2 = pygame.font.Font(None, 48)
     font3 = pygame.font.Font(None, 10)
 
-    start_screen()
+    start_screen(sc)
 
     while True:
         running = True
@@ -656,7 +656,7 @@ def main():
                 elif event.type == pg.KEYDOWN:
                     key_d = event.key
                     if event.key == pg.K_ESCAPE:
-                        start_screen()
+                        start_screen(sc)
                     elif event.key == pg.K_SPACE:
                         shoot(player)
                     elif event.key == pg.K_1:
@@ -668,9 +668,9 @@ def main():
                         if event.pos[0] <= rect_b_menu[0] + menu.get_rect().w and event.pos[1] >= rect_b_menu[1]:
                             if event.pos[0] <= rect_b_menu[0] + menu.get_rect().w and \
                                     event.pos[1] <= rect_b_menu[1] + menu.get_rect().h:
-                                if event.pos[0] >= rect_b_menu[0] and event.pos[1] <= rect_b_menu[
-                                    1] + menu.get_rect().h:
-                                    start_screen()
+                                if event.pos[0] >= rect_b_menu[0] and event.pos[1] <= rect_b_menu[1] + \
+                                        menu.get_rect().h:
+                                    start_screen(sc)
 
             if (player.pos, player.ang) != ppos:
                 lin = raycast_png(player)
