@@ -170,7 +170,7 @@ class GameObject(pg.sprite.Sprite):
     def draw3d(self, player, distd=1, sh=0, shx=0):
         dist = dist_of_points(*self.pos, *player.pos) / distd
         self.ang = angle_of_points(*player.pos, *self.pos,
-                                      player.ang)
+                                   player.ang)
         # if dist < 20:
         #     dist = 20
         self.rect.x = self.ang / line_step * line_to_px - self.image.get_rect().w // 2 + shx
@@ -222,7 +222,7 @@ class Enemy(GameObject):
         can_move = True
         for i in objects:
             if (i.__class__ in solid_cl or i.__class__.__bases__[0] in solid_cl) and i is not self and \
-               dist_of_points(*self.pos, *i.pos) <= 20:
+                    dist_of_points(*self.pos, *i.pos) <= 20:
                 can_move = False
                 break
         if dist_of_points(*self.pos, *player.pos) <= 20:
@@ -233,8 +233,8 @@ class Enemy(GameObject):
 
 
 class Door(GameObject):
-    def __init__(self, x, y, sp=0.25, marsh=None, do_marsh=False, key=-1):
-        super().__init__(x, y, sp=sp, marsh=marsh, do_marsh=do_marsh)
+    def __init__(self, x, y, marsh=None, key=-1):
+        super().__init__(x, y, sp=0.25, marsh=marsh, do_marsh=False)
         self.key = key
 
     def go_marsh(self, player):
@@ -244,8 +244,8 @@ class Door(GameObject):
 
     def step(self, player):
         if not self.do_marsh and dist_of_points(*self.pos, *player.pos) < 25 and \
-           0.3 < angle_of_points(*player.pos, *self.pos, player.ang) < 0.8 and \
-           key_d == pg.K_f:
+                0.3 < angle_of_points(*player.pos, *self.pos, player.ang) < 0.8 and \
+                key_d == pg.K_f:
             if self.key in player.keys:
                 self.do_marsh = True
             else:
@@ -254,8 +254,8 @@ class Door(GameObject):
 
     def draw3d(self, player, distd=2.5, sh=1, shx=10):
         d = dist_of_points(*self.pos, *player.pos)
-        sh = -d**0.9 / 20
-        shx *= d*0.5/20
+        sh = -d ** 0.9 / 20
+        shx *= d * 0.5 / 20
         super().draw3d(player, distd=distd, sh=sh, shx=shx)
 
 
@@ -409,7 +409,7 @@ def raycast_png(player):
         vertical, dop_inf_x = (x + rect_size2d, 1) if cos >= 0 else (x, -1)
         for j in range(0, width, rect_size2d):
             rast_vert = (vertical - player.x) / cos  # расстояние до вертикали
-            y_vert = player.y + rast_vert * sin      # координата y
+            y_vert = player.y + rast_vert * sin  # координата y
             x_vert = player.x + rast_vert * cos
             if grid_pos(vertical + dop_inf_x, y_vert) in maps[map_n]['egypt_coords']:
                 is_egipt_vert = True
@@ -423,7 +423,7 @@ def raycast_png(player):
         horisontal, dop_inf_y = (y + rect_size2d, 1) if sin >= 0 else (y, -1)
         for j in range(0, height, rect_size2d):
             rast_hor = (horisontal - player.y) / (sin + 0.00001)  # расстояние до горизонтали
-            x_hor = player.x + rast_hor * cos                     # координата x
+            x_hor = player.x + rast_hor * cos  # координата x
             y_hor = player.y + rast_hor * sin
             if grid_pos(x_hor, horisontal + dop_inf_y) in maps[map_n]['egypt_coords']:
                 is_egipt_hor = True
@@ -542,7 +542,7 @@ ttd = 0
 
 def main():
     global key_d, obj_spr, im_sh, stena, egip_stena, all_sprites, enemies, \
-           objects, stena_pre_render, font, font2, font3, egipt_stena_pre_render
+        objects, stena_pre_render, font, font2, font3, egipt_stena_pre_render
     pg.init()
     sc = pg.display.set_mode((width, height))
     # pg.display.toggle_fullscreen()
@@ -578,21 +578,41 @@ def main():
 
         ppos = None
 
-        player = Player(10 * rect_size2d, 10 * rect_size2d,
-                        objects, solid_cl, map_n)
+        # player = Player(10 * rect_size2d, 10 * rect_size2d,
+        #                 objects, solid_cl, map_n)
 
-        Spider(5 * rect_size2d, 1 * rect_size2d)
-        Spider(7 * rect_size2d, 0.55 * rect_size2d)
+        # Spider(5 * rect_size2d, 1 * rect_size2d)
+        # Spider(7 * rect_size2d, 0.55 * rect_size2d)
 
-        Door(6.2 * rect_size2d, 0.4 * rect_size2d, marsh=[(6.2 * rect_size2d, 0.10 * rect_size2d)])
-        Door(27 * rect_size2d // 4, 14.7 * rect_size2d // 4, marsh=[(27 * rect_size2d // 4, 13.5 * rect_size2d // 4)],
-             key=0)
+        # Door(6.2 * rect_size2d, 0.4 * rect_size2d, marsh=[(6.2 * rect_size2d, 0.10 * rect_size2d)])
+        # Door(27 * rect_size2d // 4, 14.7 * rect_size2d // 4, marsh=[(27 * rect_size2d // 4, 13.5 * rect_size2d // 4)],
+        #      key=0)
 
-        Key(30 * rect_size2d // 4, 2.5 * rect_size2d // 4, key=0)
+        # Key(30 * rect_size2d // 4, 2.5 * rect_size2d // 4, key=0)
 
-        Trigger(30 * rect_size2d // 4, 14.7 * rect_size2d // 4, foo=game_stop)
+        # Trigger(30 * rect_size2d // 4, 14.7 * rect_size2d // 4, foo=game_stop)
 
-        Spr(31 * rect_size2d // 4, 14.7 * rect_size2d // 4, spr=obj_spr['portal'])
+        # Spr(31 * rect_size2d // 4, 14.7 * rect_size2d // 4, spr=obj_spr['portal'])
+
+        # unit generation
+
+        player = Player(*map_obj[map_n]['player'], objects, solid_cl, map_n)
+
+        for i in map_obj[map_n]['spider']:
+            Spider(*i)
+
+        for i in map_obj[map_n]['door']:
+            print(i)
+            Door(*i)
+
+        for i in map_obj[map_n]['key']:
+            Key(*i)
+
+        for i in map_obj[map_n]['trigger']:
+            Trigger(*i[:-1], foo=eval(i[-1]))
+
+        for i in map_obj[map_n]['spr']:
+            Spr(*i[:-1], spr=eval(i[-1]))
 
         while running:
             sc.fill((0, 0, 0))
@@ -641,7 +661,6 @@ def main():
             #                          rect_size2d // 4))
             pg.display.flip()
             clock.tick(FPS)
-
 
     # pg.quit()
 
@@ -704,11 +723,10 @@ def draw_3d_png(sc, lin, sp, ppos):
     dist = 999
 
     lin = [(True, i, i[1]) for i in lin]
-    sp = [(False, i, dist_of_points(*ppos, *i.pos) * 4) for i in sp if not i.is_ded]
+    sp = [(False, i, dist_of_points(*ppos, *i.pos) * 3.85) for i in sp if not i.is_ded]
     lis = sorted(lin + sp, key=lambda x: -x[-1])
     for i in lis:
         if i[0]:
-            pass
             ii = i[1]
             j = ii[1]
             # if ii[2] >= 256:
