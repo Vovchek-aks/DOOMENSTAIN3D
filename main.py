@@ -432,8 +432,8 @@ def start_screen():
     sc.blit(quitt, (width // 4, height // 2))
     clock = pygame.time.Clock()
     running = True
-    rect_b_lv = [width / 3.74, height / 3.6]
-    rect_b_quit = [width / 3.74, height / 1.9]
+    rect_b_lv = [width / 4, height / 4]
+    rect_b_quit = [width // 4, height // 2]
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
