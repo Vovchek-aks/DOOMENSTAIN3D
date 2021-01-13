@@ -427,13 +427,14 @@ def start_screen():
     sc = pg.display.set_mode((width, height))
     fon = pygame.transform.scale(menu_fon, (width, height))
     sc.blit(fon, (0, 0))
-    sc.blit(but_menu, (width / 4, height / 4))
+    sc.blit(but_menu, ((width - menu.get_rect().w) / 4, (height - menu.get_rect().h) / 4))
     pygame.font.get_fonts()
-    sc.blit(quitt, (width // 4, height // 2))
+    sc.blit(quitt, ((width - menu.get_rect().w) / 4, (height - menu.get_rect().h) / 2))
     clock = pygame.time.Clock()
     running = True
-    rect_b_lv = [width / 4, height / 4]
-    rect_b_quit = [width // 4, height // 2]
+    # sc, width - menu.get_rect().w - 20, height - 180
+    rect_b_lv = [(width - menu.get_rect().w) / 4, (height - menu.get_rect().h) / 4]
+    rect_b_quit = [(width - menu.get_rect().w) / 4, (height - menu.get_rect().h) / 2]
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
