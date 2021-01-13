@@ -505,17 +505,21 @@ def set_message(text, t):
     ttd = t
 
 
+def draw_button_menu(sc, x, y):
+    global rect_b_menu
+    sc.blit(menu, (x, y))
+    rect_b_menu = [x, y]
+
+
 def draw_interface(sc, player):
     # global font, font2, font3
-    global rect_b_menu
     draw_minimap(sc, player)
 
     draw_message(sc, font2)
 
     pg.draw.rect(sc, dk_gray, (0, height - 200, width, height))
 
-    menu = load_image('menu.png')
-    sc.blit(menu, (width / 1.05, height / 1.35))
+    draw_button_menu(sc, width - menu.get_rect().w - 20, height - 180)
 
     draw_bar(sc, font2, f'AMMO{player.gun + 1}', red, player.ammo[player.gun], gun_amst[player.gun],
              500, (20, height - 150))
@@ -524,7 +528,6 @@ def draw_interface(sc, player):
 
     draw_bar(sc, font3, '', blue, round((gun_rt[player.gun] - time() + player.last_shoot) * 100),
              gun_rt[player.gun] * 100, 500, (150, height - 170))
-    rect_b_menu = [width / 1.047, height / 1.3426573]
 
 
 
@@ -559,7 +562,7 @@ ttd = 0
 
 def main():
     global key_d, obj_spr, im_sh, stena, egip_stena, all_sprites, enemies, \
-        objects, stena_pre_render, font, font2, font3, egipt_stena_pre_render
+        objects, stena_pre_render, font, font2, font3, egipt_stena_pre_render, menu
     pg.init()
     sc = pg.display.set_mode((width, height))
     # pg.display.toggle_fullscreen()
@@ -574,7 +577,6 @@ def main():
     im_sh = load_image('shrek3.png')
 
     menu = load_image('menu.png')
-    sc.blit(menu, (width / 1.05, height / 1.35))
 
     stena = load_image('стена обыкновенная.png')
     egip_stena = load_image('египецкая стена ураааоаоаоаоаоао.png')
