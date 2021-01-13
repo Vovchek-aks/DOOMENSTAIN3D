@@ -435,7 +435,6 @@ def start_screen(sc):
     sc.blit(quitt, (width // 2 - menu.get_rect().h * 6, (height - menu.get_rect().h) / 2 + 200))
     clock = pygame.time.Clock()
     running = True
-    # sc, width - menu.get_rect().w - 20, height - 180
     rect_b_lv = draw_button(sc, but_menu, width // 2 - menu.get_rect().h * 6, (height - menu.get_rect().h) / 2)
     rect_b_quit = draw_button(sc, quitt, width // 2 - menu.get_rect().h * 6, (height - menu.get_rect().h) / 2 + 200)
     while running:
@@ -449,6 +448,7 @@ def start_screen(sc):
                         if event.pos[0] <= rect_b_lv[0] + but_menu.get_rect().w and \
                                 event.pos[1] <= rect_b_lv[1] + but_menu.get_rect().h:
                             if event.pos[0] >= rect_b_lv[0] and event.pos[1] <= rect_b_lv[1] + but_menu.get_rect().h:
+                                level_all(sc)
                                 return
                 if event.pos[0] >= rect_b_quit[0] and event.pos[1] >= rect_b_quit[1]:
                     if event.pos[0] <= rect_b_quit[0] + but_menu.get_rect().w and event.pos[1] >= rect_b_quit[1]:
@@ -462,14 +462,48 @@ def start_screen(sc):
         clock.tick(FPS)
 
 
+def level_all(sc):
+    sc.blit(lvl_fon, (0, 0))
+
+    pygame.font.get_fonts()
+    clock = pygame.time.Clock()
+    running = True
+    odin = draw_button(sc, one, width / 6 - menu.get_rect().h, height / 4 - menu.get_rect().h)
+    dva = draw_button(sc, two, width / 2 - menu.get_rect().h, height / 4 - menu.get_rect().h)
+    tri = draw_button(sc, three, width / 1.2 - menu.get_rect().h, height / 4 - menu.get_rect().h)
+    chetire = draw_button(sc, four, width / 3 - menu.get_rect().h, height / 1.5 - menu.get_rect().h)
+    piat = draw_button(sc, five, width / 1.5 - menu.get_rect().h, height / 1.5 - menu.get_rect().h)
+
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if event.pos[0] >= odin[0] and event.pos[1] >= odin[1]:
+                    if event.pos[0] <= odin[0] + but_menu.get_rect().w and event.pos[1] >= odin[1]:
+                        if event.pos[0] <= odin[0] + but_menu.get_rect().w and \
+                                event.pos[1] <= odin[1] + but_menu.get_rect().h:
+                            if event.pos[0] >= odin[0] and event.pos[1] <= odin[1] + but_menu.get_rect().h:
+                                return
+                if event.pos[0] >= dva[0] and event.pos[1] >= dva[1]:
+                    if event.pos[0] <= dva[0] + but_menu.get_rect().w and event.pos[1] >= dva[1]:
+                        if event.pos[0] <= dva[0] + but_menu.get_rect().w and \
+                                event.pos[1] <= dva[1] + but_menu.get_rect().h:
+                            if event.pos[0] >= dva[0] and \
+                                    event.pos[1] <= dva[1] + but_menu.get_rect().h:
+                                pass
+                                # pygame.quit()
+                                # sys.exit()
+        pygame.display.flip()
+        clock.tick(FPS)
+
+
 def mini_menu_go(sc):
     sc.blit(fon, (0, 0))
 
     pygame.font.get_fonts()
-    sc.blit(quitt, (width // 2 - menu.get_rect().h * 6, (height - menu.get_rect().h) / 2 + 200))
-    clock = pygame.time.Clock()
     running = True
-    # sc, width - menu.get_rect().w - 20, height - 180
     rect_b_c = draw_button(sc, continue_b, width // 2 - menu.get_rect().h * 6, (height - menu.get_rect().h) / 2)
     rect_b_menu = draw_button(sc, minin_in_menu, width // 2 - menu.get_rect().h * 6, (height - menu.get_rect().h) / 2 + 200)
     while running:
@@ -570,7 +604,13 @@ menu_fon = None
 but_menu = None
 continue_b = None
 minin_in_menu = None
+one = None
+two = None
+three = None
+four = None
+five = None
 fon = None
+lvl_fon = None
 
 stena_pre_render = []
 egipt_stena_pre_render = []
@@ -602,7 +642,7 @@ need_break = False
 def main():
     global key_d, obj_spr, im_sh, stena, egip_stena, all_sprites, enemies, \
         objects, stena_pre_render, font, font2, font3, egipt_stena_pre_render, menu, need_break, quitt, menu_fon, \
-        but_menu, fon, minin_in_menu, continue_b
+        but_menu, fon, minin_in_menu, continue_b, one, two, three, four, five, lvl_fon
 
     pg.init()
     sc = pg.display.set_mode((width, height))
@@ -622,6 +662,12 @@ def main():
     but_menu = load_image('levels.png')
     minin_in_menu = load_image('mini_menu.png')
     continue_b = load_image('сontinue.png')
+    one = load_image('1.png')
+    two = load_image('2.png')
+    three = load_image('3.png')
+    four = load_image('4.png')
+    five = load_image('5.png')
+    lvl_fon = load_image('lvl_fon.png')
     fon = pygame.transform.scale(menu_fon, (width, height))
 
     stena = load_image('стена обыкновенная.png')
