@@ -69,6 +69,11 @@ map_ = [
 ]
 
 
+map_obj = [
+
+]
+
+
 for gg in range(maps_n):
     map_coords = set()
     wall_coords = set()
@@ -81,7 +86,7 @@ for gg in range(maps_n):
                 map_coords.add((j * rect_size2d, i * rect_size2d))
                 if g == '#':
                     wall_coords.add((j * rect_size2d, i * rect_size2d))
-                elif g == '@':
+                else:
                     egypt_coords.add((j * rect_size2d, i * rect_size2d))
 
     maps += [{
