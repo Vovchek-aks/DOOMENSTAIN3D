@@ -309,9 +309,8 @@ def start_screen():
     sc.blit(quitt, (width // 4, height // 2))
     clock = pygame.time.Clock()
     running = True
-    # width - menu.get_rect().w - 20, height - 180
-    rect_b_lv = [width / 4, height / 4]
-    rect_b_quit = [width // 4, height // 2]
+    rect_b_lv = [width / 3.74, height / 3.6]
+    rect_b_quit = [width / 3.74, height / 1.9]
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -454,8 +453,8 @@ def raycast_png(player):
             pict = is_egipt_hor
 
         rast *= math.cos(player.ang - a)  # стены прямые, без округлостей
-        xx = player.x + rast * cos
-        yy = player.y + rast * sin
+        # xx = player.x + rast * cos
+        # yy = player.y + rast * sin
 
         if rast < 20:
             rast = 20
@@ -465,8 +464,50 @@ def raycast_png(player):
     return ret
 
 
+def start_screen():
+    sc = pg.display.set_mode((width, height))
+    fon = pygame.transform.scale(menu_fon, (width, height))
+    sc.blit(fon, (0, 0))
+    sc.blit(but_menu, (width / 4, height / 4))
+    pygame.font.get_fonts()
+    sc.blit(quitt, (width // 4, height // 2))
+    clock = pygame.time.Clock()
+    running = True
+    rect_b_lv = [width / 3.74, height / 3.6]
+    rect_b_quit = [width / 3.74, height / 1.9]
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if event.pos[0] >= rect_b_lv[0] and event.pos[1] >= rect_b_lv[1]:
+                    if event.pos[0] <= rect_b_lv[0] + but_menu.get_rect().w and event.pos[1] >= rect_b_lv[1]:
+                        if event.pos[0] <= rect_b_lv[0] + but_menu.get_rect().w and \
+                                event.pos[1] <= rect_b_lv[1] + but_menu.get_rect().h:
+                            if event.pos[0] >= rect_b_lv[0] and event.pos[1] <= rect_b_lv[1] + but_menu.get_rect().h:
+                                return
+                if event.pos[0] >= rect_b_quit[0] and event.pos[1] >= rect_b_quit[1]:
+                    if event.pos[0] <= rect_b_quit[0] + but_menu.get_rect().w and event.pos[1] >= rect_b_quit[1]:
+                        if event.pos[0] <= rect_b_quit[0] + but_menu.get_rect().w and \
+                                event.pos[1] <= rect_b_quit[1] + but_menu.get_rect().h:
+                            if event.pos[0] >= rect_b_quit[0] and \
+                                    event.pos[1] <= rect_b_quit[1] + but_menu.get_rect().h:
+                                pygame.quit()
+                                sys.exit()
+        pygame.display.flip()
+        clock.tick(FPS)
+
+
 def game_stop():
     exit(0)
+
+
+def next_level():
+    global map_n, need_break
+    map_n += 1
+    map_n %= maps_n
+    need_break = True
 
 
 def shoot(player):
@@ -531,11 +572,13 @@ def draw_interface(sc, player):
              gun_rt[player.gun] * 100, 500, (150, height - 170))
 
 
-
-
 stena = None
 menu = None
+quitt = None
 egip_stena = None
+menu_fon = None
+but_menu = None
+
 stena_pre_render = []
 egipt_stena_pre_render = []
 rect_b_menu = []
@@ -560,10 +603,14 @@ message = ''
 tsm = 0
 ttd = 0
 
+need_break = False
+
 
 def main():
     global key_d, obj_spr, im_sh, stena, egip_stena, all_sprites, enemies, \
-        objects, stena_pre_render, font, font2, font3, egipt_stena_pre_render, menu
+        objects, stena_pre_render, font, font2, font3, egipt_stena_pre_render, menu, need_break, quitt, menu_fon, \
+        but_menu
+
     pg.init()
     sc = pg.display.set_mode((width, height))
     # pg.display.toggle_fullscreen()
@@ -576,8 +623,10 @@ def main():
                'portal': load_image('portal.png')}
 
     im_sh = load_image('shrek3.png')
-
     menu = load_image('menu.png')
+    quitt = load_image('quit.png')
+    menu_fon = load_image('fon.jpg')
+    but_menu = load_image('levels.png')
 
     stena = load_image('стена обыкновенная.png')
     egip_stena = load_image('египецкая стена ураааоаоаоаоаоао.png')
@@ -589,7 +638,6 @@ def main():
     font = pygame.font.Font(None, 24)
     font2 = pygame.font.Font(None, 48)
     font3 = pygame.font.Font(None, 10)
-
 
     start_screen()
 
@@ -648,8 +696,7 @@ def main():
                 elif event.type == pg.KEYDOWN:
                     key_d = event.key
                     if event.key == pg.K_ESCAPE:
-                        running = False
-                        exit(0)
+                        start_screen()
                     elif event.key == pg.K_SPACE:
                         shoot(player)
                     elif event.key == pg.K_1:
@@ -692,6 +739,10 @@ def main():
             #                          rect_size2d // 4))
             pg.display.flip()
             clock.tick(FPS)
+
+            if need_break:
+                need_break = False
+                break
 
     # pg.quit()
 
