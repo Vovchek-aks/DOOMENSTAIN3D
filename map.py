@@ -79,7 +79,7 @@ map_obj = [
                   [(27 * rect_size2d // 4, 13.5 * rect_size2d // 4)], 0)],
 
         'key': [(30 * rect_size2d // 4, 2.5 * rect_size2d // 4, 0)],
-        'trigger': [(30 * rect_size2d // 4, 14.7 * rect_size2d // 4, 'game_stop')],
+        'trigger': [(30 * rect_size2d // 4, 14.7 * rect_size2d // 4, 'next_level')],
         'spr': [(31 * rect_size2d // 4, 14.7 * rect_size2d // 4, "obj_spr['portal']")]
     },
     {
