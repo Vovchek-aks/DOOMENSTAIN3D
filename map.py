@@ -68,11 +68,29 @@ map_ = [
     ]
 ]
 
-
 map_obj = [
+    {
+        'player': (10 * rect_size2d, 10 * rect_size2d),
+        'spider': [(5 * rect_size2d, 1 * rect_size2d), (7 * rect_size2d, 0.55 * rect_size2d)],
+        'door': [(6.2 * rect_size2d, 0.4 * rect_size2d,
+                  [(6.2 * rect_size2d, 0.10 * rect_size2d)]),
 
+                 (27 * rect_size2d // 4, 14.7 * rect_size2d // 4,
+                  [(27 * rect_size2d // 4, 13.5 * rect_size2d // 4)], 0)],
+
+        'key': [(30 * rect_size2d // 4, 2.5 * rect_size2d // 4, 0)],
+        'trigger': [(30 * rect_size2d // 4, 14.7 * rect_size2d // 4, 'game_stop')],
+        'spr': [(31 * rect_size2d // 4, 14.7 * rect_size2d // 4, "obj_spr['portal']")]
+    },
+    {
+        'player': (10 * rect_size2d, 10 * rect_size2d),
+        'spider': [],
+        'door': [],
+        'key': [],
+        'trigger': [],
+        'spr': []
+    }
 ]
-
 
 for gg in range(maps_n):
     map_coords = set()
