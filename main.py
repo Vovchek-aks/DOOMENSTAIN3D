@@ -467,6 +467,7 @@ def next_level():
     map_n += 1
     map_n %= maps_n
     need_break = True
+    set_message(f'Вы были перемещены на уровень {map_n + 1}', 5)
 
 
 def shoot(player):
