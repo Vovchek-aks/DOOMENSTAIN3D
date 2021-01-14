@@ -18,7 +18,6 @@ key_d = -1
 
 map_n = 1
 
-
 znak = lambda x: 1 if x > 0 else -1
 
 
@@ -189,7 +188,8 @@ class GameObject(pg.sprite.Sprite):
             self.image = pg.transform.scale(self.base_im,
                                             (round(self.rect.w / (dist * 0.02 + 0.000000000001)),
                                              round(self.rect.h / (dist * 0.02 + 0.000000000001))))
-        self.rect.y = height / 2 - (dist * 0.05 + 0.000000000001) - self.image.get_rect().h // 2 + 20 + self.rect.h / 40 + sh - 15
+        self.rect.y = height / 2 - (
+                    dist * 0.05 + 0.000000000001) - self.image.get_rect().h // 2 + 20 + self.rect.h / 40 + sh - 15
 
         self.past_d = dist
 
@@ -575,7 +575,7 @@ def level_all(sc):
                             event.pos[1] <= tri[1] + but_menu.get_rect().h \
                             and event.pos[0] >= tri[0] and \
                             event.pos[1] <= tri[1] + but_menu.get_rect().h:
-                        map_n = 2
+                        map_n = 1
                         need_break = True
                         return
                 elif event.pos[0] >= chetire[0] and event.pos[1] >= chetire[1]:
