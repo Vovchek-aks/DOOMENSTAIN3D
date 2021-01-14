@@ -16,7 +16,7 @@ enemies = pg.sprite.Group()
 
 key_d = -1
 
-map_n = 1
+map_n = 0
 
 
 znak = lambda x: 1 if x > 0 else -1
@@ -121,6 +121,9 @@ def load_image(name, colorkey=None):
 
 def load_sound(name):
     fullname = os.path.join('data', 'sounds', name)
+    if not os.path.isfile(fullname):
+        print(f"Файл со звуком '{fullname}' не найден")
+        fullname = os.path.join('data', 'sounds', 'empty.wav')
     return pg.mixer.Sound(fullname)
 
 
@@ -193,6 +196,7 @@ class GameObject(pg.sprite.Sprite):
     def ded(self):
         self.is_ded = True
         self.pos = self.x, self.y = -100, -100
+        obj_ded_v.get(self.__class__, v_empty).play()
 
 
 class Enemy(GameObject):
@@ -255,8 +259,10 @@ class Door(GameObject):
                 key_d == pg.K_f:
             if self.key in player.keys:
                 self.do_marsh = True
+                over_v.get('door_open', v_empty).play()
             else:
                 set_message(f'Вам нужен ключ {self.key}', 3)
+                over_v.get('door_not_open', v_empty).play()
         super().step(player)
 
     def draw3d(self, player, distd=2.5, sh=1, shx=10):
@@ -586,10 +592,14 @@ def shoot(player):
         player.ammo[player.gun] -= 1
         player.last_shoot = time()
         gun_v[player.gun].play()
+        objs = []
         for i in objects.sprites():
             if 0.2 < i.ang < 0.8 and dist_of_points(*player.pos, *i.pos) < rect_size2d * 2:
-                i.hp -= gun_dam[player.gun]
-                break
+                objs += [i]
+        if objs:
+            i = sorted(objs, key=lambda x: dist_of_points(*x.pos, *player.pos))[0]
+            i.hp -= gun_dam[player.gun]
+            obj_v_dam.get(i.__class__, v_empty).play()
 
 
 def draw_bar(sc, ft, text, color, num, max_, sz, pos):
@@ -668,6 +678,10 @@ obj_hp = {Spider: 10,
 obj_dam = {Spider: 1,
            Zombie: 0.1}
 
+v_empty = None
+
+over_v = {}
+
 gun_dam = [1, 5]
 gun_rt = [1, 3]
 gun_amst = [20, 5]
@@ -675,6 +689,7 @@ gun_v = []
 
 obj_spr = {}
 obj_v_dam = {}
+obj_ded_v = {}
 
 im_sh = None
 
@@ -692,7 +707,8 @@ need_break = False
 def main():
     global key_d, obj_spr, im_sh, stena, egip_stena, all_sprites, enemies, \
         objects, stena_pre_render, font, font2, font3, egipt_stena_pre_render, menu, need_break, quitt, menu_fon, \
-        but_menu, fon, minin_in_menu, continue_b, one, two, three, four, five, lvl_fon, obj_v_dam, gun_v
+        but_menu, fon, minin_in_menu, continue_b, one, two, three, four, five, lvl_fon, obj_v_dam, gun_v, v_empty, \
+        over_v, obj_ded_v
 
     pg.mixer.pre_init()
     pg.init()
@@ -742,6 +758,17 @@ def main():
         load_sound('shoot_1.wav'),
         load_sound('shoot_2.wav')
     ]
+
+    obj_ded_v = {
+        Key: load_sound('key.wav')
+    }
+
+    over_v = {
+        'door_open': load_sound('door open.wav'),
+        'door_not_open': load_sound('door not open.wav')
+    }
+
+    v_empty = load_sound('empty.wav')
 
     start_screen(sc)
 
