@@ -324,6 +324,7 @@ def grid_pos(x, y):
 
 
 def raycast_fps_stonks(player):
+    global rast_vert, rast_hor
     ret = []
     x, y = grid_pos(player.x, player.y)
     for i in range(lines):
@@ -364,6 +365,7 @@ def raycast_fps_stonks(player):
 
 
 def raycast_png(player):
+    global rast_hor, rast_vert, x_vert, y_vert, x_hor, y_hor
     ret = []
     x, y = grid_pos(player.x, player.y)
     for i in range(lines):
@@ -473,23 +475,41 @@ def level_all(sc):
 
     while running:
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                if event.pos[0] >= odin[0] and event.pos[1] >= odin[1]:
-                    if event.pos[0] <= odin[0] + but_menu.get_rect().w and event.pos[1] >= odin[1]:
-                        if event.pos[0] <= odin[0] + but_menu.get_rect().w and \
-                                event.pos[1] <= odin[1] + but_menu.get_rect().h:
-                            if event.pos[0] >= odin[0] and event.pos[1] <= odin[1] + but_menu.get_rect().h:
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.pos[0] >= odin[0] and event.pos[1] >= odin[1] \
+                        and event.pos[0] <= odin[0] + but_menu.get_rect().w and event.pos[1] >= odin[1] \
+                        and event.pos[0] <= odin[0] + but_menu.get_rect().w and \
+                        event.pos[1] <= odin[1] + but_menu.get_rect().h \
+                        and event.pos[0] >= odin[0] and event.pos[1] <= odin[1] + but_menu.get_rect().h:
+                    return
+                elif event.pos[0] >= tri[0] and event.pos[1] >= tri[1]:
+                    if event.pos[0] <= tri[0] + but_menu.get_rect().w and event.pos[1] >= tri[1] \
+                            and event.pos[0] <= tri[0] + but_menu.get_rect().w and \
+                            event.pos[1] <= tri[1] + but_menu.get_rect().h \
+                            and event.pos[0] >= tri[0] and \
+                            event.pos[1] <= tri[1] + but_menu.get_rect().h:
+                        return
+                elif event.pos[0] >= chetire[0] and event.pos[1] >= chetire[1]:
+                    if event.pos[0] <= chetire[0] + but_menu.get_rect().w and event.pos[1] >= chetire[1] \
+                            and event.pos[0] <= chetire[0] + but_menu.get_rect().w and \
+                            event.pos[1] <= chetire[1] + but_menu.get_rect().h \
+                            and event.pos[0] >= chetire[0] and \
+                            event.pos[1] <= chetire[1] + but_menu.get_rect().h:
+                        return
+                elif event.pos[0] >= dva[0] and event.pos[1] >= dva[1]:
+                    if event.pos[0] <= dva[0] + but_menu.get_rect().w and event.pos[1] >= dva[1] \
+                            and event.pos[0] <= dva[0] + but_menu.get_rect().w and \
+                            event.pos[1] <= dva[1] + but_menu.get_rect().h \
+                            and event.pos[0] >= dva[0] and \
+                            event.pos[1] <= dva[1] + but_menu.get_rect().h:
+                        return
+                elif event.pos[0] >= piat[0] and event.pos[1] >= piat[1]:
+                    if event.pos[0] <= piat[0] + but_menu.get_rect().w and event.pos[1] >= piat[1]:
+                        if event.pos[0] <= piat[0] + but_menu.get_rect().w and \
+                                event.pos[1] <= piat[1] + but_menu.get_rect().h:
+                            if event.pos[0] >= piat[0] and \
+                                    event.pos[1] <= piat[1] + but_menu.get_rect().h:
                                 return
-                if event.pos[0] >= dva[0] and event.pos[1] >= dva[1]:
-                    if event.pos[0] <= dva[0] + but_menu.get_rect().w and event.pos[1] >= dva[1]:
-                        if event.pos[0] <= dva[0] + but_menu.get_rect().w and \
-                                event.pos[1] <= dva[1] + but_menu.get_rect().h:
-                            if event.pos[0] >= dva[0] and \
-                                    event.pos[1] <= dva[1] + but_menu.get_rect().h:
-                                pass
                                 # pygame.quit()
                                 # sys.exit()
         pygame.display.flip()
@@ -500,7 +520,8 @@ def mini_menu_go(sc):
     sc.blit(fon, (0, 0))
     running = True
     rect_b_c = draw_button(sc, continue_b, width // 2 - menu.get_rect().h * 6, (height - menu.get_rect().h) / 2)
-    rect_b_menu = draw_button(sc, minin_in_menu, width // 2 - menu.get_rect().h * 6, (height - menu.get_rect().h) / 2 + 200)
+    rect_b_menu = draw_button(sc, minin_in_menu, width // 2 - menu.get_rect().h * 6,
+                              (height - menu.get_rect().h) / 2 + 200)
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -521,6 +542,7 @@ def mini_menu_go(sc):
                                     event.pos[1] <= rect_b_menu[1] + but_menu.get_rect().h:
                                 start_screen(sc)
         pygame.display.flip()
+
 
 def game_stop():
     exit(0)
