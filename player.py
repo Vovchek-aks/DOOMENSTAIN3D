@@ -18,7 +18,7 @@ class Player:
     def __init__(self, x, y, all_s, solid_cl, map_n):
         self.pos = self.x, self.y = x, y
         self.ang = 0
-        self.sp = 3
+        self.sp = 5
 
         self.hp = 100
         self.ammo = [20, 5]
