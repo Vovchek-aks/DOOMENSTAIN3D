@@ -72,6 +72,8 @@ map_obj = [
     {
         'player': (10 * rect_size2d, 10 * rect_size2d),
         'spider': [(5 * rect_size2d, 1 * rect_size2d), (7 * rect_size2d, 0.55 * rect_size2d)],
+        'zombie': [],
+        'spavner': [],
         'door': [(6.2 * rect_size2d, 0.4 * rect_size2d,
                   [(6.2 * rect_size2d, 0.10 * rect_size2d)]),
 
@@ -85,6 +87,8 @@ map_obj = [
     {
         'player': (10 * rect_size2d, 10 * rect_size2d),
         'spider': [],
+        'zombie': [(5 * rect_size2d, 1 * rect_size2d)],
+        'spavner': [],
         'door': [],
         'key': [],
         'trigger': [],

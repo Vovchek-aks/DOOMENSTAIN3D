@@ -15,7 +15,7 @@ enemies = pg.sprite.Group()
 
 key_d = -1
 
-map_n = 0
+map_n = 1
 
 znak = lambda x: 1 if x > 0 else -1
 
@@ -263,6 +263,10 @@ class Spider(Enemy):
     pass
 
 
+class Zombie(Enemy):
+    pass
+
+
 class Key(GameObject):
     def __init__(self, x, y, key=-1):
         super().__init__(x, y, sp=0)
@@ -448,7 +452,7 @@ def start_screen(sc):
                         if event.pos[0] <= rect_b_lv[0] + but_menu.get_rect().w and \
                                 event.pos[1] <= rect_b_lv[1] + but_menu.get_rect().h:
                             if event.pos[0] >= rect_b_lv[0] and event.pos[1] <= rect_b_lv[1] + but_menu.get_rect().h:
-                                level_all(sc)
+                                # level_all(sc)
                                 return
                 if event.pos[0] >= rect_b_quit[0] and event.pos[1] >= rect_b_quit[1]:
                     if event.pos[0] <= rect_b_quit[0] + but_menu.get_rect().w and event.pos[1] >= rect_b_quit[1]:
@@ -618,9 +622,11 @@ rect_b_menu = []
 
 solid_cl = {Door, Enemy}
 obj_nd = {Trigger, Spr}
-obj_hp = {Spider: 10}
+obj_hp = {Spider: 10,
+          Zombie: 2}
 
-obj_dam = {Spider: 1}
+obj_dam = {Spider: 1,
+           Zombie: 0.1}
 gun_dam = [1, 5]
 gun_rt = [1, 3]
 gun_amst = [20, 5]
@@ -652,6 +658,7 @@ def main():
 
     obj_spr = {Door: load_image('дверь.png'),
                Spider: load_image('321.png'),
+               Zombie: load_image('zombie.png'),
                Key: load_image('ключ.png'),
                'portal': load_image('portal.png')}
 
@@ -715,6 +722,9 @@ def main():
         for i in map_obj[map_n]['spider']:
             Spider(*i)
 
+        for i in map_obj[map_n]['zombie']:
+            Zombie(*i)
+
         for i in map_obj[map_n]['door']:
             print(i)
             Door(*i)
@@ -738,7 +748,7 @@ def main():
                 elif event.type == pg.KEYDOWN:
                     key_d = event.key
                     if event.key == pg.K_ESCAPE:
-                        start_screen(sc)
+                        mini_menu_go(sc)
                     elif event.key == pg.K_SPACE:
                         shoot(player)
                     elif event.key == pg.K_1:
