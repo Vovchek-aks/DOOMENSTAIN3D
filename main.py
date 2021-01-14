@@ -18,6 +18,7 @@ key_d = -1
 
 map_n = 1
 
+
 znak = lambda x: 1 if x > 0 else -1
 
 
@@ -118,6 +119,11 @@ def load_image(name, colorkey=None):
     return image
 
 
+def load_sound(name):
+    fullname = os.path.join('data', 'sounds', name)
+    return pg.mixer.Sound(fullname)
+
+
 class GameObject(pg.sprite.Sprite):
     def __init__(self, x, y, *groups, sp=0.25, marsh=None, do_marsh=True):
         super().__init__(all_sprites, objects, *groups)
@@ -172,15 +178,15 @@ class GameObject(pg.sprite.Sprite):
         dist = dist_of_points(*self.pos, *player.pos) / distd
         self.ang = angle_of_points(*player.pos, *self.pos,
                                    player.ang)
-        # if dist < 20:
-        #     dist = 20
+        if dist < 5:
+            dist = 5
         self.rect.x = self.ang / line_step * line_to_px - self.image.get_rect().w // 2 + shx
 
         if dist != self.past_d:
             self.image = pg.transform.scale(self.base_im,
-                                            (round(self.rect.w / (dist * 0.02)),
-                                             round(self.rect.h / (dist * 0.02))))
-        self.rect.y = height / 2 - (dist * 0.05) - self.image.get_rect().h // 2 + 20 + self.rect.h / 40 + sh - 15
+                                            (round(self.rect.w / (dist * 0.02 + 0.000000000001)),
+                                             round(self.rect.h / (dist * 0.02 + 0.000000000001))))
+        self.rect.y = height / 2 - (dist * 0.05 + 0.000000000001) - self.image.get_rect().h // 2 + 20 + self.rect.h / 40 + sh - 15
 
         self.past_d = dist
 
@@ -281,6 +287,7 @@ class Spawner(GameObject):
         super().step(player)
         self.sch += 1
         if self.sch // 60 >= self.chst:
+            self.sch = 0
             can_spawn = True
             for i in all_sprites.sprites():
                 if i.__class__ == self.obj and dist_of_points(*self.pos, *i.pos) < 20:
@@ -295,7 +302,6 @@ class Spawner(GameObject):
 
                 self.obj(*self.pos, marsh=[pos],
                          do_marsh=True)
-                self.sch = 0
 
 
 class Key(GameObject):
@@ -579,6 +585,7 @@ def shoot(player):
     if player.ammo[player.gun] and time() - player.last_shoot >= gun_rt[player.gun]:
         player.ammo[player.gun] -= 1
         player.last_shoot = time()
+        gun_v[player.gun].play()
         for i in objects.sprites():
             if 0.2 < i.ang < 0.8 and dist_of_points(*player.pos, *i.pos) < rect_size2d * 2:
                 i.hp -= gun_dam[player.gun]
@@ -664,8 +671,11 @@ obj_dam = {Spider: 1,
 gun_dam = [1, 5]
 gun_rt = [1, 3]
 gun_amst = [20, 5]
+gun_v = []
 
 obj_spr = {}
+obj_v_dam = {}
+
 im_sh = None
 
 font = None
@@ -682,8 +692,9 @@ need_break = False
 def main():
     global key_d, obj_spr, im_sh, stena, egip_stena, all_sprites, enemies, \
         objects, stena_pre_render, font, font2, font3, egipt_stena_pre_render, menu, need_break, quitt, menu_fon, \
-        but_menu, fon, minin_in_menu, continue_b, one, two, three, four, five, lvl_fon
+        but_menu, fon, minin_in_menu, continue_b, one, two, three, four, five, lvl_fon, obj_v_dam, gun_v
 
+    pg.mixer.pre_init()
     pg.init()
     sc = pg.display.set_mode((width, height))
     # pg.display.toggle_fullscreen()
@@ -722,6 +733,15 @@ def main():
     font = pygame.font.Font(None, 24)
     font2 = pygame.font.Font(None, 48)
     font3 = pygame.font.Font(None, 10)
+
+    obj_v_dam = {
+        Spider: load_sound('spider_damage.wav')
+    }
+
+    gun_v = [
+        load_sound('shoot_1.wav'),
+        load_sound('shoot_2.wav')
+    ]
 
     start_screen(sc)
 
