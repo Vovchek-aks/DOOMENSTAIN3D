@@ -430,8 +430,6 @@ def draw_button(sc, name, x, y):
 
 def start_screen(sc):
     sc.blit(fon, (0, 0))
-
-    pygame.font.get_fonts()
     sc.blit(quitt, (width // 2 - menu.get_rect().h * 6, (height - menu.get_rect().h) / 2 + 200))
     clock = pygame.time.Clock()
     running = True
@@ -463,16 +461,15 @@ def start_screen(sc):
 
 
 def level_all(sc):
-    sc.blit(lvl_fon, (0, 0))
-
-    pygame.font.get_fonts()
+    lvl_fon_all = pygame.transform.scale(lvl_fon, (width, height))
+    sc.blit(lvl_fon_all, (0, 0))
     clock = pygame.time.Clock()
     running = True
     odin = draw_button(sc, one, width / 6 - menu.get_rect().h, height / 4 - menu.get_rect().h)
-    dva = draw_button(sc, two, width / 2 - menu.get_rect().h, height / 4 - menu.get_rect().h)
-    tri = draw_button(sc, three, width / 1.2 - menu.get_rect().h, height / 4 - menu.get_rect().h)
-    chetire = draw_button(sc, four, width / 3 - menu.get_rect().h, height / 1.5 - menu.get_rect().h)
-    piat = draw_button(sc, five, width / 1.5 - menu.get_rect().h, height / 1.5 - menu.get_rect().h)
+    dva = draw_button(sc, two, width / 2.1 - menu.get_rect().h, height / 4 - menu.get_rect().h)
+    tri = draw_button(sc, three, width / 1.3 - menu.get_rect().h, height / 4 - menu.get_rect().h)
+    chetire = draw_button(sc, four, width / 3.1 - menu.get_rect().h, height / 1.5 - menu.get_rect().h)
+    piat = draw_button(sc, five, width / 1.6 - menu.get_rect().h, height / 1.5 - menu.get_rect().h)
 
     while running:
         for event in pygame.event.get():
@@ -501,8 +498,6 @@ def level_all(sc):
 
 def mini_menu_go(sc):
     sc.blit(fon, (0, 0))
-
-    pygame.font.get_fonts()
     running = True
     rect_b_c = draw_button(sc, continue_b, width // 2 - menu.get_rect().h * 6, (height - menu.get_rect().h) / 2)
     rect_b_menu = draw_button(sc, minin_in_menu, width // 2 - menu.get_rect().h * 6, (height - menu.get_rect().h) / 2 + 200)
