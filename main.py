@@ -495,7 +495,7 @@ def start_screen(sc):
                         if event.pos[0] <= rect_b_lv[0] + but_menu.get_rect().w and \
                                 event.pos[1] <= rect_b_lv[1] + but_menu.get_rect().h:
                             if event.pos[0] >= rect_b_lv[0] and event.pos[1] <= rect_b_lv[1] + but_menu.get_rect().h:
-                                # level_all(sc)
+                                level_all(sc)
                                 return
                 if event.pos[0] >= rect_b_quit[0] and event.pos[1] >= rect_b_quit[1]:
                     if event.pos[0] <= rect_b_quit[0] + but_menu.get_rect().w and event.pos[1] >= rect_b_quit[1]:
@@ -510,6 +510,7 @@ def start_screen(sc):
 
 
 def level_all(sc):
+    global map_n, need_break
     lvl_fon_all = pygame.transform.scale(lvl_fon, (width, height))
     sc.blit(lvl_fon_all, (0, 0))
     clock = pygame.time.Clock()
@@ -528,6 +529,8 @@ def level_all(sc):
                         and event.pos[0] <= odin[0] + but_menu.get_rect().w and \
                         event.pos[1] <= odin[1] + but_menu.get_rect().h \
                         and event.pos[0] >= odin[0] and event.pos[1] <= odin[1] + but_menu.get_rect().h:
+                    map_n = 0
+                    need_break = True
                     return
                 elif event.pos[0] >= tri[0] and event.pos[1] >= tri[1]:
                     if event.pos[0] <= tri[0] + but_menu.get_rect().w and event.pos[1] >= tri[1] \
@@ -535,6 +538,8 @@ def level_all(sc):
                             event.pos[1] <= tri[1] + but_menu.get_rect().h \
                             and event.pos[0] >= tri[0] and \
                             event.pos[1] <= tri[1] + but_menu.get_rect().h:
+                        map_n = 2
+                        need_break = True
                         return
                 elif event.pos[0] >= chetire[0] and event.pos[1] >= chetire[1]:
                     if event.pos[0] <= chetire[0] + but_menu.get_rect().w and event.pos[1] >= chetire[1] \
@@ -542,6 +547,8 @@ def level_all(sc):
                             event.pos[1] <= chetire[1] + but_menu.get_rect().h \
                             and event.pos[0] >= chetire[0] and \
                             event.pos[1] <= chetire[1] + but_menu.get_rect().h:
+                        map_n = 3
+                        need_break = True
                         return
                 elif event.pos[0] >= dva[0] and event.pos[1] >= dva[1]:
                     if event.pos[0] <= dva[0] + but_menu.get_rect().w and event.pos[1] >= dva[1] \
@@ -549,6 +556,8 @@ def level_all(sc):
                             event.pos[1] <= dva[1] + but_menu.get_rect().h \
                             and event.pos[0] >= dva[0] and \
                             event.pos[1] <= dva[1] + but_menu.get_rect().h:
+                        map_n = 1
+                        need_break = True
                         return
                 elif event.pos[0] >= piat[0] and event.pos[1] >= piat[1]:
                     if event.pos[0] <= piat[0] + but_menu.get_rect().w and event.pos[1] >= piat[1]:
@@ -556,6 +565,8 @@ def level_all(sc):
                                 event.pos[1] <= piat[1] + but_menu.get_rect().h:
                             if event.pos[0] >= piat[0] and \
                                     event.pos[1] <= piat[1] + but_menu.get_rect().h:
+                                map_n = 4
+                                need_break = True
                                 return
                                 # pygame.quit()
                                 # sys.exit()
