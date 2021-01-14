@@ -16,7 +16,7 @@ enemies = pg.sprite.Group()
 
 key_d = -1
 
-map_n = 1
+map_n = 0
 
 znak = lambda x: 1 if x > 0 else -1
 
@@ -243,7 +243,7 @@ class Enemy(GameObject):
             self.pos = self.x, self.y = xx, yy
 
     def ded(self):
-        r = randint(0, 10)
+        r = randint(0, 5)
         if not r:
             Aptechka(*self.pos)
         elif r == 1:
@@ -651,6 +651,13 @@ def next_level():
     set_message(f'Вы были перемещены на уровень {map_n + 1}', 5)
 
 
+def set_level(n):
+    global map_n, need_break
+    map_n = n
+    need_break = True
+    set_message(f'Вы были перемещены на уровень {map_n + 1}', 5)
+
+
 def shoot(player):
     if player.ammo[player.gun] and time() - player.last_shoot >= gun_rt[player.gun]:
         player.ammo[player.gun] -= 1
@@ -755,6 +762,9 @@ obj_spr = {}
 obj_v_dam = {}
 obj_ded_v = {}
 
+maps_music = []
+menu_music = None
+
 im_sh = None
 
 font = None
@@ -772,7 +782,7 @@ def main():
     global key_d, obj_spr, im_sh, stena, egip_stena, all_sprites, enemies, \
         objects, stena_pre_render, font, font2, font3, egipt_stena_pre_render, menu, need_break, quitt, menu_fon, \
         but_menu, fon, minin_in_menu, continue_b, one, two, three, four, five, lvl_fon, obj_v_dam, gun_v, v_empty, \
-        over_v, obj_ded_v
+        over_v, obj_ded_v, maps_music, menu_music
 
     pg.mixer.pre_init()
     pg.init()
@@ -834,6 +844,15 @@ def main():
         Patroni: v_key
     }
 
+    maps_music = [
+        'ур1.mp3',
+        'ур2.mp3',
+        'ур3.mp3',
+        'ур4.mp3',
+        'ур5.mp3'
+    ]
+    menu_music = 'меню.mp3'
+
     over_v = {
         'door_open': load_sound('door open.wav'),
         'door_not_open': load_sound('door not open.wav')
@@ -845,6 +864,9 @@ def main():
 
     while True:
         running = True
+
+        pg.mixer.music.load(os.path.join('data', 'sounds', maps_music[map_n]))
+        pg.mixer.music.play()
 
         all_sprites = pg.sprite.Group()
         objects = pg.sprite.Group()
