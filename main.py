@@ -18,6 +18,7 @@ key_d = -1
 
 map_n = 1
 
+
 znak = lambda x: 1 if x > 0 else -1
 
 
@@ -118,6 +119,14 @@ def load_image(name, colorkey=None):
     return image
 
 
+def load_sound(name):
+    fullname = os.path.join('data', 'sounds', name)
+    if not os.path.isfile(fullname):
+        print(f"Файл со звуком '{fullname}' не найден")
+        fullname = os.path.join('data', 'sounds', 'empty.wav')
+    return pg.mixer.Sound(fullname)
+
+
 class GameObject(pg.sprite.Sprite):
     def __init__(self, x, y, *groups, sp=0.25, marsh=None, do_marsh=True):
         super().__init__(all_sprites, objects, *groups)
@@ -172,21 +181,22 @@ class GameObject(pg.sprite.Sprite):
         dist = dist_of_points(*self.pos, *player.pos) / distd
         self.ang = angle_of_points(*player.pos, *self.pos,
                                    player.ang)
-        # if dist < 20:
-        #     dist = 20
+        if dist < 5:
+            dist = 5
         self.rect.x = self.ang / line_step * line_to_px - self.image.get_rect().w // 2 + shx
 
         if dist != self.past_d:
             self.image = pg.transform.scale(self.base_im,
-                                            (round(self.rect.w / (dist * 0.02)),
-                                             round(self.rect.h / (dist * 0.02))))
-        self.rect.y = height / 2 - (dist * 0.05) - self.image.get_rect().h // 2 + 20 + self.rect.h / 40 + sh - 15
+                                            (round(self.rect.w / (dist * 0.02 + 0.000000000001)),
+                                             round(self.rect.h / (dist * 0.02 + 0.000000000001))))
+        self.rect.y = height / 2 - (dist * 0.05 + 0.000000000001) - self.image.get_rect().h // 2 + 20 + self.rect.h / 40 + sh - 15
 
         self.past_d = dist
 
     def ded(self):
         self.is_ded = True
         self.pos = self.x, self.y = -100, -100
+        obj_ded_v.get(self.__class__, v_empty).play()
 
 
 class Enemy(GameObject):
@@ -232,6 +242,16 @@ class Enemy(GameObject):
         if grid_pos(self.x * 4, self.y * 4) in maps[map_n]['map_coords'] or not can_move:
             self.pos = self.x, self.y = xx, yy
 
+    def ded(self):
+        r = randint(0, 10)
+        if not r:
+            Aptechka(*self.pos)
+        elif r == 1:
+            Patroni(*self.pos, 0)
+        elif r == 2 and map_n >= 1:
+            Patroni(*self.pos, 1)
+        super().ded()
+
 
 class Door(GameObject):
     def __init__(self, x, y, marsh=None, key=-1):
@@ -249,8 +269,10 @@ class Door(GameObject):
                 key_d == pg.K_f:
             if self.key in player.keys:
                 self.do_marsh = True
+                over_v.get('door_open', v_empty).play()
             else:
                 set_message(f'Вам нужен ключ {self.key}', 3)
+                over_v.get('door_not_open', v_empty).play()
         super().step(player)
 
     def draw3d(self, player, distd=2.5, sh=1, shx=10):
@@ -281,6 +303,7 @@ class Spawner(GameObject):
         super().step(player)
         self.sch += 1
         if self.sch // 60 >= self.chst:
+            self.sch = 0
             can_spawn = True
             for i in all_sprites.sprites():
                 if i.__class__ == self.obj and dist_of_points(*self.pos, *i.pos) < 20:
@@ -295,7 +318,6 @@ class Spawner(GameObject):
 
                 self.obj(*self.pos, marsh=[pos],
                          do_marsh=True)
-                self.sch = 0
 
 
 class Key(GameObject):
@@ -331,6 +353,33 @@ class Spr(GameObject):
     def __init__(self, x, y, spr):
         super().__init__(x, y, sp=0)
         self.base_im = self.image = spr
+
+
+class Aptechka(GameObject):
+    def __init__(self, x, y):
+        super().__init__(x, y, do_marsh=False, sp=0)
+
+    def step(self, player):
+        super().step(player)
+        if dist_of_points(*self.pos, *player.pos) <= 10:
+            player.hp = 100
+            self.ded()
+
+
+class Patroni(GameObject):
+    def __init__(self, x, y, tp):
+        super().__init__(x, y, do_marsh=False, sp=0)
+        self.type = tp
+        if tp:
+            self.image = self.base_im = obj_spr['p2']
+        else:
+            self.image = self.base_im = obj_spr['p1']
+
+    def step(self, player):
+        super().step(player)
+        if dist_of_points(*self.pos, *player.pos) <= 10:
+            player.ammo[self.type] = gun_amst[self.type]
+            self.ded()
 
 
 def raycast(player):
@@ -498,6 +547,7 @@ def start_screen(sc):
 
 
 def level_all(sc):
+    global map_n, need_break
     lvl_fon_all = pygame.transform.scale(lvl_fon, (width, height))
     sc.blit(lvl_fon_all, (0, 0))
     clock = pygame.time.Clock()
@@ -516,6 +566,8 @@ def level_all(sc):
                         and event.pos[0] <= odin[0] + but_menu.get_rect().w and \
                         event.pos[1] <= odin[1] + but_menu.get_rect().h \
                         and event.pos[0] >= odin[0] and event.pos[1] <= odin[1] + but_menu.get_rect().h:
+                    map_n = 0
+                    need_break = True
                     return
                 elif event.pos[0] >= tri[0] and event.pos[1] >= tri[1]:
                     if event.pos[0] <= tri[0] + but_menu.get_rect().w and event.pos[1] >= tri[1] \
@@ -523,6 +575,8 @@ def level_all(sc):
                             event.pos[1] <= tri[1] + but_menu.get_rect().h \
                             and event.pos[0] >= tri[0] and \
                             event.pos[1] <= tri[1] + but_menu.get_rect().h:
+                        map_n = 2
+                        need_break = True
                         return
                 elif event.pos[0] >= chetire[0] and event.pos[1] >= chetire[1]:
                     if event.pos[0] <= chetire[0] + but_menu.get_rect().w and event.pos[1] >= chetire[1] \
@@ -530,6 +584,8 @@ def level_all(sc):
                             event.pos[1] <= chetire[1] + but_menu.get_rect().h \
                             and event.pos[0] >= chetire[0] and \
                             event.pos[1] <= chetire[1] + but_menu.get_rect().h:
+                        map_n = 3
+                        need_break = True
                         return
                 elif event.pos[0] >= dva[0] and event.pos[1] >= dva[1]:
                     if event.pos[0] <= dva[0] + but_menu.get_rect().w and event.pos[1] >= dva[1] \
@@ -537,6 +593,8 @@ def level_all(sc):
                             event.pos[1] <= dva[1] + but_menu.get_rect().h \
                             and event.pos[0] >= dva[0] and \
                             event.pos[1] <= dva[1] + but_menu.get_rect().h:
+                        map_n = 1
+                        need_break = True
                         return
                 elif event.pos[0] >= piat[0] and event.pos[1] >= piat[1]:
                     if event.pos[0] <= piat[0] + but_menu.get_rect().w and event.pos[1] >= piat[1]:
@@ -544,6 +602,8 @@ def level_all(sc):
                                 event.pos[1] <= piat[1] + but_menu.get_rect().h:
                             if event.pos[0] >= piat[0] and \
                                     event.pos[1] <= piat[1] + but_menu.get_rect().h:
+                                map_n = 4
+                                need_break = True
                                 return
                                 # pygame.quit()
                                 # sys.exit()
@@ -595,10 +655,15 @@ def shoot(player):
     if player.ammo[player.gun] and time() - player.last_shoot >= gun_rt[player.gun]:
         player.ammo[player.gun] -= 1
         player.last_shoot = time()
+        gun_v[player.gun].play()
+        objs = []
         for i in objects.sprites():
             if 0.2 < i.ang < 0.8 and dist_of_points(*player.pos, *i.pos) < rect_size2d * 2:
-                i.hp -= gun_dam[player.gun]
-                break
+                objs += [i]
+        if objs:
+            i = sorted(objs, key=lambda x: dist_of_points(*x.pos, *player.pos))[0]
+            i.hp -= gun_dam[player.gun]
+            obj_v_dam.get(i.__class__, v_empty).play()
 
 
 def draw_bar(sc, ft, text, color, num, max_, sz, pos):
@@ -677,11 +742,19 @@ obj_hp = {Spider: 10,
 obj_dam = {Spider: 1,
            Zombie: 0.1}
 
+v_empty = None
+
+over_v = {}
+
 gun_dam = [1, 5]
 gun_rt = [1, 3]
 gun_amst = [20, 5]
+gun_v = []
 
 obj_spr = {}
+obj_v_dam = {}
+obj_ded_v = {}
+
 im_sh = None
 
 font = None
@@ -698,8 +771,10 @@ need_break = False
 def main():
     global key_d, obj_spr, im_sh, stena, egip_stena, all_sprites, enemies, \
         objects, stena_pre_render, font, font2, font3, egipt_stena_pre_render, menu, need_break, quitt, menu_fon, \
-        but_menu, fon, minin_in_menu, continue_b, one, two, three, four, five, lvl_fon
+        but_menu, fon, minin_in_menu, continue_b, one, two, three, four, five, lvl_fon, obj_v_dam, gun_v, v_empty, \
+        over_v, obj_ded_v
 
+    pg.mixer.pre_init()
     pg.init()
     sc = pg.display.set_mode((width, height))
     # pg.display.toggle_fullscreen()
@@ -711,7 +786,10 @@ def main():
                Zombie: load_image('zombie.png'),
                Key: load_image('ключ.png'),
                Spawner: load_image('spawner.png'),
-               'portal': load_image('portal.png')}
+               'portal': load_image('portal.png'),
+               Aptechka: load_image('аптечка.png'),
+               'p1': load_image('патроны1.png'),
+               'p2': load_image('патроны2.png')}
 
     im_sh = load_image('shrek3.png')
     menu = load_image('menu.png')
@@ -738,6 +816,30 @@ def main():
     font = pygame.font.Font(None, 24)
     font2 = pygame.font.Font(None, 48)
     font3 = pygame.font.Font(None, 10)
+
+    obj_v_dam = {
+        Spider: load_sound('spider_damage.wav')
+    }
+
+    gun_v = [
+        load_sound('shoot_1.wav'),
+        load_sound('shoot_2.wav')
+    ]
+
+    v_key = load_sound('key.wav')
+
+    obj_ded_v = {
+        Key: v_key,
+        Aptechka: v_key,
+        Patroni: v_key
+    }
+
+    over_v = {
+        'door_open': load_sound('door open.wav'),
+        'door_not_open': load_sound('door not open.wav')
+    }
+
+    v_empty = load_sound('empty.wav')
 
     start_screen(sc)
 
@@ -776,11 +878,16 @@ def main():
         for i in map_obj[map_n]['zombie']:
             Zombie(*i)
 
+        for i in map_obj[map_n]['aptechka']:
+            Aptechka(*i)
+
+        for i in map_obj[map_n]['patroni']:
+            Patroni(*i[:-1], i[-1])
+
         for i in map_obj[map_n]['spawner']:
             Spawner(*i[:2], eval(i[2]), *i[3:])
 
         for i in map_obj[map_n]['door']:
-            print(i)
             Door(*i)
 
         for i in map_obj[map_n]['key']:

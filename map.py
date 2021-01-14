@@ -145,7 +145,9 @@ map_obj = [
 
         'key': [(30 * rect_size2d // 4, 2.5 * rect_size2d // 4, 0)],
         'trigger': [(30 * rect_size2d // 4, 14.7 * rect_size2d // 4, 'next_level')],
-        'spr': [(31 * rect_size2d // 4, 14.7 * rect_size2d // 4, "obj_spr['portal']")]
+        'spr': [(31 * rect_size2d // 4, 14.7 * rect_size2d // 4, "obj_spr['portal']")],
+        'aptechka': [],
+        'patroni': []
     },
     {
         'player': (10 * rect_size2d, 10 * rect_size2d),
@@ -155,7 +157,9 @@ map_obj = [
         'door': [],
         'key': [],
         'trigger': [],
-        'spr': []
+        'spr': [],
+        'aptechka': [],
+        'patroni': [],
     }
 ]
 
