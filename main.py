@@ -16,7 +16,7 @@ enemies = pg.sprite.Group()
 
 key_d = -1
 
-map_n = 0
+map_n = 1
 
 
 znak = lambda x: 1 if x > 0 else -1
@@ -242,6 +242,16 @@ class Enemy(GameObject):
         if grid_pos(self.x * 4, self.y * 4) in maps[map_n]['map_coords'] or not can_move:
             self.pos = self.x, self.y = xx, yy
 
+    def ded(self):
+        r = randint(0, 10)
+        if not r:
+            Aptechka(*self.pos)
+        elif r == 1:
+            Patroni(*self.pos, 0)
+        elif r == 2 and map_n >= 1:
+            Patroni(*self.pos, 1)
+        super().ded()
+
 
 class Door(GameObject):
     def __init__(self, x, y, marsh=None, key=-1):
@@ -343,6 +353,33 @@ class Spr(GameObject):
     def __init__(self, x, y, spr):
         super().__init__(x, y, sp=0)
         self.base_im = self.image = spr
+
+
+class Aptechka(GameObject):
+    def __init__(self, x, y):
+        super().__init__(x, y, do_marsh=False, sp=0)
+
+    def step(self, player):
+        super().step(player)
+        if dist_of_points(*self.pos, *player.pos) <= 10:
+            player.hp = 100
+            self.ded()
+
+
+class Patroni(GameObject):
+    def __init__(self, x, y, tp):
+        super().__init__(x, y, do_marsh=False, sp=0)
+        self.type = tp
+        if tp:
+            self.image = self.base_im = obj_spr['p2']
+        else:
+            self.image = self.base_im = obj_spr['p1']
+
+    def step(self, player):
+        super().step(player)
+        if dist_of_points(*self.pos, *player.pos) <= 10:
+            player.ammo[self.type] = gun_amst[self.type]
+            self.ded()
 
 
 def raycast(player):
@@ -495,7 +532,7 @@ def start_screen(sc):
                         if event.pos[0] <= rect_b_lv[0] + but_menu.get_rect().w and \
                                 event.pos[1] <= rect_b_lv[1] + but_menu.get_rect().h:
                             if event.pos[0] >= rect_b_lv[0] and event.pos[1] <= rect_b_lv[1] + but_menu.get_rect().h:
-                                level_all(sc)
+                                # level_all(sc)
                                 return
                 if event.pos[0] >= rect_b_quit[0] and event.pos[1] >= rect_b_quit[1]:
                     if event.pos[0] <= rect_b_quit[0] + but_menu.get_rect().w and event.pos[1] >= rect_b_quit[1]:
@@ -749,7 +786,10 @@ def main():
                Zombie: load_image('zombie.png'),
                Key: load_image('ключ.png'),
                Spawner: load_image('spawner.png'),
-               'portal': load_image('portal.png')}
+               'portal': load_image('portal.png'),
+               Aptechka: load_image('аптечка.png'),
+               'p1': load_image('патроны1.png'),
+               'p2': load_image('патроны2.png')}
 
     im_sh = load_image('shrek3.png')
     menu = load_image('menu.png')
@@ -786,8 +826,12 @@ def main():
         load_sound('shoot_2.wav')
     ]
 
+    v_key = load_sound('key.wav')
+
     obj_ded_v = {
-        Key: load_sound('key.wav')
+        Key: v_key,
+        Aptechka: v_key,
+        Patroni: v_key
     }
 
     over_v = {
@@ -834,11 +878,16 @@ def main():
         for i in map_obj[map_n]['zombie']:
             Zombie(*i)
 
+        for i in map_obj[map_n]['aptechka']:
+            Aptechka(*i)
+
+        for i in map_obj[map_n]['patroni']:
+            Patroni(*i[:-1], i[-1])
+
         for i in map_obj[map_n]['spawner']:
             Spawner(*i[:2], eval(i[2]), *i[3:])
 
         for i in map_obj[map_n]['door']:
-            print(i)
             Door(*i)
 
         for i in map_obj[map_n]['key']:
