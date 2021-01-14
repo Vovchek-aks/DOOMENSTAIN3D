@@ -6,6 +6,7 @@ import math
 import sys
 import os
 from time import time
+from random import randint
 
 # import numpy as np
 
@@ -265,6 +266,36 @@ class Spider(Enemy):
 
 class Zombie(Enemy):
     pass
+
+
+class Spawner(GameObject):
+    def __init__(self, x, y, obj=None, marsh=None, chst=1):
+        super().__init__(x, y, sp=0, marsh=marsh, do_marsh=False)
+        self.chst = chst
+
+        self.obj = obj
+
+        self.sch = 0
+
+    def step(self, player):
+        super().step(player)
+        self.sch += 1
+        if self.sch // 60 >= self.chst:
+            can_spawn = True
+            for i in all_sprites.sprites():
+                if i.__class__ == self.obj and dist_of_points(*self.pos, *i.pos) < 20:
+                    can_spawn = False
+                    break
+            if can_spawn:
+                for i in range(100):
+                    pos = (self.marsh[0][0] + randint(-rect_size2d, rect_size2d),
+                           self.marsh[0][1] + randint(-rect_size2d, rect_size2d))
+                    if dist_of_points(*self.pos, *pos) > 30:
+                        break
+
+                self.obj(*self.pos, marsh=[pos],
+                         do_marsh=True)
+                self.sch = 0
 
 
 class Key(GameObject):
@@ -531,6 +562,7 @@ def mini_menu_go(sc):
                                 start_screen(sc)
         pygame.display.flip()
 
+
 def game_stop():
     exit(0)
 
@@ -623,10 +655,12 @@ rect_b_menu = []
 solid_cl = {Door, Enemy}
 obj_nd = {Trigger, Spr}
 obj_hp = {Spider: 10,
-          Zombie: 2}
+          Zombie: 2,
+          Spawner: 20}
 
 obj_dam = {Spider: 1,
            Zombie: 0.1}
+
 gun_dam = [1, 5]
 gun_rt = [1, 3]
 gun_amst = [20, 5]
@@ -660,6 +694,7 @@ def main():
                Spider: load_image('321.png'),
                Zombie: load_image('zombie.png'),
                Key: load_image('ключ.png'),
+               Spawner: load_image('spawner.png'),
                'portal': load_image('portal.png')}
 
     im_sh = load_image('shrek3.png')
@@ -724,6 +759,9 @@ def main():
 
         for i in map_obj[map_n]['zombie']:
             Zombie(*i)
+
+        for i in map_obj[map_n]['spawner']:
+            Spawner(*i[:2], eval(i[2]), *i[3:])
 
         for i in map_obj[map_n]['door']:
             print(i)
