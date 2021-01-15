@@ -717,7 +717,7 @@ def set_message(text, t):
 def draw_interface(sc, player):
     # global font, font2, font3
     global rect_b_menu
-    draw_minimap(sc, player)
+    # draw_minimap(sc, player)
 
     draw_message(sc, font2)
 
@@ -843,7 +843,8 @@ def main():
     font3 = pygame.font.Font(None, 10)
 
     obj_v_dam = {
-        Spider: load_sound('spider_damage.wav')
+        Spider: load_sound('spider_damage.wav'),
+        Zombie: load_sound('zombie_damage.wav')
     }
 
     gun_v = [
