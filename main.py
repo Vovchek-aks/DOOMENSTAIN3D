@@ -301,10 +301,10 @@ class Spawner(GameObject):
     def step(self, player):
         super().step(player)
         self.sch += 1
-        if self.sch // 60 >= self.chst:
+        if self.sch // 60 >= self.chst and len(enemies.sprites()) < 60:
             self.sch = 0
             can_spawn = True
-            for i in all_sprites.sprites():
+            for i in enemies.sprites():
                 if i.__class__ == self.obj and dist_of_points(*self.pos, *i.pos) < 20:
                     can_spawn = False
                     break
