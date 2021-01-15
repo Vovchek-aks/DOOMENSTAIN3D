@@ -16,7 +16,7 @@ enemies = pg.sprite.Group()
 
 key_d = -1
 
-map_n = 4
+map_n = 0
 
 znak = lambda x: 1 if x > 0 else -1
 
