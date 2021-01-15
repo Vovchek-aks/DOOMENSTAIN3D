@@ -16,7 +16,7 @@ enemies = pg.sprite.Group()
 
 key_d = -1
 
-map_n = 3
+map_n = 0
 znak = lambda x: 1 if x > 0 else -1
 
 
@@ -559,7 +559,7 @@ def level_all(sc):
     tri = draw_button(sc, three, width / 1.3 - menu.get_rect().h, height / 4 - menu.get_rect().h)
     chetire = draw_button(sc, four, width / 3.1 - menu.get_rect().h, height / 1.5 - menu.get_rect().h)
     piat = draw_button(sc, five, width / 1.6 - menu.get_rect().h, height / 1.5 - menu.get_rect().h)
-    back_b = draw_button(sc, back, width // 2 - menu.get_rect().h - 100, height - menu.get_rect().h - 100)
+    back_b = draw_button(sc, back, width - menu.get_rect().h - 100, height - menu.get_rect().h - 50)
 
     while running:
         for event in pygame.event.get():
@@ -572,14 +572,6 @@ def level_all(sc):
                             event.pos[1] <= back_b[1] + back.get_rect().h:
                         start_screen(sc)
                         return
-                if event.pos[0] >= dva[0] and event.pos[1] >= dva[1]:
-                    if event.pos[0] <= dva[0] + two.get_rect().w and event.pos[1] >= dva[1] \
-                            and event.pos[0] <= dva[0] + two.get_rect().w and \
-                            event.pos[1] <= dva[1] + two.get_rect().h \
-                            and event.pos[0] >= dva[0] and \
-                            event.pos[1] <= dva[1] + two.get_rect().h:
-                        map_n = 1
-                        return
                 if event.pos[0] >= odin[0] and event.pos[1] >= odin[1]:
                     if event.pos[0] <= odin[0] + one.get_rect().w and event.pos[1] >= odin[1] \
                             and event.pos[0] <= odin[0] + one.get_rect().w and \
@@ -588,15 +580,15 @@ def level_all(sc):
                             event.pos[1] <= odin[1] + one.get_rect().h:
                         map_n = 0
                         return
-                if event.pos[0] >= piat[0] and event.pos[1] >= piat[1]:
-                    if event.pos[0] <= piat[0] + five.get_rect().w and event.pos[1] >= piat[1] \
-                            and event.pos[0] <= piat[0] + five.get_rect().w and \
-                            event.pos[1] <= piat[1] + five.get_rect().h \
-                            and event.pos[0] >= piat[0] and \
-                            event.pos[1] <= piat[1] + five.get_rect().h:
-                        map_n = 4
+                elif event.pos[0] >= dva[0] and event.pos[1] >= dva[1]:
+                    if event.pos[0] <= dva[0] + two.get_rect().w and event.pos[1] >= dva[1] \
+                            and event.pos[0] <= dva[0] + two.get_rect().w and \
+                            event.pos[1] <= dva[1] + two.get_rect().h \
+                            and event.pos[0] >= dva[0] and \
+                            event.pos[1] <= dva[1] + two.get_rect().h:
+                        map_n = 1
                         return
-                if event.pos[0] >= tri[0] and event.pos[1] >= tri[1]:
+                elif event.pos[0] >= tri[0] and event.pos[1] >= tri[1]:
                     if event.pos[0] <= tri[0] + three.get_rect().w and event.pos[1] >= tri[1] \
                             and event.pos[0] <= tri[0] + three.get_rect().w and \
                             event.pos[1] <= tri[1] + three.get_rect().h \
@@ -604,13 +596,21 @@ def level_all(sc):
                             event.pos[1] <= tri[1] + three.get_rect().h:
                         map_n = 2
                         return
-                if event.pos[0] >= chetire[0] and event.pos[1] >= chetire[1]:
+                elif event.pos[0] >= chetire[0] and event.pos[1] >= chetire[1]:
                     if event.pos[0] <= chetire[0] + four.get_rect().w and event.pos[1] >= chetire[1] \
                             and event.pos[0] <= chetire[0] + four.get_rect().w and \
                             event.pos[1] <= chetire[1] + four.get_rect().h \
                             and event.pos[0] >= chetire[0] and \
                             event.pos[1] <= chetire[1] + four.get_rect().h:
                         map_n = 3
+                        return
+                elif event.pos[0] >= piat[0] and event.pos[1] >= piat[1]:
+                    if event.pos[0] <= piat[0] + five.get_rect().w and event.pos[1] >= piat[1] \
+                            and event.pos[0] <= piat[0] + five.get_rect().w and \
+                            event.pos[1] <= piat[1] + five.get_rect().h \
+                            and event.pos[0] >= piat[0] and \
+                            event.pos[1] <= piat[1] + five.get_rect().h:
+                        map_n = 4
                         return
 
         pygame.display.flip()
