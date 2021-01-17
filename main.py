@@ -16,7 +16,7 @@ enemies = pg.sprite.Group()
 
 key_d = -1
 
-map_n = 2
+map_n = 0
 znak = lambda x: 1 if x > 0 else -1
 
 
@@ -714,10 +714,17 @@ def set_message(text, t):
     ttd = t
 
 
+def draw_gun(sc, player):
+    im = obj_spr['guns'][player.gun]
+    r = im.get_rect()
+    sc.blit(im, (width // 2 - r.w // 2, height - 200 - r.h))
+
+
 def draw_interface(sc, player):
     # global font, font2, font3
     global rect_b_menu
-    draw_minimap(sc, player)
+
+    # draw_minimap(sc, player)
 
     draw_message(sc, font2)
 
@@ -732,6 +739,8 @@ def draw_interface(sc, player):
 
     draw_bar(sc, font3, '', blue, round((gun_rt[player.gun] - time() + player.last_shoot) * 100),
              gun_rt[player.gun] * 100, 500, (150, height - 170))
+
+    draw_gun(sc, player)
 
 
 stena = None
@@ -758,7 +767,7 @@ solid_cl = {Door, Enemy}
 obj_nd = {Trigger, Spr}
 obj_hp = {Spider: 10,
           Zombie: 2,
-          Spawner: 20}
+          Spawner: 5}
 
 obj_dam = {Spider: 1,
            Zombie: 0.1}
@@ -814,7 +823,9 @@ def main():
                'portal': load_image('portal.png'),
                Aptechka: load_image('аптечка.png'),
                'p1': load_image('патроны1.png'),
-               'p2': load_image('патроны2.png')}
+               'p2': load_image('патроны2.png'),
+               'guns': [load_image('gun1.png'),
+                        load_image('gun2.png')]}
 
     im_sh = load_image('shrek3.png')
     menu = load_image('menu.png')
@@ -844,7 +855,8 @@ def main():
 
     obj_v_dam = {
         Spider: load_sound('spider_damage.wav'),
-        Zombie: load_sound('zombie_damage.wav')
+        Zombie: load_sound('zombie_damage.wav'),
+        Spawner: load_sound('spawner_damage.wav')
     }
 
     gun_v = [
