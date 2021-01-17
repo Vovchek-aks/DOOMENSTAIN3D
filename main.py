@@ -766,7 +766,7 @@ def main():
 
     font = pg.font.Font(None, 24)
     font2 = pg.font.Font(None, 48)
-    font3 = pg.font.Font(None, 35)
+    font3 = pg.font.Font(None, 9)
     font_play = pg.font.Font(os.path.join('data', 'fonts', '20179.ttf'), 30)
 
     obj_v_dam = {
