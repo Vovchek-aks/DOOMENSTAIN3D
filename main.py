@@ -450,6 +450,7 @@ def raycast_fps_stonks(player):
 def raycast_png(player):
     global rast_hor, rast_vert, x_vert, y_vert, x_hor, y_hor
     ret = []
+    st_b = stena.get_rect()
     x, y = grid_pos(player.x, player.y)
     for i in range(lines):
         a = player.ang + line_step * i - line_step * lines / 2
@@ -488,12 +489,12 @@ def raycast_png(player):
         if rast_vert < rast_hor:
             rast = rast_vert
             yt = grid_pos(x_vert, y_vert)[1]
-            shift = (y_vert - yt) / rect_size2d * (stena.get_rect().w - round(line_to_px))
+            shift = (y_vert - yt) / rect_size2d * (st_b.w - round(line_to_px))
             pict = is_egipt_vert
         else:
             rast = rast_hor
             xt = grid_pos(x_hor, y_hor)[0]
-            shift = (x_hor - xt) / rect_size2d * (stena.get_rect().w - round(line_to_px))
+            shift = (x_hor - xt) / rect_size2d * (st_b.w - round(line_to_px))
             pict = is_egipt_hor
 
         rast *= math.cos(player.ang - a)  # стены прямые, без округлостей
@@ -514,112 +515,73 @@ def draw_button(sc, name, x, y):
 
 
 def start_screen(sc):
+    menu_rect = menu.get_rect()
+    b_rect = but_menu.get_rect()
     pg.mixer.music.load(os.path.join('data', 'sounds', 'меню.mp3'))
     pg.mixer.music.play()
     pg.mixer.music.set_volume(0.5)
 
     sc.blit(fon, (0, 0))
-    sc.blit(quitt, (width // 2 - menu.get_rect().h * 6, (height - menu.get_rect().h) / 2 + 200))
-    clock = pygame.time.Clock()
     running = True
-    rect_b_lv = draw_button(sc, but_menu, width // 2 - menu.get_rect().h * 6, (height - menu.get_rect().h) / 2)
-    rect_b_quit = draw_button(sc, quitt, width // 2 - menu.get_rect().h * 6, (height - menu.get_rect().h) / 2 + 200)
+    rect_b_lv = draw_button(sc, but_menu, width // 2 - menu_rect.h * 6, (height - menu_rect.h) / 2.5 - 50)
+    rect_b_quit = draw_button(sc, quitt, width // 2 - menu_rect.h * 6, (height - menu_rect.h) / 2 + 220)
+    regul_b = draw_button(sc, regulations, width // 2 - menu_rect.h * 6, (height - menu_rect.h) / 2 + 50)
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
+                if event.pos[0] >= regul_b[0] and event.pos[1] >= regul_b[1]:
+                    if event.pos[0] <= regul_b[0] + b_rect.w and event.pos[1] >= regul_b[1]:
+                        if event.pos[0] <= regul_b[0] + b_rect.w and \
+                                event.pos[1] <= regul_b[1] + b_rect.h:
+                            if event.pos[0] >= regul_b[0] and event.pos[1] <= regul_b[1] + b_rect.h:
+                                pravila(sc)
                 if event.pos[0] >= rect_b_lv[0] and event.pos[1] >= rect_b_lv[1]:
-                    if event.pos[0] <= rect_b_lv[0] + but_menu.get_rect().w and event.pos[1] >= rect_b_lv[1]:
-                        if event.pos[0] <= rect_b_lv[0] + but_menu.get_rect().w and \
-                                event.pos[1] <= rect_b_lv[1] + but_menu.get_rect().h:
-                            if event.pos[0] >= rect_b_lv[0] and event.pos[1] <= rect_b_lv[1] + but_menu.get_rect().h:
-                                # level_all(sc)
+                    if event.pos[0] <= rect_b_lv[0] + b_rect.w and event.pos[1] >= rect_b_lv[1]:
+                        if event.pos[0] <= rect_b_lv[0] + b_rect.w and \
+                                event.pos[1] <= rect_b_lv[1] + b_rect.h:
+                            if event.pos[0] >= rect_b_lv[0] and event.pos[1] <= rect_b_lv[1] + b_rect.h:
                                 return
                 if event.pos[0] >= rect_b_quit[0] and event.pos[1] >= rect_b_quit[1]:
-                    if event.pos[0] <= rect_b_quit[0] + but_menu.get_rect().w and event.pos[1] >= rect_b_quit[1]:
-                        if event.pos[0] <= rect_b_quit[0] + but_menu.get_rect().w and \
-                                event.pos[1] <= rect_b_quit[1] + but_menu.get_rect().h:
+                    if event.pos[0] <= rect_b_quit[0] + b_rect.w and event.pos[1] >= rect_b_quit[1]:
+                        if event.pos[0] <= rect_b_quit[0] + b_rect.w and \
+                                event.pos[1] <= rect_b_quit[1] + b_rect.h:
                             if event.pos[0] >= rect_b_quit[0] and \
-                                    event.pos[1] <= rect_b_quit[1] + but_menu.get_rect().h:
+                                    event.pos[1] <= rect_b_quit[1] + b_rect.h:
                                 pygame.quit()
                                 sys.exit()
         pygame.display.flip()
-        clock.tick(FPS)
 
 
-def level_all(sc):
-    global map_n, need_break
-    lvl_fon_all = pygame.transform.scale(lvl_fon, (width, height))
-    sc.blit(lvl_fon_all, (0, 0))
-    clock = pygame.time.Clock()
+def pravila(sc):
+    sc.blit(lvl_fon, (0, 0))
+    menu_rect = menu.get_rect()
+    b_rect = but_menu.get_rect()
+    regul_b = draw_button(sc, back, width - menu_rect.h - 100, height - menu_rect.h - 50)
+
     running = True
-    odin = draw_button(sc, one, width / 6 - menu.get_rect().h, height / 4 - menu.get_rect().h)
-    dva = draw_button(sc, two, width / 2.1 - menu.get_rect().h, height / 4 - menu.get_rect().h)
-    tri = draw_button(sc, three, width / 1.3 - menu.get_rect().h, height / 4 - menu.get_rect().h)
-    chetire = draw_button(sc, four, width / 3.1 - menu.get_rect().h, height / 1.5 - menu.get_rect().h)
-    piat = draw_button(sc, five, width / 1.6 - menu.get_rect().h, height / 1.5 - menu.get_rect().h)
-    back_b = draw_button(sc, back, width - menu.get_rect().h - 100, height - menu.get_rect().h - 50)
-
     while running:
         for event in pygame.event.get():
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if event.pos[0] >= back_b[0] and event.pos[1] >= back_b[1]:
-                    if event.pos[0] <= back_b[0] + back.get_rect().w and event.pos[1] >= back_b[1] \
-                            and event.pos[0] <= back_b[0] + back.get_rect().w and \
-                            event.pos[1] <= back_b[1] + back.get_rect().h \
-                            and event.pos[0] >= back_b[0] and \
-                            event.pos[1] <= back_b[1] + back.get_rect().h:
-                        start_screen(sc)
-                        return
-                if event.pos[0] >= odin[0] and event.pos[1] >= odin[1]:
-                    if event.pos[0] <= odin[0] + one.get_rect().w and event.pos[1] >= odin[1] \
-                            and event.pos[0] <= odin[0] + one.get_rect().w and \
-                            event.pos[1] <= odin[1] + one.get_rect().h \
-                            and event.pos[0] >= odin[0] and \
-                            event.pos[1] <= odin[1] + one.get_rect().h:
-                        map_n = 0
-                        return
-                elif event.pos[0] >= dva[0] and event.pos[1] >= dva[1]:
-                    if event.pos[0] <= dva[0] + two.get_rect().w and event.pos[1] >= dva[1] \
-                            and event.pos[0] <= dva[0] + two.get_rect().w and \
-                            event.pos[1] <= dva[1] + two.get_rect().h \
-                            and event.pos[0] >= dva[0] and \
-                            event.pos[1] <= dva[1] + two.get_rect().h:
-                        map_n = 1
-                        return
-                elif event.pos[0] >= tri[0] and event.pos[1] >= tri[1]:
-                    if event.pos[0] <= tri[0] + three.get_rect().w and event.pos[1] >= tri[1] \
-                            and event.pos[0] <= tri[0] + three.get_rect().w and \
-                            event.pos[1] <= tri[1] + three.get_rect().h \
-                            and event.pos[0] >= tri[0] and \
-                            event.pos[1] <= tri[1] + three.get_rect().h:
-                        map_n = 2
-                        return
-                elif event.pos[0] >= chetire[0] and event.pos[1] >= chetire[1]:
-                    if event.pos[0] <= chetire[0] + four.get_rect().w and event.pos[1] >= chetire[1] \
-                            and event.pos[0] <= chetire[0] + four.get_rect().w and \
-                            event.pos[1] <= chetire[1] + four.get_rect().h \
-                            and event.pos[0] >= chetire[0] and \
-                            event.pos[1] <= chetire[1] + four.get_rect().h:
-                        map_n = 3
-                        return
-                elif event.pos[0] >= piat[0] and event.pos[1] >= piat[1]:
-                    if event.pos[0] <= piat[0] + five.get_rect().w and event.pos[1] >= piat[1] \
-                            and event.pos[0] <= piat[0] + five.get_rect().w and \
-                            event.pos[1] <= piat[1] + five.get_rect().h \
-                            and event.pos[0] >= piat[0] and \
-                            event.pos[1] <= piat[1] + five.get_rect().h:
-                        map_n = 4
-                        return
-
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if event.pos[0] >= regul_b[0] and event.pos[1] >= regul_b[1]:
+                    if event.pos[0] <= regul_b[0] + b_rect.w and event.pos[1] >= regul_b[1]:
+                        if event.pos[0] <= regul_b[0] + b_rect.w and \
+                                event.pos[1] <= regul_b[1] + b_rect.h:
+                            if event.pos[0] >= regul_b[0] and event.pos[1] <= regul_b[1] + b_rect.h:
+                                start_screen(sc)
+                                return
         pygame.display.flip()
-        clock.tick(FPS)
-
 
 def mini_menu_go(sc):
     global tm_map_m
+
+    menu_rect = menu.get_rect()
+    b_rect = but_menu.get_rect()
 
     tm_map_m = time() - tm_map_m
     pg.mixer.music.load(os.path.join('data', 'sounds', 'меню.mp3'))
@@ -628,9 +590,9 @@ def mini_menu_go(sc):
 
     sc.blit(fon, (0, 0))
     running = True
-    rect_b_c = draw_button(sc, continue_b, width // 2 - menu.get_rect().h * 6, (height - menu.get_rect().h) / 2)
-    rect_b_menu = draw_button(sc, minin_in_menu, width // 2 - menu.get_rect().h * 6,
-                              (height - menu.get_rect().h) / 2 + 200)
+    rect_b_c = draw_button(sc, continue_b, width // 2 - menu_rect.h * 6, (height - menu_rect.h) / 2)
+    rect_b_menu = draw_button(sc, minin_in_menu, width // 2 - menu_rect.h * 6,
+                              (height - menu_rect.h) / 2 + 200)
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -638,22 +600,23 @@ def mini_menu_go(sc):
                 sys.exit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.pos[0] >= rect_b_c[0] and event.pos[1] >= rect_b_c[1]:
-                    if event.pos[0] <= rect_b_c[0] + but_menu.get_rect().w and event.pos[1] >= rect_b_c[1]:
-                        if event.pos[0] <= rect_b_c[0] + but_menu.get_rect().w and \
-                                event.pos[1] <= rect_b_c[1] + but_menu.get_rect().h:
-                            if event.pos[0] >= rect_b_c[0] and event.pos[1] <= rect_b_c[1] + but_menu.get_rect().h:
+                    if event.pos[0] <= rect_b_c[0] + b_rect.w and event.pos[1] >= rect_b_c[1]:
+                        if event.pos[0] <= rect_b_c[0] + b_rect.w and \
+                                event.pos[1] <= rect_b_c[1] + b_rect.h:
+                            if event.pos[0] >= rect_b_c[0] and event.pos[1] <= rect_b_c[1] + b_rect.h:
                                 pg.mixer.music.load(os.path.join('data', 'sounds', maps_music[map_n]))
                                 pg.mixer.music.play(start=tm_map_m)
                                 pg.mixer.music.set_volume(0.25)
                                 tm_map_m = time() - tm_map_m
                                 return
                 if event.pos[0] >= rect_b_menu[0] and event.pos[1] >= rect_b_menu[1]:
-                    if event.pos[0] <= rect_b_menu[0] + but_menu.get_rect().w and event.pos[1] >= rect_b_menu[1]:
-                        if event.pos[0] <= rect_b_menu[0] + but_menu.get_rect().w and \
-                                event.pos[1] <= rect_b_menu[1] + but_menu.get_rect().h:
+                    if event.pos[0] <= rect_b_menu[0] + b_rect.w and event.pos[1] >= rect_b_menu[1]:
+                        if event.pos[0] <= rect_b_menu[0] + b_rect.w and \
+                                event.pos[1] <= rect_b_menu[1] + b_rect.h:
                             if event.pos[0] >= rect_b_menu[0] and \
-                                    event.pos[1] <= rect_b_menu[1] + but_menu.get_rect().h:
+                                    event.pos[1] <= rect_b_menu[1] + b_rect.h:
                                 start_screen(sc)
+                                return
         pygame.display.flip()
 
 
@@ -766,11 +729,7 @@ menu_fon = None
 but_menu = None
 continue_b = None
 minin_in_menu = None
-one = None
-two = None
-three = None
-four = None
-five = None
+regulations = None
 fon = None
 lvl_fon = None
 back = None
@@ -823,8 +782,8 @@ tdsh = 0
 def main():
     global key_d, obj_spr, im_sh, stena, egip_stena, all_sprites, enemies, \
         objects, stena_pre_render, font, font2, font3, egipt_stena_pre_render, menu, need_break, quitt, menu_fon, \
-        but_menu, fon, minin_in_menu, continue_b, one, two, three, four, five, lvl_fon, obj_v_dam, gun_v, v_empty, \
-        over_v, obj_ded_v, maps_music, menu_music, tm_map_m, back
+        but_menu, fon, minin_in_menu, continue_b, lvl_fon, obj_v_dam, gun_v, v_empty, \
+        over_v, obj_ded_v, maps_music, menu_music, tm_map_m, back, regulations
 
     pg.mixer.pre_init()
     pg.init()
@@ -853,14 +812,10 @@ def main():
     but_menu = load_image('levels.png')
     minin_in_menu = load_image('mini_menu.png')
     continue_b = load_image('сontinue.png')
-    one = load_image('1.png')
-    two = load_image('2.png')
-    three = load_image('3.png')
-    four = load_image('4.png')
-    five = load_image('5.png')
+    regulations = load_image('regulations.png')
     lvl_fon = load_image('lvl_fon.png')
     back = load_image('back.png')
-    fon = pygame.transform.scale(menu_fon, (width, height))
+    fon = pg.transform.scale(menu_fon, (width, height))
 
     stena = load_image('стена обыкновенная.png')
     egip_stena = load_image('египецкая стена ураааоаоаоаоаоао.png')
