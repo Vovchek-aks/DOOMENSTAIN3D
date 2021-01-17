@@ -753,7 +753,7 @@ def main():
     az = load_image('lang.png')
     next = load_image('next.png')
     fon = pg.transform.scale(menu_fon, (width, height))
-
+    lvl_fon = pg.transform.scale(lvl_fon, (width, height))
     stena = load_image('стена обыкновенная.png')
     egip_stena = load_image('египецкая стена ураааоаоаоаоаоао.png')
 
