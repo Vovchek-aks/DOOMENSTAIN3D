@@ -518,21 +518,24 @@ def set_level(n):
 
 def shoot(player):
     global tdsh
-    if player.ammo[player.gun] and time() - player.last_shoot >= gun_rt[player.gun]:
-        player.ammo[player.gun] -= 1
-        player.last_shoot = time()
-        gun_v[player.gun].play()
-        tdsh = time()
-        objs = []
-        for i in objects.sprites():
-            if 0.2 < i.ang < 0.8 and dist_of_points(*player.pos, *i.pos) < rect_size2d * 2:
-                objs += [i]
-        if objs:
-            i = sorted(objs, key=lambda x: dist_of_points(*x.pos, *player.pos))[0]
-            i.hp -= gun_dam[player.gun]
-            if i in enemies.sprites():
-                i.tdd = time()
-            obj_v_dam.get(i.__class__, v_empty).play()
+    if time() - player.last_shoot >= gun_rt[player.gun]:
+        if player.ammo[player.gun]:
+            player.ammo[player.gun] -= 1
+            player.last_shoot = time()
+            gun_v[player.gun].play()
+            tdsh = time()
+            objs = []
+            for i in objects.sprites():
+                if 0.2 < i.ang < 0.8 and dist_of_points(*player.pos, *i.pos) < rect_size2d * 2:
+                    objs += [i]
+            if objs:
+                i = sorted(objs, key=lambda x: dist_of_points(*x.pos, *player.pos))[0]
+                i.hp -= gun_dam[player.gun]
+                if i in enemies.sprites():
+                    i.tdd = time()
+                obj_v_dam.get(i.__class__, v_empty).play()
+        else:
+            over_v['no_ammo'].play()
 
 
 def draw_bar(sc, ft, text, color, num, max_, sz, pos):
@@ -739,7 +742,8 @@ def main():
 
     over_v = {
         'door_open': load_sound('door open.wav'),
-        'door_not_open': load_sound('door not open.wav')
+        'door_not_open': load_sound('door not open.wav'),
+        'no_ammo': load_sound('no_ammo.wav')
     }
 
     v_empty = load_sound('empty.wav')
