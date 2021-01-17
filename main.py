@@ -125,8 +125,7 @@ class GameObject(pg.sprite.Sprite):
                                         (round(self.rect.w / (dist * 0.02 + 0.000000000001)),
                                          round(self.rect.h / (dist * 0.02 + 0.000000000001))))
         self.rect.y = height / 2 - (
-                    dist * 0.05 + 0.000000000001) - self.image.get_rect().h // 2 + 20 + self.rect.h / 40 + sh - 15
-
+                dist * 0.05 + 0.000000000001) - self.image.get_rect().h // 2 + 20 + self.rect.h / 40 + sh - 15
 
     def ded(self):
         self.is_ded = True
@@ -433,18 +432,51 @@ def start_screen(sc):
 
 
 def pravila(sc):
+    global en_rus
+
+    rus = ["Введение", "",
+           "И так.... Вы - известный археолог,  у которого цель в жизни - найти самую большую гробницу ",
+           "в мире (гробницу императора Нинтоку) и забрать все её сокровища себе. ",
+           "Много лет вы не могли норамально спать и есть, всё время думая об этой загадочной гробнице.",
+           "И вот однажды идя один по заброшенной пустыне, куда вас выбросило после огромного взрыва, ",
+           "который произошол из-за перегрева двигателя самолёта на котором вы летели на экспедицию, наконец-то",
+           " вдали показалась верхушка той самой гробницы!",
+           "Дойдя до неё вы обнаружили длинный тонель в который не думая зашли...А зря... ",
+           "Дверь которая вела наружу за вами закрылась... И теперь чтобы добраться до сокровищ и вернуться",
+           "невредимым домой вы должны пройти все уровни, которые приготовила вам судьба...."]
+    ru_prav = ["Правила игры", "",
+               "DOOMENSTAIN3D это неповторимая пародия классической трёхмерной игры wolfenstain с элементами doom.",
+               "Цель игры пройти все уровни (их 5),  убивая на своём пути всех монстров... ",
+               "Да, никто не говорил, что это просто, но как вы хотели? ",
+               "w - вперёд  s - назад",
+               "а - влево боком  d - вправо боком",
+               "q - поворот налево  е - поворот направо",
+               "В игре есть двери, к некоторым из них нужен ключ, который необходимо собрать",
+               "f - открыть дверь",
+               "Изначально у игрока будет полный запас патронов, пополнить их можно, найдя их на дороге или ",
+               "подобрать из побеждённого монстра",
+               "Пробел - стрелять  1 - пистолет  2 - дробовик"]
     sc.blit(lvl_fon, (0, 0))
     menu_rect = menu.get_rect()
     b_rect = but_menu.get_rect()
     regul_b = draw_button(sc, back, width - menu_rect.h - 100, height - menu_rect.h - 50)
-
+    next_b = draw_button(sc, next, width - menu_rect.h - 100, height - menu_rect.h - 150)
+    text_coord = 150
+    for line in rus:
+        string_rendered = font_play.render(line, 1, pg.Color('black'))
+        intro_rect = string_rendered.get_rect()
+        text_coord += 10
+        intro_rect.top = text_coord
+        intro_rect.x = 150
+        text_coord += intro_rect.height
+        sc.blit(string_rendered, intro_rect)
     running = True
     while running:
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 pg.quit()
                 sys.exit()
-            elif event.type == pg.MOUSEBUTTONDOWN:
+            if event.type == pg.MOUSEBUTTONDOWN:
                 if event.pos[0] >= regul_b[0] and event.pos[1] >= regul_b[1]:
                     if event.pos[0] <= regul_b[0] + b_rect.w and event.pos[1] >= regul_b[1]:
                         if event.pos[0] <= regul_b[0] + b_rect.w and \
@@ -452,7 +484,25 @@ def pravila(sc):
                             if event.pos[0] >= regul_b[0] and event.pos[1] <= regul_b[1] + b_rect.h:
                                 start_screen(sc)
                                 return
+                if event.pos[0] >= next_b[0] and event.pos[1] >= next_b[1] and \
+                        event.pos[0] <= next_b[0] + b_rect.w and event.pos[1] >= next_b[1] and \
+                        event.pos[0] <= next_b[0] + b_rect.w and \
+                        event.pos[1] <= next_b[1] + b_rect.h and event.pos[0] >= next_b[0] and \
+                        event.pos[1] <= next_b[1] + b_rect.h:
+                    sc.blit(lvl_fon, (0, 0))
+                    regul_b = draw_button(sc, back, width - menu_rect.h - 100, height - menu_rect.h - 50)
+                    text_coord = 150
+                    for line in ru_prav:
+                        string_rendered = font_play.render(line, 1, pg.Color('black'))
+                        intro_rect = string_rendered.get_rect()
+                        text_coord += 10
+                        intro_rect.top = text_coord
+                        intro_rect.x = 150
+                        text_coord += intro_rect.height
+                        sc.blit(string_rendered, intro_rect)
+
         pg.display.flip()
+
 
 def mini_menu_go(sc):
     global tm_map_m
@@ -493,6 +543,7 @@ def mini_menu_go(sc):
                             if event.pos[0] >= rect_b_menu[0] and \
                                     event.pos[1] <= rect_b_menu[1] + b_rect.h:
                                 start_screen(sc)
+                                set_level(0)
                                 return
         pg.display.flip()
 
@@ -506,14 +557,14 @@ def next_level():
     map_n += 1
     map_n %= maps_n
     need_break = True
-    set_message(f'Вы были перемещены на уровень {map_n + 1}', 5)
+    set_message(f'Уровень {map_n + 1}', 5)
 
 
 def set_level(n):
     global map_n, need_break
     map_n = n
     need_break = True
-    set_message(f'Вы были перемещены на уровень {map_n + 1}', 5)
+    set_message(f'Уровень {map_n + 1}', 5)
 
 
 def shoot(player):
@@ -615,6 +666,8 @@ regulations = None
 fon = None
 lvl_fon = None
 back = None
+az = None
+next = None
 
 stena_pre_render = []
 egipt_stena_pre_render = []
@@ -651,6 +704,7 @@ im_sh = None
 font = None
 font2 = None
 font3 = None
+font_play = None
 
 message = ''
 tsm = 0
@@ -665,7 +719,7 @@ def main():
     global key_d, obj_spr, im_sh, stena, egip_stena, all_sprites, enemies, \
         objects, stena_pre_render, font, font2, font3, egipt_stena_pre_render, menu, need_break, quitt, menu_fon, \
         but_menu, fon, minin_in_menu, continue_b, lvl_fon, obj_v_dam, gun_v, v_empty, \
-        over_v, obj_ded_v, maps_music, menu_music, tm_map_m, back, regulations
+        over_v, obj_ded_v, maps_music, menu_music, tm_map_m, back, regulations, font_play, az, next
 
     pg.mixer.pre_init()
     pg.init()
@@ -699,6 +753,8 @@ def main():
     regulations = load_image('regulations.png')
     lvl_fon = load_image('lvl_fon.png')
     back = load_image('back.png')
+    az = load_image('lang.png')
+    next = load_image('next.png')
     fon = pg.transform.scale(menu_fon, (width, height))
 
     stena = load_image('стена обыкновенная.png')
@@ -710,7 +766,8 @@ def main():
 
     font = pg.font.Font(None, 24)
     font2 = pg.font.Font(None, 48)
-    font3 = pg.font.Font(None, 10)
+    font3 = pg.font.Font(None, 35)
+    font_play = pg.font.Font(os.path.join('data', 'fonts', '20179.ttf'), 30)
 
     obj_v_dam = {
         Spider: load_sound('spider_damage.wav'),
