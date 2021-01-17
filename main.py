@@ -16,7 +16,7 @@ enemies = pg.sprite.Group()
 
 key_d = -1
 
-map_n = 0
+map_n = 4
 znak = lambda x: 1 if x > 0 else -1
 
 
@@ -633,7 +633,7 @@ def draw_interface(sc, player):
     # global font, font2, font3
     global rect_b_menu
 
-    # draw_minimap(sc, player)
+    draw_minimap(sc, player)
 
     draw_message(sc, font2)
 
