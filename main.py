@@ -677,10 +677,12 @@ def set_level(n):
 
 
 def shoot(player):
+    global tdsh
     if player.ammo[player.gun] and time() - player.last_shoot >= gun_rt[player.gun]:
         player.ammo[player.gun] -= 1
         player.last_shoot = time()
         gun_v[player.gun].play()
+        tdsh = time()
         objs = []
         for i in objects.sprites():
             if 0.2 < i.ang < 0.8 and dist_of_points(*player.pos, *i.pos) < rect_size2d * 2:
@@ -724,6 +726,13 @@ def draw_gun(sc, player):
     sc.blit(im, (width // 2 - r.w // 2, height - 200 - r.h))
 
 
+def draw_shoot(sc):
+    if time() - tdsh <= 0.1:
+        im = obj_spr['shoot']
+        r = im.get_rect()
+        sc.blit(im, (width // 2 - r.w // 2, height - 250 - r.h))
+
+
 def draw_interface(sc, player):
     # global font, font2, font3
     global rect_b_menu
@@ -743,6 +752,8 @@ def draw_interface(sc, player):
 
     draw_bar(sc, font3, '', blue, round((gun_rt[player.gun] - time() + player.last_shoot) * 100),
              gun_rt[player.gun] * 100, 500, (150, height - 170))
+
+    draw_shoot(sc)
 
     draw_gun(sc, player)
 
@@ -806,6 +817,8 @@ ttd = 0
 
 need_break = False
 
+tdsh = 0
+
 
 def main():
     global key_d, obj_spr, im_sh, stena, egip_stena, all_sprites, enemies, \
@@ -830,7 +843,8 @@ def main():
                'p1': load_image('патроны1.png'),
                'p2': load_image('патроны2.png'),
                'guns': [load_image('gun1.png'),
-                        load_image('gun2.png')]}
+                        load_image('gun2.png')],
+               'shoot': load_image('bank.png')}
 
     im_sh = load_image('shrek3.png')
     menu = load_image('menu.png')
