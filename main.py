@@ -39,68 +39,6 @@ def dist_of_points(x1, y1, x2, y2):
     return (dx ** 2 + dy ** 2) ** 0.5
 
 
-def lines_collision(x1_1, y1_1, x1_2, y1_2,
-                    x2_1, y2_1, x2_2, y2_2):
-    def point(xx):
-        if min(x1_1, x1_2) <= xx <= max(x1_1, x1_2):
-            return True
-        return False
-
-    A1 = y1_1 - y1_2
-    B1 = x1_2 - x1_1
-    C1 = x1_1 * y1_2 - x1_2 * y1_1
-    A2 = y2_1 - y2_2
-    B2 = x2_2 - x2_1
-    C2 = x2_1 * y2_2 - x2_2 * y2_1
-
-    if B1 * A2 - B2 * A1 and A1:
-        y = (C2 * A1 - C1 * A2) / (B1 * A2 - B2 * A1)
-        x = (-C1 - B1 * y) / A1
-        return point(x)
-    elif B1 * A2 - B2 * A1 and A2:
-        y = (C2 * A1 - C1 * A2) / (B1 * A2 - B2 * A1)
-        x = (-C2 - B2 * y) / A2
-        return point(x)
-    return False
-
-
-# def lines_collision(x1_1, y1_1, x1_2, y1_2,
-#                     x2_1, y2_1, x2_2, y2_2):
-#     """
-#     Returns the point of intersection of the lines passing through a2,a1 and b2,b1.
-#     a1: [x, y] a point on the first line
-#     a2: [x, y] another point on the first line
-#     b1: [x, y] a point on the second line
-#     b2: [x, y] another point on the second line
-#     """
-#
-#     a1, a2 = (x1_1, y1_1), (x1_2, y1_2)
-#     b1, b2 = (x2_1, y2_1), (x2_2, y2_2)
-#
-#     s = np.vstack([a1,a2,b1,b2])        # s for stacked
-#     h = np.hstack((s, np.ones((4, 1)))) # h for homogeneous
-#     l1 = np.cross(h[0], h[1])           # get first line
-#     l2 = np.cross(h[2], h[3])           # get second line
-#     x, y, z = np.cross(l1, l2)          # point of intersection
-#     if z == 0:                          # lines are parallel
-#         return False
-#     return True
-
-
-def lines_from_square(x, y, size=rect_size2d):
-    return ((x, y, x + size, y),
-            (x, y, x, y + size),
-            (x + size, y, x + size, y + size),
-            (x, y + size, x + size, y + size))
-
-
-def point_in_square(x, y, xx, yy, sizex, sizey):
-    if xx * sizex <= x <= (xx + 1) * sizex and \
-            yy * sizey <= y <= (yy + 1) * sizey:
-        return True
-    return False
-
-
 def load_image(name, colorkey=None):
     fullname = os.path.join('data', 'sprites', name)
     if not os.path.isfile(fullname):
@@ -129,6 +67,8 @@ class GameObject(pg.sprite.Sprite):
     def __init__(self, x, y, *groups, sp=0.25, marsh=None, do_marsh=True):
         super().__init__(all_sprites, objects, *groups)
         self.base_im = obj_spr.get(self.__class__, im_sh)
+        if self in enemies.sprites():
+            self.base_im = self.base_im[0]
         self.image = self.base_im
         self.rect = self.image.get_rect()
         self.x = x
@@ -138,8 +78,6 @@ class GameObject(pg.sprite.Sprite):
         self.sp = sp
         self.is_ded = False
         self.ang = -1
-
-        self.past_d = -1
 
         self.marsh = [self.pos]
         if marsh is not None:
@@ -183,14 +121,12 @@ class GameObject(pg.sprite.Sprite):
             dist = 5
         self.rect.x = self.ang / line_step * line_to_px - self.image.get_rect().w // 2 + shx
 
-        if dist != self.past_d:
-            self.image = pg.transform.scale(self.base_im,
-                                            (round(self.rect.w / (dist * 0.02 + 0.000000000001)),
-                                             round(self.rect.h / (dist * 0.02 + 0.000000000001))))
+        self.image = pg.transform.scale(self.base_im,
+                                        (round(self.rect.w / (dist * 0.02 + 0.000000000001)),
+                                         round(self.rect.h / (dist * 0.02 + 0.000000000001))))
         self.rect.y = height / 2 - (
                     dist * 0.05 + 0.000000000001) - self.image.get_rect().h // 2 + 20 + self.rect.h / 40 + sh - 15
 
-        self.past_d = dist
 
     def ded(self):
         self.is_ded = True
@@ -201,10 +137,13 @@ class GameObject(pg.sprite.Sprite):
 class Enemy(GameObject):
     def __init__(self, x, y, sp=0.25, marsh=None, do_marsh=True):
         super().__init__(x, y, enemies, sp=sp, marsh=marsh, do_marsh=do_marsh)
+        self.tdd = 0
 
     def step(self, player):
         self.find_player(player)
         super().step(player)
+        if self.hp <= obj_hp[self.__class__] // 2 and self.base_im != obj_spr[self.__class__][1]:
+            self.base_im = obj_spr[self.__class__][1]
 
     def find_player(self, player):
         pass
@@ -381,70 +320,8 @@ class Patroni(GameObject):
             self.ded()
 
 
-def raycast(player):
-    ret = []
-    for i in range(lines):
-        a = player.ang + line_step * i - line_step * lines / 2
-
-        cos = math.cos(a)
-        sin = math.sin(a)
-        for j in range(0, draw_dist, 5):
-            xx = player.x + j * cos
-            yy = player.y + j * sin
-
-            if (int(xx // rect_size2d * rect_size2d), int(yy // rect_size2d * rect_size2d)) in map_coords:
-                j *= math.cos(player.ang - a)
-
-                ret += [((xx, yy), j, i)]
-
-                break
-
-    return ret
-
-
 def grid_pos(x, y):
     return x // rect_size2d * rect_size2d, y // rect_size2d * rect_size2d
-
-
-def raycast_fps_stonks(player):
-    global rast_vert, rast_hor
-    ret = []
-    x, y = grid_pos(player.x, player.y)
-    for i in range(lines):
-
-        a = player.ang + line_step * i - line_step * lines / 2
-        cos = math.cos(a)
-        sin = math.sin(a)
-
-        # смотрим на пересечение с вертикалями
-        vertical, dop_inf_x = (x + rect_size2d, 1) if cos >= 0 else (x, -1)
-        for j in range(0, width, rect_size2d):
-            rast_vert = (vertical - player.x) / cos
-            y_vert = player.y + rast_vert * sin
-            if grid_pos(vertical + dop_inf_x, y_vert) in map_coords:
-                break
-            vertical += dop_inf_x * rect_size2d
-
-        # смотрим на пересечение с горизонталями
-        horisontal, dop_inf_y = (y + rect_size2d, 1) if sin >= 0 else (y, -1)
-        for j in range(0, height, rect_size2d):
-            rast_hor = (horisontal - player.y) / (sin + 0.00001)
-            x_hor = player.x + rast_hor * cos
-            if grid_pos(x_hor, horisontal + dop_inf_y) in map_coords:
-                break
-            horisontal += dop_inf_y * rect_size2d
-
-        if rast_vert < rast_hor:
-            rast = rast_vert
-        else:
-            rast = rast_hor
-        rast *= math.cos(player.ang - a)  # стены прямые, без округлостей
-        xx = player.x + rast * cos
-        yy = player.y + rast * sin
-
-        ret += [((xx, yy), rast, i)]
-
-    return ret
 
 
 def raycast_png(player):
@@ -690,6 +567,8 @@ def shoot(player):
         if objs:
             i = sorted(objs, key=lambda x: dist_of_points(*x.pos, *player.pos))[0]
             i.hp -= gun_dam[player.gun]
+            if i in enemies.sprites():
+                i.tdd = time()
             obj_v_dam.get(i.__class__, v_empty).play()
 
 
@@ -834,8 +713,10 @@ def main():
     clock = pg.time.Clock()
 
     obj_spr = {Door: load_image('дверь.png'),
-               Spider: load_image('321.png'),
-               Zombie: load_image('zombie.png'),
+               Spider: [load_image('321.png'),
+                        load_image('321.png')],
+               Zombie: [load_image('zombie.png'),
+                        load_image('zombie2.png')],
                Key: load_image('ключ.png'),
                Spawner: load_image('spawner.png'),
                'portal': load_image('portal.png'),
@@ -924,22 +805,6 @@ def main():
 
         ppos = None
 
-        # player = Player(10 * rect_size2d, 10 * rect_size2d,
-        #                 objects, solid_cl, map_n)
-
-        # Spider(5 * rect_size2d, 1 * rect_size2d)
-        # Spider(7 * rect_size2d, 0.55 * rect_size2d)
-
-        # Door(6.2 * rect_size2d, 0.4 * rect_size2d, marsh=[(6.2 * rect_size2d, 0.10 * rect_size2d)])
-        # Door(27 * rect_size2d // 4, 14.7 * rect_size2d // 4, marsh=[(27 * rect_size2d // 4, 13.5 * rect_size2d // 4)],
-        #      key=0)
-
-        # Key(30 * rect_size2d // 4, 2.5 * rect_size2d // 4, key=0)
-
-        # Trigger(30 * rect_size2d // 4, 14.7 * rect_size2d // 4, foo=game_stop)
-
-        # Spr(31 * rect_size2d // 4, 14.7 * rect_size2d // 4, spr=obj_spr['portal'])
-
         # unit generation
 
         player = Player(*map_obj[map_n]['player'], objects, solid_cl, map_n)
@@ -1001,9 +866,6 @@ def main():
             if (player.pos, player.ang) != ppos:
                 lin = raycast_png(player)
             draw_3d_png(sc, lin, all_sprites.sprites(), player.pos)
-            # lin = raycast_fps_stonks(player)
-            # draw_3d(sc, lin, all_sprites.sprites(), player.pos)
-            # draw_map(sc, player, lin)
             draw_interface(sc, player)
             for i in objects.sprites():
                 if not i.is_ded:
@@ -1013,17 +875,7 @@ def main():
             player.step()
             if player.hp <= 0:
                 running = False
-            # angle_of_points(*player.pos, *sh.pos, player.ang)
             sc.blit(font.render(str(round(clock.get_fps())), False, red), (width - 100, 50))
-            # sc.blit(font.render(str((sh.x, sh.y,)), False, red), (width - 500, 100))
-            # if sh.in_wall:
-            #     color = red
-            # else:
-            #     color = green
-            # pg.draw.rect(sc, color, (sh.pos[0] // (rect_size2d // 4) * (rect_size2d // 4),
-            #                          sh.pos[1] // (rect_size2d // 4) * (rect_size2d // 4),
-            #                          rect_size2d // 4,
-            #                          rect_size2d // 4))
             pg.display.flip()
             clock.tick(FPS)
 
@@ -1032,14 +884,6 @@ def main():
                 break
 
     # pg.quit()
-
-
-def draw_map(sc, player, lines):
-    for i in map_coords:
-        pg.draw.rect(sc, white, (i[0], i[1], rect_size2d, rect_size2d), 1)
-        player.draw(sc)
-    for i in lines:
-        pg.draw.line(sc, gray, player.pos, i[0], 1)
 
 
 def draw_minimap(sc, player):
@@ -1060,30 +904,6 @@ def draw_minimap(sc, player):
         # pg.draw.line(sc, green, i.pos, (i.x // 4 + rect_size2d // 4 * math.cos(i.ang),
         #                                    i.y // 4 + rect_size2d // 4 * math.sin(i.ang)), 1)
         # print(i.pos)
-
-
-def draw_3d(sc, lin, sp, ppos):
-    pg.draw.rect(sc, (50, 30, 0), (0, 0, width, height / 2))
-    pg.draw.rect(sc, (40, 30, 0), (0, height / 2, width, height))
-    dist = 999
-    lin = [(True, i, i[1]) for i in lin]
-    sp = [(False, i, dist_of_points(*ppos, *i.pos) * 3.6) for i in sp if not i.is_ded]
-    lis = sorted(lin + sp, key=lambda x: -x[-1])
-    for ret in lis:
-        if ret[0]:
-            i = ret[1][2]
-            j = ret[1][1]
-
-            c = 255 / (1 + j * j * 0.00001)
-
-            color = (int(c / 2), int(c / 3), int(c / 5))
-            pg.draw.rect(sc, color, (i * line_to_px,
-                                     height / 2 - dist * rect_size2d / (j + 1),
-                                     line_to_px + 1,
-                                     dist * rect_size2d / (j + 1) * 2))
-        else:
-            if -ret[1].rect.w * 8 <= ret[1].rect.x <= width or False:
-                sc.blit(ret[1].image, (ret[1].rect.x, ret[1].rect.y))
 
 
 def draw_3d_png(sc, lin, sp, ppos):
