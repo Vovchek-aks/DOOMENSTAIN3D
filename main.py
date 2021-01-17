@@ -404,11 +404,11 @@ def start_screen(sc):
     rect_b_quit = draw_button(sc, quitt, width // 2 - menu_rect.h * 6, (height - menu_rect.h) / 2 + 220)
     regul_b = draw_button(sc, regulations, width // 2 - menu_rect.h * 6, (height - menu_rect.h) / 2 + 50)
     while running:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                pg.quit()
                 sys.exit()
-            elif event.type == pygame.MOUSEBUTTONDOWN:
+            elif event.type == pg.MOUSEBUTTONDOWN:
                 if event.pos[0] >= regul_b[0] and event.pos[1] >= regul_b[1]:
                     if event.pos[0] <= regul_b[0] + b_rect.w and event.pos[1] >= regul_b[1]:
                         if event.pos[0] <= regul_b[0] + b_rect.w and \
@@ -427,9 +427,9 @@ def start_screen(sc):
                                 event.pos[1] <= rect_b_quit[1] + b_rect.h:
                             if event.pos[0] >= rect_b_quit[0] and \
                                     event.pos[1] <= rect_b_quit[1] + b_rect.h:
-                                pygame.quit()
+                                pg.quit()
                                 sys.exit()
-        pygame.display.flip()
+        pg.display.flip()
 
 
 def pravila(sc):
@@ -440,11 +440,11 @@ def pravila(sc):
 
     running = True
     while running:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                pg.quit()
                 sys.exit()
-            elif event.type == pygame.MOUSEBUTTONDOWN:
+            elif event.type == pg.MOUSEBUTTONDOWN:
                 if event.pos[0] >= regul_b[0] and event.pos[1] >= regul_b[1]:
                     if event.pos[0] <= regul_b[0] + b_rect.w and event.pos[1] >= regul_b[1]:
                         if event.pos[0] <= regul_b[0] + b_rect.w and \
@@ -452,7 +452,7 @@ def pravila(sc):
                             if event.pos[0] >= regul_b[0] and event.pos[1] <= regul_b[1] + b_rect.h:
                                 start_screen(sc)
                                 return
-        pygame.display.flip()
+        pg.display.flip()
 
 def mini_menu_go(sc):
     global tm_map_m
@@ -471,11 +471,11 @@ def mini_menu_go(sc):
     rect_b_menu = draw_button(sc, minin_in_menu, width // 2 - menu_rect.h * 6,
                               (height - menu_rect.h) / 2 + 200)
     while running:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                pg.quit()
                 sys.exit()
-            elif event.type == pygame.MOUSEBUTTONDOWN:
+            elif event.type == pg.MOUSEBUTTONDOWN:
                 if event.pos[0] >= rect_b_c[0] and event.pos[1] >= rect_b_c[1]:
                     if event.pos[0] <= rect_b_c[0] + b_rect.w and event.pos[1] >= rect_b_c[1]:
                         if event.pos[0] <= rect_b_c[0] + b_rect.w and \
@@ -494,7 +494,7 @@ def mini_menu_go(sc):
                                     event.pos[1] <= rect_b_menu[1] + b_rect.h:
                                 start_screen(sc)
                                 return
-        pygame.display.flip()
+        pg.display.flip()
 
 
 def game_stop():
@@ -705,9 +705,9 @@ def main():
         stena_pre_render += [stena.subsurface(i, 0, round(line_to_px), stena.get_rect().h)]
         egipt_stena_pre_render += [egip_stena.subsurface(i, 0, round(line_to_px), egip_stena.get_rect().h)]
 
-    font = pygame.font.Font(None, 24)
-    font2 = pygame.font.Font(None, 48)
-    font3 = pygame.font.Font(None, 10)
+    font = pg.font.Font(None, 24)
+    font2 = pg.font.Font(None, 48)
+    font3 = pg.font.Font(None, 10)
 
     obj_v_dam = {
         Spider: load_sound('spider_damage.wav'),
@@ -794,7 +794,7 @@ def main():
         while running:
             sc.fill((0, 0, 0))
             key_d = -1
-            for event in pygame.event.get():
+            for event in pg.event.get():
                 if event.type == pg.QUIT:
                     running = False
                     exit(0)
@@ -808,7 +808,7 @@ def main():
                         player.gun = 0
                     elif event.key == pg.K_2:
                         player.gun = 1
-                elif event.type == pygame.MOUSEBUTTONDOWN:
+                elif event.type == pg.MOUSEBUTTONDOWN:
                     if event.pos[0] >= rect_b_menu[0] and event.pos[1] >= rect_b_menu[1]:
                         if event.pos[0] <= rect_b_menu[0] + menu.get_rect().w and event.pos[1] >= rect_b_menu[1]:
                             if event.pos[0] <= rect_b_menu[0] + menu.get_rect().w and \
