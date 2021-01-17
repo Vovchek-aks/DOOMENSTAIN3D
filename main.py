@@ -788,6 +788,14 @@ def main():
         Patroni: v_key
     }
 
+    over_v = {
+        'door_open': load_sound('door open.wav'),
+        'door_not_open': load_sound('door not open.wav'),
+        'no_ammo': load_sound('no_ammo.wav')
+    }
+
+    v_empty = load_sound('empty.wav')
+
     maps_music = [
         'ур1.mp3',
         'ур2.mp3',
@@ -796,14 +804,6 @@ def main():
         'ур5.mp3'
     ]
     menu_music = 'меню.mp3'
-
-    over_v = {
-        'door_open': load_sound('door open.wav'),
-        'door_not_open': load_sound('door not open.wav'),
-        'no_ammo': load_sound('no_ammo.wav')
-    }
-
-    v_empty = load_sound('empty.wav')
 
     start_screen(sc)
 
@@ -877,7 +877,6 @@ def main():
                                 if event.pos[0] >= rect_b_menu[0] and event.pos[1] <= rect_b_menu[1] + \
                                         menu.get_rect().h:
                                     mini_menu_go(sc)
-                                    # start_screen(sc)
 
             if (player.pos, player.ang) != ppos:
                 lin = raycast_png(player)
@@ -899,17 +898,12 @@ def main():
                 need_break = False
                 break
 
-    # pg.quit()
-
 
 def draw_minimap(sc, player):
     pg.draw.rect(sc, black, (0, 0, rect_size2d // 4 * len(map_[map_n][0]), rect_size2d // 4 * len(map_[map_n])))
     for i in maps[map_n]['map_coords']:
-        # print(i[0], i[1], rect_size2d)
         pg.draw.rect(sc, gray, (i[0] // 4, i[1] // 4, rect_size2d // 4, rect_size2d // 4))
         player.draw_minamap(sc)
-    # for i in lines:
-    #     pg.draw.line(sc, white, player.pos, (i[0][0] // 4, i[0][1] // 4), 1)
     for i in objects.sprites():
         if i.__class__ == Enemy or i.__class__.__bases__[0] == Enemy:
             color = red
@@ -917,9 +911,6 @@ def draw_minimap(sc, player):
             color = blue
         if not i.is_ded and i.__class__ not in obj_nd:
             pg.draw.circle(sc, color, i.pos, 5)
-        # pg.draw.line(sc, green, i.pos, (i.x // 4 + rect_size2d // 4 * math.cos(i.ang),
-        #                                    i.y // 4 + rect_size2d // 4 * math.sin(i.ang)), 1)
-        # print(i.pos)
 
 
 def draw_3d_png(sc, lin, sp, ppos):
@@ -934,8 +925,6 @@ def draw_3d_png(sc, lin, sp, ppos):
         if i[0]:
             ii = i[1]
             j = ii[1]
-            # if ii[2] >= 256:
-            #     ii[2] = 253
             if ii[3]:
                 wall = egipt_stena_pre_render[ii[2] - 1]
             else:
@@ -943,13 +932,6 @@ def draw_3d_png(sc, lin, sp, ppos):
 
             wall = pg.transform.scale(wall, (round(line_to_px), round(dist * rect_size2d / (j + 1)) * 2))
             sc.blit(wall, (ii[0] * round(line_to_px), height / 2 - dist * rect_size2d / (j + 1)))
-
-            # c = 255 / (1 + j * j * 0.00001)
-            # color = (c, c, c)
-            # pg.draw.rect(sc, color, (ii[2] * line_to_px,
-            #                          height / 2 - dist * rect_size2d / (j + 1),
-            #                          line_to_px + 1,
-            #                          dist * rect_size2d / (j + 1) * 2))
         else:
             if -i[1].rect.w * 8 <= i[1].rect.x <= width or False:
                 sc.blit(i[1].image, (i[1].rect.x, i[1].rect.y))
