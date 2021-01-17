@@ -401,7 +401,7 @@ def start_screen(sc):
     running = True
     rect_b_lv = draw_button(sc, but_menu, width // 2 - menu_rect.h * 6, (height - menu_rect.h) / 2.5 - 50)
     rect_b_quit = draw_button(sc, quitt, width // 2 - menu_rect.h * 6, (height - menu_rect.h) / 2 + 220)
-    regul_b = draw_button(sc, regulations, width // 2 - menu_rect.h * 6, (height - menu_rect.h) / 2 + 50)
+    regul_b = draw_button(sc, regulations, width // 2 - menu_rect.h * 6, (height - menu_rect.h) / 2 + 30)
     while running:
         for event in pg.event.get():
             if event.type == pg.QUIT:
