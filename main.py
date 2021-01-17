@@ -730,7 +730,7 @@ def main():
 
     obj_spr = {Door: load_image('дверь.png'),
                Spider: [load_image('321.png'),
-                        load_image('321.png')],
+                        load_image('321 ранен(.png')],
                Zombie: [load_image('zombie.png'),
                         load_image('zombie2.png')],
                Key: load_image('ключ.png'),
