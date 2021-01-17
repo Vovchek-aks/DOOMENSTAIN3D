@@ -560,56 +560,60 @@ def level_all(sc):
     tri = draw_button(sc, three, width / 1.3 - menu.get_rect().h, height / 4 - menu.get_rect().h)
     chetire = draw_button(sc, four, width / 3.1 - menu.get_rect().h, height / 1.5 - menu.get_rect().h)
     piat = draw_button(sc, five, width / 1.6 - menu.get_rect().h, height / 1.5 - menu.get_rect().h)
+    back_b = draw_button(sc, back, width - menu.get_rect().h - 100, height - menu.get_rect().h - 50)
 
     while running:
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if event.pos[0] >= odin[0] and event.pos[1] >= odin[1] \
-                        and event.pos[0] <= odin[0] + but_menu.get_rect().w and event.pos[1] >= odin[1] \
-                        and event.pos[0] <= odin[0] + but_menu.get_rect().w and \
-                        event.pos[1] <= odin[1] + but_menu.get_rect().h \
-                        and event.pos[0] >= odin[0] and event.pos[1] <= odin[1] + but_menu.get_rect().h:
-                    map_n = 0
-                    need_break = True
-                    return
-                elif event.pos[0] >= tri[0] and event.pos[1] >= tri[1]:
-                    if event.pos[0] <= tri[0] + but_menu.get_rect().w and event.pos[1] >= tri[1] \
-                            and event.pos[0] <= tri[0] + but_menu.get_rect().w and \
-                            event.pos[1] <= tri[1] + but_menu.get_rect().h \
-                            and event.pos[0] >= tri[0] and \
-                            event.pos[1] <= tri[1] + but_menu.get_rect().h:
-                        map_n = 1
-                        need_break = True
+                if event.pos[0] >= back_b[0] and event.pos[1] >= back_b[1]:
+                    if event.pos[0] <= back_b[0] + back.get_rect().w and event.pos[1] >= back_b[1] \
+                            and event.pos[0] <= back_b[0] + back.get_rect().w and \
+                            event.pos[1] <= back_b[1] + back.get_rect().h \
+                            and event.pos[0] >= back_b[0] and \
+                            event.pos[1] <= back_b[1] + back.get_rect().h:
+                        start_screen(sc)
                         return
-                elif event.pos[0] >= chetire[0] and event.pos[1] >= chetire[1]:
-                    if event.pos[0] <= chetire[0] + but_menu.get_rect().w and event.pos[1] >= chetire[1] \
-                            and event.pos[0] <= chetire[0] + but_menu.get_rect().w and \
-                            event.pos[1] <= chetire[1] + but_menu.get_rect().h \
-                            and event.pos[0] >= chetire[0] and \
-                            event.pos[1] <= chetire[1] + but_menu.get_rect().h:
-                        map_n = 3
-                        need_break = True
+                if event.pos[0] >= odin[0] and event.pos[1] >= odin[1]:
+                    if event.pos[0] <= odin[0] + one.get_rect().w and event.pos[1] >= odin[1] \
+                            and event.pos[0] <= odin[0] + one.get_rect().w and \
+                            event.pos[1] <= odin[1] + one.get_rect().h \
+                            and event.pos[0] >= odin[0] and \
+                            event.pos[1] <= odin[1] + one.get_rect().h:
+                        map_n = 0
                         return
                 elif event.pos[0] >= dva[0] and event.pos[1] >= dva[1]:
-                    if event.pos[0] <= dva[0] + but_menu.get_rect().w and event.pos[1] >= dva[1] \
-                            and event.pos[0] <= dva[0] + but_menu.get_rect().w and \
-                            event.pos[1] <= dva[1] + but_menu.get_rect().h \
+                    if event.pos[0] <= dva[0] + two.get_rect().w and event.pos[1] >= dva[1] \
+                            and event.pos[0] <= dva[0] + two.get_rect().w and \
+                            event.pos[1] <= dva[1] + two.get_rect().h \
                             and event.pos[0] >= dva[0] and \
-                            event.pos[1] <= dva[1] + but_menu.get_rect().h:
+                            event.pos[1] <= dva[1] + two.get_rect().h:
                         map_n = 1
-                        need_break = True
+                        return
+                elif event.pos[0] >= tri[0] and event.pos[1] >= tri[1]:
+                    if event.pos[0] <= tri[0] + three.get_rect().w and event.pos[1] >= tri[1] \
+                            and event.pos[0] <= tri[0] + three.get_rect().w and \
+                            event.pos[1] <= tri[1] + three.get_rect().h \
+                            and event.pos[0] >= tri[0] and \
+                            event.pos[1] <= tri[1] + three.get_rect().h:
+                        map_n = 2
+                        return
+                elif event.pos[0] >= chetire[0] and event.pos[1] >= chetire[1]:
+                    if event.pos[0] <= chetire[0] + four.get_rect().w and event.pos[1] >= chetire[1] \
+                            and event.pos[0] <= chetire[0] + four.get_rect().w and \
+                            event.pos[1] <= chetire[1] + four.get_rect().h \
+                            and event.pos[0] >= chetire[0] and \
+                            event.pos[1] <= chetire[1] + four.get_rect().h:
+                        map_n = 3
                         return
                 elif event.pos[0] >= piat[0] and event.pos[1] >= piat[1]:
-                    if event.pos[0] <= piat[0] + but_menu.get_rect().w and event.pos[1] >= piat[1]:
-                        if event.pos[0] <= piat[0] + but_menu.get_rect().w and \
-                                event.pos[1] <= piat[1] + but_menu.get_rect().h:
-                            if event.pos[0] >= piat[0] and \
-                                    event.pos[1] <= piat[1] + but_menu.get_rect().h:
-                                map_n = 4
-                                need_break = True
-                                return
-                                # pygame.quit()
-                                # sys.exit()
+                    if event.pos[0] <= piat[0] + five.get_rect().w and event.pos[1] >= piat[1] \
+                            and event.pos[0] <= piat[0] + five.get_rect().w and \
+                            event.pos[1] <= piat[1] + five.get_rect().h \
+                            and event.pos[0] >= piat[0] and \
+                            event.pos[1] <= piat[1] + five.get_rect().h:
+                        map_n = 4
+                        return
+
         pygame.display.flip()
         clock.tick(FPS)
 
@@ -758,6 +762,7 @@ four = None
 five = None
 fon = None
 lvl_fon = None
+back = None
 
 stena_pre_render = []
 egipt_stena_pre_render = []
@@ -806,7 +811,7 @@ def main():
     global key_d, obj_spr, im_sh, stena, egip_stena, all_sprites, enemies, \
         objects, stena_pre_render, font, font2, font3, egipt_stena_pre_render, menu, need_break, quitt, menu_fon, \
         but_menu, fon, minin_in_menu, continue_b, one, two, three, four, five, lvl_fon, obj_v_dam, gun_v, v_empty, \
-        over_v, obj_ded_v, maps_music, menu_music, tm_map_m
+        over_v, obj_ded_v, maps_music, menu_music, tm_map_m, back
 
     pg.mixer.pre_init()
     pg.init()
@@ -840,6 +845,7 @@ def main():
     four = load_image('4.png')
     five = load_image('5.png')
     lvl_fon = load_image('lvl_fon.png')
+    back = load_image('back.png')
     fon = pygame.transform.scale(menu_fon, (width, height))
 
     stena = load_image('стена обыкновенная.png')
