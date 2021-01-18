@@ -3,17 +3,17 @@ import math
 from map import *
 
 
-def grid_pos(x, y):
+def grid_pos(x, y):  # тоже что и мэйне
     return x // rect_size2d * rect_size2d, y // rect_size2d * rect_size2d
 
 
-def dist_of_points(x1, y1, x2, y2):
+def dist_of_points(x1, y1, x2, y2):  # тоже что и мэйне
     dx = abs(x1 - x2)
     dy = abs(y1 - y2)
     return (dx ** 2 + dy ** 2) ** 0.5
 
 
-class Player:
+class Player:  # игрок
     def __init__(self, x, y, all_s, solid_cl, map_n):
         self.pos = self.x, self.y = x, y
         self.ang = 0
@@ -31,17 +31,12 @@ class Player:
 
         self.map_n = map_n
 
-    def draw(self, sc):
-        pg.draw.circle(sc, green, (self.pos[0] * rect_size2d, self.pos[1] * rect_size2d), 5)
-        pg.draw.line(sc, green, self.pos, (self.x + rect_size2d * math.cos(self.ang),
-                                           self.y + rect_size2d * math.sin(self.ang)), 1)
-
-    def draw_minamap(self, sc):
+    def draw_minamap(self, sc):  # рисование на миникарте
         pg.draw.circle(sc, green, self.pos, 5)
         pg.draw.line(sc, green, self.pos, (self.x // 4 + rect_size2d // 4 * math.cos(self.ang),
                                            self.y // 4 + rect_size2d // 4 * math.sin(self.ang)), 1)
 
-    def step(self):
+    def step(self):  # то же что и у гейм обджекта
         key = pg.key.get_pressed()
 
         cos = math.cos(self.ang)
@@ -69,7 +64,7 @@ class Player:
 
         self.pos = self.x // 4, self.y // 4
 
-        can_move = True
+        can_move = True  # проверка столконовений
         for i in self.all_sp:
             if (i.__class__ in self.solid_sp or i.__class__.__bases__[0] in self.solid_sp) and \
                     dist_of_points(*self.pos, *i.pos) <= 20:

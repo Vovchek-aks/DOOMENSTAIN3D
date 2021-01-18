@@ -1,10 +1,10 @@
 from settings import *
 
-maps_n = 5
+maps_n = 5  # кличество карт
 
-maps = []
+maps = []  # информация о картах
 
-map_ = [
+map_ = [  # карты
     [
         '############################',
         '#--------------------------#',
@@ -108,7 +108,7 @@ map_ = [
     ]
 ]
 
-map_obj = [
+map_obj = [  # объекты на карте
     {
         'player': (2 * rect_size2d // 4, 8 * rect_size2d // 4),
         'spider': [],
@@ -273,7 +273,7 @@ map_obj = [
     }
 ]
 
-for gg in range(maps_n):
+for gg in range(maps_n):  # формирование удобных данных
     map_coords = set()
     wall_coords = set()
     egypt_coords = set()

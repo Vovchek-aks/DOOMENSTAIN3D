@@ -1,9 +1,9 @@
 import math
 from screeninfo import get_monitors
 
-FPS = 60
+FPS = 60  # фпс
 
-width = get_monitors()[0].width
+width = get_monitors()[0].width  # получение разрешения экрана
 height = get_monitors()[0].height
 
 # size = 32, 32  # размер карты
@@ -17,9 +17,9 @@ lines = 200  # Количество лучей
 line_step = fow / lines / 50  # угол между лучами
 line_to_px = width / lines  # ширина линии в 3д
 
-is_minimap = True
+is_minimap = True  # нужно ли рисовать миникарту
 
-max_unit = 30
+max_unit = 30  # максимальное количество мобов
 
 bese_wall_h = 600  # дальность прорисовки
 
