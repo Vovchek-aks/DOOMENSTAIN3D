@@ -17,6 +17,10 @@ lines = 200  # Количество лучей
 line_step = fow / lines / 50  # угол между лучами
 line_to_px = width / lines  # ширина линии в 3д
 
+is_minimap = True
+
+max_unit = 30
+
 bese_wall_h = 600  # дальность прорисовки
 
 # всякие нужные цвета

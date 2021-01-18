@@ -8,19 +8,18 @@ import os
 from time import time
 from random import randint
 
-# import numpy as np
-
-all_sprites = pg.sprite.Group()
+all_sprites = pg.sprite.Group()  # группы спрайтов
 objects = pg.sprite.Group()
 enemies = pg.sprite.Group()
 
-key_d = -1
+key_d = -1  # последняя нажатая клавиша для открытия дверей
 
-map_n = 4
-znak = lambda x: 1 if x > 0 else -1
+map_n = 4  # номер текущей карты
+
+znak = lambda x: 1 if x > 0 else -1  # возвращает знак числа
 
 
-def angle_of_points(x1, y1, x2, y2, ang):
+def angle_of_points(x1, y1, x2, y2, ang):  # игол между точками для определения х спайта
     dx = -(x1 - x2)
     dy = (y1 - y2)
     f = math.atan2(dx, dy)
@@ -33,13 +32,13 @@ def angle_of_points(x1, y1, x2, y2, ang):
     return r - 1
 
 
-def dist_of_points(x1, y1, x2, y2):
+def dist_of_points(x1, y1, x2, y2):  # растояние между точками
     dx = abs(x1 - x2)
     dy = abs(y1 - y2)
     return (dx ** 2 + dy ** 2) ** 0.5
 
 
-def load_image(name, colorkey=None):
+def load_image(name, colorkey=None):  # загружает картинки
     fullname = os.path.join('data', 'sprites', name)
     if not os.path.isfile(fullname):
         print(f"Файл с изображением '{fullname}' не найден")
@@ -55,7 +54,7 @@ def load_image(name, colorkey=None):
     return image
 
 
-def load_sound(name):
+def load_sound(name):  # загружает звуки
     fullname = os.path.join('data', 'sounds', name)
     if not os.path.isfile(fullname):
         print(f"Файл со звуком '{fullname}' не найден")
@@ -63,7 +62,7 @@ def load_sound(name):
     return pg.mixer.Sound(fullname)
 
 
-class GameObject(pg.sprite.Sprite):
+class GameObject(pg.sprite.Sprite):  # родительский объект для всех внутреигровых объектов
     def __init__(self, x, y, *groups, sp=0.25, marsh=None, do_marsh=True):
         super().__init__(all_sprites, objects, *groups)
         self.base_im = obj_spr.get(self.__class__, im_sh)
@@ -88,13 +87,13 @@ class GameObject(pg.sprite.Sprite):
 
         self.hp = obj_hp.get(self.__class__, 1000000)
 
-    def step(self, player):
+    def step(self, player):  # шаг, выполняется каждый кадр
         if self.hp <= 0:
             self.ded()
         self.go_marsh(player)
         self.draw3d(player)
 
-    def go_marsh(self, player):
+    def go_marsh(self, player):  # перемещение по маршруту
         if self.do_marsh:
             if self.pos != self.marsh[self.mc]:
                 self.move(*self.marsh[self.mc], player)
@@ -102,7 +101,7 @@ class GameObject(pg.sprite.Sprite):
                 self.mc += 1
                 self.mc %= len(self.marsh)
 
-    def move(self, x, y, player):
+    def move(self, x, y, player):  # перемещение к конкретной точке
         if abs(self.x - x) > self.sp:
             self.x -= self.sp * znak(self.x - x)
         else:
@@ -113,7 +112,7 @@ class GameObject(pg.sprite.Sprite):
             self.y = y
         self.pos = self.x, self.y
 
-    def draw3d(self, player, distd=1, sh=0, shx=0):
+    def draw3d(self, player, distd=1, sh=0, shx=0):  # подгонка размера и координаты из хотя из положения игрока
         dist = dist_of_points(*self.pos, *player.pos) / distd
         self.ang = angle_of_points(*player.pos, *self.pos,
                                    player.ang)
@@ -127,13 +126,13 @@ class GameObject(pg.sprite.Sprite):
         self.rect.y = height / 2 - (
                 dist * 0.05 + 0.000000000001) - self.image.get_rect().h // 2 + 20 + self.rect.h / 40 + sh - 15
 
-    def ded(self):
+    def ded(self):  # смэрть
         self.is_ded = True
         self.pos = self.x, self.y = -100, -100
         obj_ded_v.get(self.__class__, v_empty).play()
 
 
-class Enemy(GameObject):
+class Enemy(GameObject):  # родительский класс противника
     def __init__(self, x, y, sp=0.25, marsh=None, do_marsh=True):
         super().__init__(x, y, enemies, sp=sp, marsh=marsh, do_marsh=do_marsh)
         self.tdd = 0
@@ -144,7 +143,7 @@ class Enemy(GameObject):
         if self.hp <= obj_hp[self.__class__] // 2 and self.base_im != obj_spr[self.__class__][1]:
             self.base_im = obj_spr[self.__class__][1]
 
-    def find_player(self, player):
+    def find_player(self, player):  # криво работающая функция поиска игрока
         pass
         f = False
         lsp = (player.pos[0] - self.x, player.pos[1] - self.y)
@@ -163,7 +162,7 @@ class Enemy(GameObject):
             self.marsh = [player.pos]
             self.mc = 0
 
-    def move(self, x, y, player):
+    def move(self, x, y, player):  # то же что и у родителя но сталкивается с пепятствиями
         xx, yy = self.pos
         super().move(x, y, player)
 
@@ -179,7 +178,7 @@ class Enemy(GameObject):
         if grid_pos(self.x * 4, self.y * 4) in maps[map_n]['map_coords'] or not can_move:
             self.pos = self.x, self.y = xx, yy
 
-    def ded(self):
+    def ded(self):  # +выбрасывание дропа
         r = randint(0, 5)
         if not r:
             Aptechka(*self.pos)
@@ -190,17 +189,17 @@ class Enemy(GameObject):
         super().ded()
 
 
-class Door(GameObject):
+class Door(GameObject):  # дверь
     def __init__(self, x, y, marsh=None, key=-1):
         super().__init__(x, y, sp=0.25, marsh=marsh, do_marsh=False)
         self.key = key
 
-    def go_marsh(self, player):
+    def go_marsh(self, player):  # смерть по открытию
         super().go_marsh(player)
         if self.pos == self.marsh[-1]:
             self.ded()
 
-    def step(self, player):
+    def step(self, player):  # проверка открытия
         if not self.do_marsh and dist_of_points(*self.pos, *player.pos) < 25 and \
                 0.3 < angle_of_points(*player.pos, *self.pos, player.ang) < 0.8 and \
                 key_d == pg.K_f:
@@ -212,22 +211,22 @@ class Door(GameObject):
                 over_v.get('door_not_open', v_empty).play()
         super().step(player)
 
-    def draw3d(self, player, distd=2.5, sh=1, shx=10):
+    def draw3d(self, player, distd=2.5, sh=1, shx=10):  # дверь нужно рисовать чутка подругому
         d = dist_of_points(*self.pos, *player.pos)
         sh = -d ** 0.9 / 20
         shx *= d * 0.5 / 20
         super().draw3d(player, distd=distd, sh=sh, shx=shx)
 
 
-class Spider(Enemy):
+class Spider(Enemy):  # паук
     pass
 
 
-class Zombie(Enemy):
+class Zombie(Enemy):  # зомби
     pass
 
 
-class Spawner(GameObject):
+class Spawner(GameObject):  # спавнер
     def __init__(self, x, y, obj=None, marsh=None, chst=1):
         super().__init__(x, y, sp=0, marsh=marsh, do_marsh=False)
         self.chst = chst
@@ -236,10 +235,10 @@ class Spawner(GameObject):
 
         self.sch = 0
 
-    def step(self, player):
+    def step(self, player):  # создание врагов с определённой частотой
         super().step(player)
         self.sch += 1
-        if self.sch // 60 >= self.chst and len(enemies.sprites()) < 60:
+        if self.sch // 60 >= self.chst and len(enemies.sprites()) < max_unit:
             self.sch = 0
             can_spawn = True
             for i in enemies.sprites():
@@ -257,12 +256,12 @@ class Spawner(GameObject):
                          do_marsh=True)
 
 
-class Key(GameObject):
+class Key(GameObject):  # ключ
     def __init__(self, x, y, key=-1):
         super().__init__(x, y, sp=0)
         self.key = key
 
-    def step(self, player):
+    def step(self, player):  # проверка сталкновения с игроком
         if dist_of_points(*self.pos, *player.pos) <= 20:
             set_message(f'Вы подобрали ключ {self.key}', 3)
             player.keys.add(self.key)
@@ -270,40 +269,40 @@ class Key(GameObject):
         super().step(player)
 
 
-class Trigger(GameObject):
+class Trigger(GameObject):  # триггер
     def __init__(self, x, y, foo=lambda: None):
         super().__init__(x, y, sp=0)
         self.foo = foo
         self.rect.x, self.rect.y = -1000, -1000
 
-    def step(self, player):
+    def step(self, player):  # проверка сталкновения с игроком
         if dist_of_points(*self.pos, *player.pos) <= 20:
             self.foo()
             self.ded()
         super().step(player)
 
-    def draw3d(self, player, distd=1, sh=0, shx=0):
+    def draw3d(self, player, distd=1, sh=0, shx=0):  # триггер не рисуется
         pass
 
 
-class Spr(GameObject):
+class Spr(GameObject):  # спрайт
     def __init__(self, x, y, spr):
         super().__init__(x, y, sp=0)
         self.base_im = self.image = spr
 
 
-class Aptechka(GameObject):
+class Aptechka(GameObject):  # аптечка
     def __init__(self, x, y):
         super().__init__(x, y, do_marsh=False, sp=0)
 
-    def step(self, player):
+    def step(self, player):  # проверка сталкновения с игроком
         super().step(player)
         if dist_of_points(*self.pos, *player.pos) <= 10:
             player.hp = 100
             self.ded()
 
 
-class Patroni(GameObject):
+class Patroni(GameObject):  # патроны
     def __init__(self, x, y, tp):
         super().__init__(x, y, do_marsh=False, sp=0)
         self.type = tp
@@ -312,18 +311,18 @@ class Patroni(GameObject):
         else:
             self.image = self.base_im = obj_spr['p1']
 
-    def step(self, player):
+    def step(self, player):  # проверка сталкновения с игроком
         super().step(player)
         if dist_of_points(*self.pos, *player.pos) <= 10:
             player.ammo[self.type] = gun_amst[self.type]
             self.ded()
 
 
-def grid_pos(x, y):
+def grid_pos(x, y):  # координаты квадрата в котором стоим
     return x // rect_size2d * rect_size2d, y // rect_size2d * rect_size2d
 
 
-def raycast_png(player):
+def raycast_png(player):  # пускает лучи с целью узнать где рисовать 3д стены
     global rast_hor, rast_vert, x_vert, y_vert, x_hor, y_hor
     ret = []
     st_b = stena.get_rect()
@@ -385,23 +384,24 @@ def raycast_png(player):
     return ret
 
 
-def draw_button(sc, name, x, y):
+def draw_button(sc, name, x, y):  # рисует кнопку
     sc.blit(name, (x, y))
     return (x, y)
 
 
-def start_screen(sc):
+def start_screen(sc):  # рисует стартовое меню
     menu_rect = menu.get_rect()
     b_rect = but_menu.get_rect()
     pg.mixer.music.load(os.path.join('data', 'sounds', 'меню.mp3'))
     pg.mixer.music.play()
-    pg.mixer.music.set_volume(0.5)
+    pg.mixer.music.set_volume(1)
 
     sc.blit(fon, (0, 0))
     running = True
     rect_b_lv = draw_button(sc, but_menu, width // 2 - menu_rect.h * 6, (height - menu_rect.h) / 2.5 - 50)
     rect_b_quit = draw_button(sc, quitt, width // 2 - menu_rect.h * 6, (height - menu_rect.h) / 2 + 220)
-    regul_b = draw_button(sc, regulations, width // 2 - menu_rect.h * 6, (height - menu_rect.h) / 1.75)
+    regul_b = draw_button(sc, regulations, width // 2 - menu_rect.h * 6,
+                          (height - menu_rect.h) / 2.5 + 135)
     while running:
         for event in pg.event.get():
             if event.type == pg.QUIT:
@@ -431,7 +431,7 @@ def start_screen(sc):
         pg.display.flip()
 
 
-def pravila(sc):
+def pravila(sc):  # рисует правила
     global en_rus
 
     rus = ["Введение", "",
@@ -504,7 +504,7 @@ def pravila(sc):
         pg.display.flip()
 
 
-def mini_menu_go(sc):
+def mini_menu_go(sc):  # рисует меню паузы
     global tm_map_m
 
     menu_rect = menu.get_rect()
@@ -548,11 +548,11 @@ def mini_menu_go(sc):
         pg.display.flip()
 
 
-def game_stop():
+def game_stop():  # оч сложная для понимания функция
     exit(0)
 
 
-def next_level():
+def next_level():  # тож непонятно
     global map_n, need_break
     map_n += 1
     map_n %= maps_n
@@ -560,14 +560,14 @@ def next_level():
     set_message(f'Уровень {map_n + 1}', 5)
 
 
-def set_level(n):
+def set_level(n):  # и тут
     global map_n, need_break
     map_n = n
     need_break = True
     set_message(f'Уровень {map_n + 1}', 5)
 
 
-def shoot(player):
+def shoot(player):  # выстрел игрока (это должно быть в классе игрока, но не страшно)
     global tdsh
     if time() - player.last_shoot >= gun_rt[player.gun]:
         if player.ammo[player.gun]:
@@ -576,7 +576,7 @@ def shoot(player):
             gun_v[player.gun].play()
             tdsh = time()
             objs = []
-            for i in objects.sprites():
+            for i in enemies.sprites():
                 if 0.2 < i.ang < 0.8 and dist_of_points(*player.pos, *i.pos) < rect_size2d * 2:
                     objs += [i]
             if objs:
@@ -589,7 +589,7 @@ def shoot(player):
             over_v['no_ammo'].play()
 
 
-def draw_bar(sc, ft, text, color, num, max_, sz, pos):
+def draw_bar(sc, ft, text, color, num, max_, sz, pos):  # рисует название величины и саму величину
     if color != white:
         c = white
     else:
@@ -604,36 +604,37 @@ def draw_bar(sc, ft, text, color, num, max_, sz, pos):
                                                 pos[1]))
 
 
-def draw_message(sc, ft):
+def draw_message(sc, ft):  # рисует сообщение пользователю
     if time() - tsm <= ttd:
         sc.blit(ft.render(message, False, red), (width // 2 - ft.size(message)[0] // 2, 20))
 
 
-def set_message(text, t):
+def set_message(text, t):  # устанавливает сообщение пользователю
     global message, ttd, tsm
     message = text
     tsm = time()
     ttd = t
 
 
-def draw_gun(sc, player):
+def draw_gun(sc, player):  # рисует выбранную пушку
     im = obj_spr['guns'][player.gun]
     r = im.get_rect()
     sc.blit(im, (width // 2 - r.w // 2, height - 200 - r.h))
 
 
-def draw_shoot(sc):
+def draw_shoot(sc):  # рисует выстрел
     if time() - tdsh <= 0.1:
         im = obj_spr['shoot']
         r = im.get_rect()
         sc.blit(im, (width // 2 - r.w // 2, height - 250 - r.h))
 
 
-def draw_interface(sc, player):
+def draw_interface(sc, player):  # рисует интерфейс
     # global font, font2, font3
     global rect_b_menu
 
-    draw_minimap(sc, player)
+    if is_minimap:
+        draw_minimap(sc, player)
 
     draw_message(sc, font2)
 
@@ -654,7 +655,7 @@ def draw_interface(sc, player):
     draw_gun(sc, player)
 
 
-stena = None
+stena = None  # страшные настины переменные
 menu = None
 quitt = None
 egip_stena = None
@@ -669,11 +670,11 @@ back = None
 az = None
 next = None
 
-stena_pre_render = []
+stena_pre_render = []  # пре ренддеренные кусочки стены
 egipt_stena_pre_render = []
 rect_b_menu = []
 
-solid_cl = {Door, Enemy}
+solid_cl = {Door, Enemy}  # различная информация об объектах
 obj_nd = {Trigger, Spr}
 obj_hp = {Spider: 10,
           Zombie: 2,
@@ -682,45 +683,47 @@ obj_hp = {Spider: 10,
 obj_dam = {Spider: 1,
            Zombie: 0.1}
 
-v_empty = None
-
-over_v = {}
-
-gun_dam = [1, 5]
-gun_rt = [1, 3]
-gun_amst = [20, 5]
-gun_v = []
-
 obj_spr = {}
 obj_v_dam = {}
 obj_ded_v = {}
 
-maps_music = []
+v_empty = None  # пустой звук
+
+over_v = {}  # другие звуки
+
+gun_dam = [1, 5]  # всё связанное с пушкой
+gun_rt = [1, 3]
+gun_amst = [20, 5]
+gun_v = []
+
+maps_music = []  # музыка
 menu_music = None
 tm_map_m = 0
 
-im_sh = None
+im_sh = None  # вщ хз
 
-font = None
+font = None  # шрифты
 font2 = None
 font3 = None
 font_play = None
 
-message = ''
+message = ''  # глобальные переменные нужные для работы сообщений
 tsm = 0
 ttd = 0
 
-need_break = False
+need_break = False  # необходимость перезагрузить уровень
 
-tdsh = 0
+tdsh = 0  # для рисование выстрела
 
 
-def main():
+def main():  # мэин
+    # берём в глобал всю эту радость
     global key_d, obj_spr, im_sh, stena, egip_stena, all_sprites, enemies, \
         objects, stena_pre_render, font, font2, font3, egipt_stena_pre_render, menu, need_break, quitt, menu_fon, \
         but_menu, fon, minin_in_menu, continue_b, lvl_fon, obj_v_dam, gun_v, v_empty, \
         over_v, obj_ded_v, maps_music, menu_music, tm_map_m, back, regulations, font_play, az, next
 
+    # необхадимая настройка перед главным циклом
     pg.mixer.pre_init()
     pg.init()
     sc = pg.display.set_mode((width, height))
@@ -805,40 +808,42 @@ def main():
     ]
     menu_music = 'меню.mp3'
 
-    start_screen(sc)
+    start_screen(sc)  # рисуем меню
 
-    while True:
+    while True:  # цикл уровней
         running = True
 
-        tm_map_m = time() - tm_map_m
+        tm_map_m = time() - tm_map_m  # подрубаем музон
         pg.mixer.music.load(os.path.join('data', 'sounds', maps_music[map_n]))
         pg.mixer.music.play()
         pg.mixer.music.set_volume(0.25)
 
+        # загружаем уровень
         all_sprites = pg.sprite.Group()
         objects = pg.sprite.Group()
         enemies = pg.sprite.Group()
 
         ppos = None
 
-        # unit generation
+        # ставим юнитов и игрока
 
         player = Player(*map_obj[map_n]['player'], objects, solid_cl, map_n)
 
-        for i in map_obj[map_n]['spider']:
-            Spider(*i)
+        if True:  # важно!!!!
+            for i in map_obj[map_n]['spider']:
+                Spider(*i)
 
-        for i in map_obj[map_n]['zombie']:
-            Zombie(*i)
+            for i in map_obj[map_n]['zombie']:
+                Zombie(*i)
+
+            for i in map_obj[map_n]['spawner']:
+                Spawner(*i[:2], eval(i[2]), *i[3:])
 
         for i in map_obj[map_n]['aptechka']:
             Aptechka(*i)
 
         for i in map_obj[map_n]['patroni']:
             Patroni(*i[:-1], i[-1])
-
-        for i in map_obj[map_n]['spawner']:
-            Spawner(*i[:2], eval(i[2]), *i[3:])
 
         for i in map_obj[map_n]['door']:
             Door(*i)
@@ -852,7 +857,7 @@ def main():
         for i in map_obj[map_n]['spr']:
             Spr(*i[:-1], spr=eval(i[-1]))
 
-        while running:
+        while running:  # цикл внитри уровня
             sc.fill((0, 0, 0))
             key_d = -1
             for event in pg.event.get():
@@ -899,7 +904,7 @@ def main():
                 break
 
 
-def draw_minimap(sc, player):
+def draw_minimap(sc, player):  # рисует миникарту (можно врубить в настройках)
     pg.draw.rect(sc, black, (0, 0, rect_size2d // 4 * len(map_[map_n][0]), rect_size2d // 4 * len(map_[map_n])))
     for i in maps[map_n]['map_coords']:
         pg.draw.rect(sc, gray, (i[0] // 4, i[1] // 4, rect_size2d // 4, rect_size2d // 4))
@@ -913,7 +918,7 @@ def draw_minimap(sc, player):
             pg.draw.circle(sc, color, i.pos, 5)
 
 
-def draw_3d_png(sc, lin, sp, ppos):
+def draw_3d_png(sc, lin, sp, ppos):  # рисует стены
     pg.draw.rect(sc, (50, 30, 0), (0, 0, width, height / 2))
     pg.draw.rect(sc, (40, 30, 0), (0, height / 2, width, height))
     dist = 999

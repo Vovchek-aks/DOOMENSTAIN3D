@@ -62,9 +62,9 @@ class Player:
             self.x += -self.sp * sin
             self.y += self.sp * cos
         if key[pg.K_q]:
-            self.ang -= 0.05
+            self.ang -= 0.06
         elif key[pg.K_e]:
-            self.ang += 0.05
+            self.ang += 0.06
         self.ang %= math.pi * 2
 
         self.pos = self.x // 4, self.y // 4
