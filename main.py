@@ -553,6 +553,48 @@ def game_stop():  # оч сложная для понимания функция
     exit(0)
 
 
+def end():
+    global need_break, tm_map_m
+
+    tm_map_m = time() - tm_map_m
+    pg.mixer.music.load(os.path.join('data', 'sounds', 'меню.mp3'))
+    pg.mixer.music.play()
+    pg.mixer.music.set_volume(0.5)
+    sc = pg.display.set_mode((width, height))
+    sc.blit(lvl_fon, (0, 0))
+    start_o = start_over.get_rect()
+    rect_end = draw_button(sc, rich, rich.get_rect().w, height - 400)
+    over = draw_button(sc, start_over, (width - start_over.get_rect().w) // 2, height - 300)
+    end_txt = ['После долгих и возможно мучительных дней в гробнице, вы наконец-то',
+               'выбрались от туда и вернулись с нехилым таким состоянием к себе домой !']
+    text_coord = 150
+    for line in end_txt:
+        string_rendered = font_end.render(line, 1, black)
+        intro_rect = string_rendered.get_rect()
+        text_coord += 10
+        intro_rect.top = text_coord
+        intro_rect.x = 150
+        text_coord += intro_rect.height
+        sc.blit(string_rendered, intro_rect)
+    while True:
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                pg.quit()
+                sys.exit()
+            elif event.type == pg.MOUSEBUTTONDOWN:
+                if event.pos[0] >= over[0] and event.pos[1] >= over[1]:
+                    if event.pos[0] <= over[0] + start_o.w and event.pos[1] >= over[1]:
+                        if event.pos[0] <= over[0] + start_o.w and \
+                                event.pos[1] <= over[1] + start_o.h:
+                            if event.pos[0] >= over[0] and \
+                                    event.pos[1] <= over[1] + start_o.h:
+                                start_screen(sc)
+                                set_level(0)
+                                return
+        pg.display.flip()
+
+
+
 def next_level():  # тож непонятно
     global map_n, need_break
     map_n += 1
@@ -656,12 +698,13 @@ def draw_interface(sc, player):  # рисует интерфейс
     draw_gun(sc, player)
 
 
-stena = None  # страшные настины переменные
+stena = None  # страшные настины переменные (Нормальные!)
 menu = None
 quitt = None
 egip_stena = None
 menu_fon = None
 but_menu = None
+start_over = None
 continue_b = None
 minin_in_menu = None
 regulations = None
@@ -670,6 +713,7 @@ lvl_fon = None
 back = None
 az = None
 next = None
+rich = None
 
 stena_pre_render = []  # пре ренддеренные кусочки стены
 egipt_stena_pre_render = []
@@ -701,12 +745,13 @@ maps_music = []  # музыка
 menu_music = None
 tm_map_m = 0
 
-im_sh = None  # вщ хз
+im_sh = None  # вщ хз (Вова поставил Шрека, но сам его вщ не уважает, КАК ТАК ВОВА ТЫ МОГ ЗАБЫТЬ ПРО ШРЕКА?!)
 
 font = None  # шрифты
 font2 = None
 font3 = None
 font_play = None
+font_end = None
 
 message = ''  # глобальные переменные нужные для работы сообщений
 tsm = 0
@@ -722,7 +767,8 @@ def main():  # мэин
     global key_d, obj_spr, im_sh, stena, egip_stena, all_sprites, enemies, \
         objects, stena_pre_render, font, font2, font3, egipt_stena_pre_render, menu, need_break, quitt, menu_fon, \
         but_menu, fon, minin_in_menu, continue_b, lvl_fon, obj_v_dam, gun_v, v_empty, \
-        over_v, obj_ded_v, maps_music, menu_music, tm_map_m, back, regulations, font_play, az, next
+        over_v, obj_ded_v, maps_music, menu_music, tm_map_m, back, regulations, font_play, az, next, rich, font_end, \
+        start_over
 
     # необхадимая настройка перед главным циклом
     pg.mixer.pre_init()
@@ -759,6 +805,8 @@ def main():  # мэин
     back = load_image('back.png')
     az = load_image('lang.png')
     next = load_image('next.png')
+    rich = load_image('rich_end.png')
+    start_over = load_image('Start_over.png')
     fon = pg.transform.scale(menu_fon, (width, height))
     lvl_fon = pg.transform.scale(lvl_fon, (width, height))
     stena = load_image('стена обыкновенная.png')
@@ -772,6 +820,7 @@ def main():  # мэин
     font2 = pg.font.Font(None, 48)
     font3 = pg.font.Font(None, 9)
     font_play = pg.font.Font(os.path.join('data', 'fonts', '20179.ttf'), 30)
+    font_end = pg.font.Font(os.path.join('data', 'fonts', '20179.ttf'), 50)
 
     obj_v_dam = {
         Spider: load_sound('spider_damage.wav'),
