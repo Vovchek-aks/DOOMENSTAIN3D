@@ -238,7 +238,7 @@ class Spawner(GameObject):  # спавнер
     def step(self, player):  # создание врагов с определённой частотой
         super().step(player)
         self.sch += 1
-        if self.sch // 60 >= self.chst and len(enemies.sprites()) < max_unit:
+        if self.sch // 60 >= self.chst and len([i for i in enemies.sprites() if not i.is_ded]) < max_unit:
             self.sch = 0
             can_spawn = True
             for i in enemies.sprites():
@@ -576,7 +576,7 @@ def shoot(player):  # выстрел игрока (это должно быть 
             gun_v[player.gun].play()
             tdsh = time()
             objs = []
-            for i in enemies.sprites():
+            for i in objects.sprites():
                 if 0.2 < i.ang < 0.8 and dist_of_points(*player.pos, *i.pos) < rect_size2d * 2:
                     objs += [i]
             if objs:
