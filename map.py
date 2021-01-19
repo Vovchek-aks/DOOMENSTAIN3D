@@ -257,7 +257,7 @@ map_obj = [  # объекты на карте
                 (21.5 * rect_size2d // 4, 9.5 * rect_size2d // 4, 2),
                 (21.5 * rect_size2d // 4, 3 * rect_size2d // 4, 3),
                 (51.5 * rect_size2d // 4, 19 * rect_size2d // 4, 4),
-                (1.3 * rect_size2d // 4, 5 * rect_size2d // 4, 0)],
+                (52.5 * rect_size2d // 4, 1.5 * rect_size2d // 4, 0)],
         'trigger': [(1.5 * rect_size2d // 4, -1.5 * rect_size2d // 4, 'end')],
         'spr': [(1.5 * rect_size2d // 4, -1 * rect_size2d // 4, "obj_spr['portal']")],
         'aptechka': [],
