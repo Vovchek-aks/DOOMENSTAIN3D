@@ -14,7 +14,7 @@ enemies = pg.sprite.Group()
 
 key_d = -1  # последняя нажатая клавиша для открытия дверей
 
-map_n = 4  # номер текущей карты
+map_n = 0  # номер текущей карты
 
 znak = lambda x: 1 if x > 0 else -1  # возвращает знак числа
 
@@ -563,7 +563,7 @@ def end():
     sc = pg.display.set_mode((width, height))
     sc.blit(lvl_fon, (0, 0))
     start_o = start_over.get_rect()
-    rect_end = draw_button(sc, rich, rich.get_rect().w, height - 400)
+    k = 0
     over = draw_button(sc, start_over, (width - start_over.get_rect().w) // 2, height - 300)
     end_txt = ['После долгих и возможно мучительных дней в гробнице, вы наконец-то',
                'выбрались от туда и вернулись с нехилым таким состоянием к себе домой !']
@@ -577,6 +577,9 @@ def end():
         text_coord += intro_rect.height
         sc.blit(string_rendered, intro_rect)
     while True:
+        if rich.get_rect().w + k < width - 200:
+            socrovishe_b = draw_button(sc, socrovishe, rich.get_rect().w + k, height - 450)
+            k += 150
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 pg.quit()
@@ -714,6 +717,7 @@ back = None
 az = None
 next = None
 rich = None
+socrovishe = None
 
 stena_pre_render = []  # пре ренддеренные кусочки стены
 egipt_stena_pre_render = []
@@ -768,7 +772,7 @@ def main():  # мэин
         objects, stena_pre_render, font, font2, font3, egipt_stena_pre_render, menu, need_break, quitt, menu_fon, \
         but_menu, fon, minin_in_menu, continue_b, lvl_fon, obj_v_dam, gun_v, v_empty, \
         over_v, obj_ded_v, maps_music, menu_music, tm_map_m, back, regulations, font_play, az, next, rich, font_end, \
-        start_over
+        start_over, socrovishe
 
     # необхадимая настройка перед главным циклом
     pg.mixer.pre_init()
@@ -807,6 +811,7 @@ def main():  # мэин
     next = load_image('next.png')
     rich = load_image('rich_end.png')
     start_over = load_image('Start_over.png')
+    socrovishe = load_image('socrovishe.png')
     fon = pg.transform.scale(menu_fon, (width, height))
     lvl_fon = pg.transform.scale(lvl_fon, (width, height))
     stena = load_image('стена обыкновенная.png')
