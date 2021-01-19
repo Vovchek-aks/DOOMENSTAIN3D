@@ -117,7 +117,7 @@ map_obj = [  # объекты на карте
                    (8 * rect_size2d // 2, 3 * rect_size2d // 2)],
         'spawner': [],
         'door': [(14.5 * rect_size2d // 4, 13.5 * rect_size2d // 4,
-                  [(14.5 * rect_size2d // 4, 14.7 * rect_size2d // 4)], -1),
+                  [(14.5 * rect_size2d // 4, 15 * rect_size2d // 4)], -1),
                  (14.5 * rect_size2d // 4, 7.5 * rect_size2d // 4,
                   [(14.5 * rect_size2d // 4, 8.5 * rect_size2d // 4)], 0)],
         'key': [(2 * rect_size2d // 2, 2 * rect_size2d // 2, 0)],
