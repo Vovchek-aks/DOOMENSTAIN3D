@@ -14,7 +14,7 @@ enemies = pg.sprite.Group()
 
 key_d = -1  # последняя нажатая клавиша для открытия дверей
 
-map_n = 4  # номер текущей карты
+map_n = 0  # номер текущей карты
 
 znak = lambda x: 1 if x > 0 else -1  # возвращает знак числа
 
@@ -793,7 +793,9 @@ def main():  # мэин
                'p2': load_image('патроны2.png'),
                'guns': [load_image('gun1.png'),
                         load_image('gun2.png')],
-               'shoot': load_image('bank.png')}
+               'shoot': load_image('bank.png'),
+               'fikus': load_image('fikus.png'),
+               'statya': load_image('statya.png')}
 
     im_sh = load_image('shrek3.png')
     menu = load_image('menu.png')

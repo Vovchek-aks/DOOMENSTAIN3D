@@ -17,7 +17,7 @@ lines = 200  # Количество лучей
 line_step = fow / lines / 50  # угол между лучами
 line_to_px = width / lines  # ширина линии в 3д
 
-is_minimap = True  # нужно ли рисовать миникарту
+is_minimap = False  # нужно ли рисовать миникарту
 
 max_unit = 30  # максимальное количество мобов
 
