@@ -14,7 +14,7 @@ enemies = pg.sprite.Group()
 
 key_d = -1  # последняя нажатая клавиша для открытия дверей
 
-map_n = 0  # номер текущей карты
+map_n = 4  # номер текущей карты
 
 znak = lambda x: 1 if x > 0 else -1  # возвращает знак числа
 
@@ -810,7 +810,7 @@ def main():  # мэин
     az = load_image('lang.png')
     next = load_image('next.png')
     rich = load_image('rich_end.png')
-    start_over = load_image('Start_over.png')
+    start_over = minin_in_menu
     socrovishe = load_image('socrovishe.png')
     fon = pg.transform.scale(menu_fon, (width, height))
     lvl_fon = pg.transform.scale(lvl_fon, (width, height))
