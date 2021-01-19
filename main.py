@@ -749,8 +749,6 @@ maps_music = []  # музыка
 menu_music = None
 tm_map_m = 0
 
-im_sh = None  # вщ хз (Вова поставил Шрека, но сам его вщ не уважает, КАК ТАК ВОВА ТЫ МОГ ЗАБЫТЬ ПРО ШРЕКА?!)
-
 font = None  # шрифты
 font2 = None
 font3 = None
