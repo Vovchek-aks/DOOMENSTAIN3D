@@ -1,7 +1,7 @@
 import pygame as pg
 from map import *
 from settings import *
-from player import Player
+from player import Player, dist_of_points
 import math
 import sys
 import os
@@ -14,7 +14,7 @@ enemies = pg.sprite.Group()
 
 key_d = -1  # последняя нажатая клавиша для открытия дверей
 
-map_n = 4  # номер текущей карты
+map_n = 0  # номер текущей карты
 
 znak = lambda x: 1 if x > 0 else -1  # возвращает знак числа
 
@@ -30,36 +30,6 @@ def angle_of_points(x1, y1, x2, y2, ang):  # игол между точками 
     if x1 < x2 and y1 >= y2 and math.radians(90) > ang > 0:
         r -= math.pi * 2
     return r - 1
-
-
-def dist_of_points(x1, y1, x2, y2):  # растояние между точками
-    dx = abs(x1 - x2)
-    dy = abs(y1 - y2)
-    return (dx ** 2 + dy ** 2) ** 0.5
-
-
-def load_image(name, colorkey=None):  # загружает картинки
-    fullname = os.path.join('data', 'sprites', name)
-    if not os.path.isfile(fullname):
-        print(f"Файл с изображением '{fullname}' не найден")
-        fullname = os.path.join('data', 'sprites', 'shrek3.png')
-    image = pg.image.load(fullname)
-    if colorkey is not None:
-        image = image.convert()
-        if colorkey == -1:
-            colorkey = image.get_at((0, 0))
-        image.set_colorkey(colorkey)
-    else:
-        image = image.convert_alpha()
-    return image
-
-
-def load_sound(name):  # загружает звуки
-    fullname = os.path.join('data', 'sounds', name)
-    if not os.path.isfile(fullname):
-        print(f"Файл со звуком '{fullname}' не найден")
-        fullname = os.path.join('data', 'sounds', 'empty.wav')
-    return pg.mixer.Sound(fullname)
 
 
 class GameObject(pg.sprite.Sprite):  # родительский объект для всех внутреигровых объектов
@@ -112,12 +82,12 @@ class GameObject(pg.sprite.Sprite):  # родительский объект д�
             self.y = y
         self.pos = self.x, self.y
 
-    def draw3d(self, player, distd=1, sh=0, shx=0):  # подгонка размера и координаты из хотя из положения игрока
+    def draw3d(self, player, distd=1, sh=0, shx=0, min_dist=5):  # подгонка размера и координаты из хотя из положения игрока
         dist = dist_of_points(*self.pos, *player.pos) / distd
         self.ang = angle_of_points(*player.pos, *self.pos,
                                    player.ang)
-        if dist < 5:
-            dist = 5
+        if dist < min_dist:
+            dist = min_dist
         self.rect.x = self.ang / line_step * line_to_px - self.image.get_rect().w // 2 + shx
 
         self.image = pg.transform.scale(self.base_im,
@@ -211,7 +181,7 @@ class Door(GameObject):  # дверь
                 over_v.get('door_not_open', v_empty).play()
         super().step(player)
 
-    def draw3d(self, player, distd=2.5, sh=1, shx=10):  # дверь нужно рисовать чутка подругому
+    def draw3d(self, player, distd=2.5, sh=1, shx=10, min_dist=5):  # дверь нужно рисовать чутка подругому
         d = dist_of_points(*self.pos, *player.pos)
         sh = -d ** 0.9 / 20
         shx *= d * 0.5 / 20
@@ -239,7 +209,7 @@ class Spawner(GameObject):  # спавнер
         super().step(player)
         self.sch += 1
         if self.sch // 60 >= self.chst and len([i for i in enemies.sprites() if not i.is_ded]) < max_unit and \
-                dist_of_points(*self.pos, *player.pos) <= rect_size2d * 2:
+                dist_of_points(*self.pos, *player.pos) <= rect_size2d * 8:
             self.sch = 0
             can_spawn = True
             for i in enemies.sprites():
@@ -282,7 +252,7 @@ class Trigger(GameObject):  # триггер
             self.ded()
         super().step(player)
 
-    def draw3d(self, player, distd=1, sh=0, shx=0):  # триггер не рисуется
+    def draw3d(self, player, distd=1, sh=0, shx=0, min_dist=5):  # триггер не рисуется
         pass
 
 
@@ -290,6 +260,9 @@ class Spr(GameObject):  # спрайт
     def __init__(self, x, y, spr):
         super().__init__(x, y, sp=0)
         self.base_im = self.image = spr
+
+    def draw3d(self, player, distd=1, sh=0, shx=0, min_dist=5):
+        super().draw3d(player, min_dist=20)
 
 
 class Aptechka(GameObject):  # аптечка
@@ -317,6 +290,30 @@ class Patroni(GameObject):  # патроны
         if dist_of_points(*self.pos, *player.pos) <= 10:
             player.ammo[self.type] = gun_amst[self.type]
             self.ded()
+
+
+def load_image(name, colorkey=None):  # загружает картинки
+    fullname = os.path.join('data', 'sprites', name)
+    if not os.path.isfile(fullname):
+        print(f"Файл с изображением '{fullname}' не найден")
+        fullname = os.path.join('data', 'sprites', 'shrek3.png')
+    image = pg.image.load(fullname)
+    if colorkey is not None:
+        image = image.convert()
+        if colorkey == -1:
+            colorkey = image.get_at((0, 0))
+        image.set_colorkey(colorkey)
+    else:
+        image = image.convert_alpha()
+    return image
+
+
+def load_sound(name):  # загружает звуки
+    fullname = os.path.join('data', 'sounds', name)
+    if not os.path.isfile(fullname):
+        print(f"Файл со звуком '{fullname}' не найден")
+        fullname = os.path.join('data', 'sounds', 'empty.wav')
+    return pg.mixer.Sound(fullname)
 
 
 def grid_pos(x, y):  # координаты квадрата в котором стоим
