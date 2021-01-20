@@ -766,6 +766,8 @@ def main():  # мэин
 
     clock = pg.time.Clock()
 
+    pg.display.set_icon(load_image('gun.png'))
+
     obj_spr = {Door: load_image('дверь.png'),
                Spider: [load_image('spider.png'),
                         load_image('spider ранен(.png')],
