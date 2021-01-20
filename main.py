@@ -82,7 +82,8 @@ class GameObject(pg.sprite.Sprite):  # родительский объект д�
             self.y = y
         self.pos = self.x, self.y
 
-    def draw3d(self, player, distd=1, sh=0, shx=0, min_dist=5):  # подгонка размера и координаты из хотя из положения игрока
+    def draw3d(self, player, distd=1, sh=0, shx=0,
+               min_dist=5):  # подгонка размера и координаты из хотя из положения игрока
         dist = dist_of_points(*self.pos, *player.pos) / distd
         self.ang = angle_of_points(*player.pos, *self.pos,
                                    player.ang)
@@ -406,26 +407,22 @@ def start_screen(sc):  # рисует стартовое меню
                 pg.quit()
                 sys.exit()
             elif event.type == pg.MOUSEBUTTONDOWN:
-                if event.pos[0] >= regul_b[0] and event.pos[1] >= regul_b[1]:
-                    if event.pos[0] <= regul_b[0] + b_rect.w and event.pos[1] >= regul_b[1]:
-                        if event.pos[0] <= regul_b[0] + b_rect.w and \
-                                event.pos[1] <= regul_b[1] + b_rect.h:
-                            if event.pos[0] >= regul_b[0] and event.pos[1] <= regul_b[1] + b_rect.h:
-                                pravila(sc)
-                if event.pos[0] >= rect_b_lv[0] and event.pos[1] >= rect_b_lv[1]:
-                    if event.pos[0] <= rect_b_lv[0] + b_rect.w and event.pos[1] >= rect_b_lv[1]:
-                        if event.pos[0] <= rect_b_lv[0] + b_rect.w and \
-                                event.pos[1] <= rect_b_lv[1] + b_rect.h:
-                            if event.pos[0] >= rect_b_lv[0] and event.pos[1] <= rect_b_lv[1] + b_rect.h:
-                                return
-                if event.pos[0] >= rect_b_quit[0] and event.pos[1] >= rect_b_quit[1]:
-                    if event.pos[0] <= rect_b_quit[0] + b_rect.w and event.pos[1] >= rect_b_quit[1]:
-                        if event.pos[0] <= rect_b_quit[0] + b_rect.w and \
-                                event.pos[1] <= rect_b_quit[1] + b_rect.h:
-                            if event.pos[0] >= rect_b_quit[0] and \
-                                    event.pos[1] <= rect_b_quit[1] + b_rect.h:
-                                pg.quit()
-                                sys.exit()
+                if event.pos[0] >= regul_b[0] and event.pos[1] >= regul_b[1] and \
+                        event.pos[0] <= regul_b[0] + b_rect.w and event.pos[1] >= regul_b[1] and \
+                        event.pos[0] <= regul_b[0] + b_rect.w and event.pos[1] <= regul_b[1] + b_rect.h and \
+                        event.pos[0] >= regul_b[0] and event.pos[1] <= regul_b[1] + b_rect.h:
+                    pravila(sc)
+                if event.pos[0] >= rect_b_lv[0] and event.pos[1] >= rect_b_lv[1] and \
+                        event.pos[0] <= rect_b_lv[0] + b_rect.w and event.pos[1] >= rect_b_lv[1] and \
+                        event.pos[0] <= rect_b_lv[0] + b_rect.w and event.pos[1] <= rect_b_lv[1] + b_rect.h and \
+                        event.pos[0] >= rect_b_lv[0] and event.pos[1] <= rect_b_lv[1] + b_rect.h:
+                    return
+                if event.pos[0] >= rect_b_quit[0] and event.pos[1] >= rect_b_quit[1] and \
+                        event.pos[0] <= rect_b_quit[0] + b_rect.w and event.pos[1] >= rect_b_quit[1] and \
+                        event.pos[0] <= rect_b_quit[0] + b_rect.w and event.pos[1] <= rect_b_quit[1] + b_rect.h and \
+                        event.pos[0] >= rect_b_quit[0] and event.pos[1] <= rect_b_quit[1] + b_rect.h:
+                    pg.quit()
+                    sys.exit()
         pg.display.flip()
 
 
@@ -475,18 +472,16 @@ def pravila(sc):  # рисует правила
                 pg.quit()
                 sys.exit()
             if event.type == pg.MOUSEBUTTONDOWN:
-                if event.pos[0] >= regul_b[0] and event.pos[1] >= regul_b[1]:
-                    if event.pos[0] <= regul_b[0] + b_rect.w and event.pos[1] >= regul_b[1]:
-                        if event.pos[0] <= regul_b[0] + b_rect.w and \
-                                event.pos[1] <= regul_b[1] + b_rect.h:
-                            if event.pos[0] >= regul_b[0] and event.pos[1] <= regul_b[1] + b_rect.h:
-                                start_screen(sc)
-                                return
+                if event.pos[0] >= regul_b[0] and event.pos[1] >= regul_b[1] and \
+                        event.pos[0] <= regul_b[0] + b_rect.w and event.pos[1] >= regul_b[1] and \
+                        event.pos[0] <= regul_b[0] + b_rect.w and event.pos[1] <= regul_b[1] + b_rect.h and \
+                        event.pos[0] >= regul_b[0] and event.pos[1] <= regul_b[1] + b_rect.h:
+                    start_screen(sc)
+                    return
                 if event.pos[0] >= next_b[0] and event.pos[1] >= next_b[1] and \
                         event.pos[0] <= next_b[0] + b_rect.w and event.pos[1] >= next_b[1] and \
-                        event.pos[0] <= next_b[0] + b_rect.w and \
-                        event.pos[1] <= next_b[1] + b_rect.h and event.pos[0] >= next_b[0] and \
-                        event.pos[1] <= next_b[1] + b_rect.h:
+                        event.pos[0] <= next_b[0] + b_rect.w and event.pos[1] <= next_b[1] + b_rect.h and \
+                        event.pos[0] >= next_b[0] and event.pos[1] <= next_b[1] + b_rect.h:
                     sc.blit(lvl_fon, (0, 0))
                     regul_b = draw_button(sc, back, width - menu_rect.h - 100, height - menu_rect.h - 50)
                     text_coord = 150
@@ -524,25 +519,22 @@ def mini_menu_go(sc):  # рисует меню паузы
                 pg.quit()
                 sys.exit()
             elif event.type == pg.MOUSEBUTTONDOWN:
-                if event.pos[0] >= rect_b_c[0] and event.pos[1] >= rect_b_c[1]:
-                    if event.pos[0] <= rect_b_c[0] + b_rect.w and event.pos[1] >= rect_b_c[1]:
-                        if event.pos[0] <= rect_b_c[0] + b_rect.w and \
-                                event.pos[1] <= rect_b_c[1] + b_rect.h:
-                            if event.pos[0] >= rect_b_c[0] and event.pos[1] <= rect_b_c[1] + b_rect.h:
-                                pg.mixer.music.load(os.path.join('data', 'sounds', maps_music[map_n]))
-                                pg.mixer.music.play(start=tm_map_m)
-                                pg.mixer.music.set_volume(0.25)
-                                tm_map_m = time() - tm_map_m
-                                return
-                if event.pos[0] >= rect_b_menu[0] and event.pos[1] >= rect_b_menu[1]:
-                    if event.pos[0] <= rect_b_menu[0] + b_rect.w and event.pos[1] >= rect_b_menu[1]:
-                        if event.pos[0] <= rect_b_menu[0] + b_rect.w and \
-                                event.pos[1] <= rect_b_menu[1] + b_rect.h:
-                            if event.pos[0] >= rect_b_menu[0] and \
-                                    event.pos[1] <= rect_b_menu[1] + b_rect.h:
-                                start_screen(sc)
-                                set_level(0)
-                                return
+                if event.pos[0] >= rect_b_c[0] and event.pos[1] >= rect_b_c[1] and \
+                        event.pos[0] <= rect_b_c[0] + b_rect.w and event.pos[1] >= rect_b_c[1] and \
+                        event.pos[0] <= rect_b_c[0] + b_rect.w and event.pos[1] <= rect_b_c[1] + b_rect.h and \
+                        event.pos[0] >= rect_b_c[0] and event.pos[1] <= rect_b_c[1] + b_rect.h:
+                    pg.mixer.music.load(os.path.join('data', 'sounds', maps_music[map_n]))
+                    pg.mixer.music.play(start=tm_map_m)
+                    pg.mixer.music.set_volume(0.25)
+                    tm_map_m = time() - tm_map_m
+                    return
+                if event.pos[0] >= rect_b_menu[0] and event.pos[1] >= rect_b_menu[1] and \
+                        event.pos[0] <= rect_b_menu[0] + b_rect.w and event.pos[1] >= rect_b_menu[1] and \
+                        event.pos[0] <= rect_b_menu[0] + b_rect.w and event.pos[1] <= rect_b_menu[1] + b_rect.h and \
+                        event.pos[0] >= rect_b_menu[0] and event.pos[1] <= rect_b_menu[1] + b_rect.h:
+                    start_screen(sc)
+                    set_level(0)
+                    return
         pg.display.flip()
 
 
@@ -582,17 +574,14 @@ def end():
                 pg.quit()
                 sys.exit()
             elif event.type == pg.MOUSEBUTTONDOWN:
-                if event.pos[0] >= over[0] and event.pos[1] >= over[1]:
-                    if event.pos[0] <= over[0] + start_o.w and event.pos[1] >= over[1]:
-                        if event.pos[0] <= over[0] + start_o.w and \
-                                event.pos[1] <= over[1] + start_o.h:
-                            if event.pos[0] >= over[0] and \
-                                    event.pos[1] <= over[1] + start_o.h:
-                                start_screen(sc)
-                                set_level(0)
-                                return
+                if event.pos[0] >= over[0] and event.pos[1] >= over[1] and \
+                        event.pos[0] <= over[0] + start_o.w and event.pos[1] >= over[1] and \
+                        event.pos[0] <= over[0] + start_o.w and event.pos[1] <= over[1] + start_o.h and \
+                        event.pos[0] >= over[0] and event.pos[1] <= over[1] + start_o.h:
+                    start_screen(sc)
+                    set_level(0)
+                    return
         pg.display.flip()
-
 
 
 def next_level():  # тож непонятно
@@ -927,13 +916,12 @@ def main():  # мэин
                     elif event.key == pg.K_2:
                         player.gun = 1
                 elif event.type == pg.MOUSEBUTTONDOWN:
-                    if event.pos[0] >= rect_b_menu[0] and event.pos[1] >= rect_b_menu[1]:
-                        if event.pos[0] <= rect_b_menu[0] + menu.get_rect().w and event.pos[1] >= rect_b_menu[1]:
-                            if event.pos[0] <= rect_b_menu[0] + menu.get_rect().w and \
-                                    event.pos[1] <= rect_b_menu[1] + menu.get_rect().h:
-                                if event.pos[0] >= rect_b_menu[0] and event.pos[1] <= rect_b_menu[1] + \
-                                        menu.get_rect().h:
-                                    mini_menu_go(sc)
+                    if event.pos[0] >= rect_b_menu[0] and event.pos[1] >= rect_b_menu[1] and \
+                            event.pos[0] <= rect_b_menu[0] + menu.get_rect().w and event.pos[1] >= rect_b_menu[1] and \
+                            event.pos[0] <= rect_b_menu[0] + menu.get_rect().w and \
+                            event.pos[1] <= rect_b_menu[1] + menu.get_rect().h and \
+                            event.pos[0] >= rect_b_menu[0] and event.pos[1] <= rect_b_menu[1] + menu.get_rect().h:
+                        mini_menu_go(sc)
 
             if (player.pos, player.ang) != ppos:
                 lin = raycast_png(player)

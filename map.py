@@ -167,7 +167,8 @@ map_obj = [  # объекты на карте
         'door': [(13.5 * rect_size2d // 4, 7.5 * rect_size2d // 4,
                   [(13 * rect_size2d // 4, 8 * rect_size2d // 4)], 2), (21 * rect_size2d // 4, 10.5 * rect_size2d // 4,
                                                                         [(
-                                                                         21 * rect_size2d // 4, 11 * rect_size2d // 4)],
+                                                                            21 * rect_size2d // 4,
+                                                                            11 * rect_size2d // 4)],
                                                                         1),
                  (23.5 * rect_size2d // 4, 7.5 * rect_size2d // 4,
                   [(22.5 * rect_size2d // 4, 7.5 * rect_size2d // 4)], 3)],
